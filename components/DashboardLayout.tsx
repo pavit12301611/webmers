@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/authOptions';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, PenTool, ShoppingBag } from 'lucide-react';
+import { LayoutDashboard, Leaf, PenTool, ShoppingBag } from 'lucide-react';
 import SignOutButton from './SignOutButton';
 
 /**
@@ -33,36 +33,40 @@ export default async function DashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-webmers-black text-white flex">
-      <aside className="w-72 border-r border-white/10 bg-gradient-to-b from-[#0a0a0a] to-[#050505] flex flex-col fixed h-full z-30">
-        <div className="p-6 border-b border-white/5">
-          <Link href="/" className="font-display text-2xl font-bold">Webmers</Link>
-          <div className="text-xs text-white/30 mt-1 uppercase tracking-wider">{role} Dashboard</div>
+    <div className="nature-page flex min-h-screen text-emerald-50">
+      <aside className="fixed z-30 flex h-full w-72 flex-col border-r border-emerald-50/10 bg-[#07130e]/78 backdrop-blur-2xl">
+        <div className="border-b border-emerald-50/8 p-6">
+          <Link href="/" className="inline-flex items-center gap-2 font-display text-2xl font-bold">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-lime-200 to-emerald-500 text-[#07130e]"><Leaf size={18} fill="currentColor" /></span>
+            Webmers
+          </Link>
+          <div className="mt-2 text-xs uppercase tracking-wider text-emerald-50/38">{role} Dashboard</div>
         </div>
-        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-4">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all"
+              className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-emerald-50/55 transition-all hover:bg-emerald-50/[0.06] hover:text-emerald-50"
             >
               <item.icon size={18} />
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="p-4 border-t border-white/5">
+        <div className="border-t border-emerald-50/8 p-4">
           <SignOutButton />
         </div>
       </aside>
 
       <main className="ml-72 flex-1 p-8 md:p-12">
         <div className="mb-10 max-w-5xl">
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-2 capitalize">
+          <span className="section-eyebrow">Dashboard</span>
+          <h1 className="mb-2 font-display text-4xl font-bold capitalize tracking-tight md:text-5xl">
             {role} Dashboard
           </h1>
-          <p className="text-white/30">
-            Welcome back, <span className="text-white/60">{session.user.name || session.user.email}</span>
+          <p className="text-emerald-50/42">
+            Welcome back, <span className="text-emerald-50/70">{session.user.name || session.user.email}</span>
           </p>
         </div>
         <div className="max-w-5xl">{children}</div>

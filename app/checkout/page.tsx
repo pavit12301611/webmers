@@ -17,11 +17,12 @@ export default async function CheckoutPage({
   const listing = searchParams.listing ? await getListing(searchParams.listing) : null;
 
   return (
-    <main className="relative min-h-screen">
+    <main className="nature-page min-h-screen overflow-hidden">
       <Header />
-      <div className="max-w-4xl mx-auto px-6 pt-28 pb-24">
-        <h1 className="text-4xl md:text-5xl font-display font-bold mb-2">Checkout</h1>
-        <p className="text-white/30 mb-12">Secure payment protected by escrow</p>
+      <div className="mx-auto max-w-4xl px-6 pt-32 pb-24">
+        <span className="section-eyebrow">Secure checkout</span>
+        <h1 className="mb-2 font-display text-4xl font-bold md:text-5xl">Checkout</h1>
+        <p className="mb-12 text-emerald-50/45">Secure payment protected by escrow</p>
 
         {listing ? (
           <CheckoutForm
@@ -35,10 +36,10 @@ export default async function CheckoutPage({
             }}
           />
         ) : (
-          <div className="text-center py-24 rounded-3xl border border-white/[0.06] bg-white/[0.02]">
-            <p className="text-2xl font-display font-semibold mb-2">No website selected</p>
-            <p className="text-white/40 mb-6">Pick a website from the marketplace to check out.</p>
-            <Link href="/marketplace" className="px-6 py-3 rounded-full bg-white text-black font-medium">
+          <div className="leaf-card rounded-[2rem] py-24 text-center">
+            <p className="mb-2 font-display text-2xl font-semibold">No website selected</p>
+            <p className="mb-6 text-emerald-50/45">Pick a website from the marketplace to check out.</p>
+            <Link href="/marketplace" className="btn-forest px-6 py-3">
               Browse the marketplace
             </Link>
           </div>
