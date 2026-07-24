@@ -1,3 +1,16 @@
+/**
+ * Seeds demo data into a REAL PostgreSQL database via Prisma.
+ *
+ * This is only needed when you opt into a database (see README). It requires:
+ *   1. DATABASE_URL set in .env
+ *   2. `npm run db:generate`  (generate the Prisma client)
+ *   3. `npm run db:push`      (create the tables)
+ *
+ * Run with: `npm run db:seed`
+ *
+ * Note: when no database is configured, the app uses its built-in in-memory
+ * demo data and this script is not needed.
+ */
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
 

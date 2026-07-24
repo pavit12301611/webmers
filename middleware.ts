@@ -1,51 +1,52 @@
-import { withAuth } from 'next-auth/middleware';
+import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { AUTH_SECRET } from '@/lib/auth/secret';
 
-export default withAuth(
-  function middleware(req: NextRequest) {
-    const token = req.nextauth.token;
-    const path = req.nextUrl.pathname;
+const AUTH_PAGES = ['/auth/signin', '/auth/signup'];
 
-    // Protect auth routes from logged-in users
-    if (token && (path === '/auth/signin' || path === '/auth/signup')) {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+/**
+ * Edge middleware responsible for auth-aware routing:
+ *
+ * - Signed-in users are redirected away from the sign-in / sign-up pages.
+ * - `/dashboard/*` is protected and gated by role (BUYER / SELLER / ADMIN).
+ *
+ * Security headers are applied globally in `next.config.mjs`.
+ */
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const token = await getToken({ req, secret: AUTH_SECRET });
 
-    // Protect dashboard routes by role
-    if (path.startsWith('/dashboard/admin') && token?.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-
-    if (path.startsWith('/dashboard/seller') && !['SELLER', 'ADMIN'].includes(token?.role as string)) {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-
-    // Security headers
-    const response = NextResponse.next();
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    return response;
-  },
-  {
-    callbacks: {
-      authorized({ token, req }) {
-        // Allow public routes
-        const publicPaths = ['/', '/auth/signin', '/auth/signup', '/auth/verify', '/api/auth'];
-        const isPublic = publicPaths.some(p => req.nextUrl.pathname === p || req.nextUrl.pathname.startsWith(p));
-        return isPublic || !!token;
-      },
-    },
-    pages: {
-      signIn: '/auth/signin',
-      error: '/auth/signin',
-    },
+  // Keep already signed-in users away from the auth pages.
+  if (token && AUTH_PAGES.some((p) => pathname.startsWith(p))) {
+    return NextResponse.redirect(new URL('/', req.url));
   }
-);
+
+  // Role-based protection for the dashboards.
+  if (pathname.startsWith('/dashboard')) {
+    if (!token) {
+      const url = new URL('/auth/signin', req.url);
+      url.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(url);
+    }
+
+    const role = (token.role as string | undefined) ?? '';
+    const isAdmin = role === 'ADMIN';
+
+    if (pathname.startsWith('/dashboard/admin') && !isAdmin) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+    if (pathname.startsWith('/dashboard/seller') && !(role === 'SELLER' || isAdmin)) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+    if (pathname.startsWith('/dashboard/buyer') && !(role === 'BUYER' || role === 'SELLER' || isAdmin)) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|images/|public/).*)',
-  ],
+  matcher: ['/dashboard/:path*', '/auth/:path*'],
 };
