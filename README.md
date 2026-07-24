@@ -1,81 +1,117 @@
 # Webmers
 
-A premium, production-grade website marketplace — built from the ground up using the master prompt specification.
+A premium, production-grade **website marketplace** — *Buy. Edit. Own.* Browse fully-built websites, purchase with escrow-protected checkout, edit them in a no-code visual editor, and optionally unlock the full source code.
 
-## Stack
-
-- **Frontend:** Next.js 14 (App Router) + React 18 + Tailwind CSS
-- **Animations:** Framer Motion, GSAP-ready (installed)
-- **Backend:** Next.js API Routes + Node.js (extendable to Express/NestJS)
-- **Database:** PostgreSQL (Prisma ORM)
-- **Auth:** JWT + OAuth-ready architecture (NextAuth ready to integrate)
-- **Real-time:** Socket.io-ready
-- **Storage:** S3 / R2 configured
-- **Security:** CSP, HSTS, CSRF-ready middleware, rate limiting architecture
-
-## Structure
-
-```
-├── app/
-│   ├── layout.tsx          # Root layout with meta, CSP headers
-│   ├── page.tsx            # Cinematic landing page (night hero → day footer)
-│   └── api/
-│       └── listings/
-│           └── route.ts     # Sample marketplace API
-├── components/              # (ready for reuse)
-├── lib/
-│   └── fonts.ts             # Inter + Space Grotesk
-├── prisma/
-│   └── schema.prisma        # Full DB schema
-├── middleware.ts            # Security headers
-├── styles/
-│   └── globals.css          # Grain overlay, custom animations
-└── public/
-```
-
-## Key Features Built
-
-- ✅ Cinematic scroll-driven day-night transition on landing page
-- ✅ Animated stars, moon, fireflies, sun, grass
-- ✅ Featured marketplace cards with colorful thumbnails
-- ✅ Visual editor showcase section
-- ✅ Stats bar, categories, how-it-works, testimonials
-- ✅ Pricing / code-unlock comparison
-- ✅ Newsletter signup
-- ✅ Footer with daytime sky, sun, and swaying grass
-- ✅ Security middleware (CSP, X-Frame-Options, etc.)
-- ✅ Prisma schema with User, Listing, Order, Review, Wishlist, Message
-- ✅ Responsive design (mobile-first)
-- ✅ Reduced-motion-friendly animations (CSS keyframes)
-
-## Running the Project
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000`.
-
-## Next Steps (per master prompt)
-
-- [ ] Full user authentication (Google OAuth, email/password, 2FA)
-- [ ] Buyer / Seller / Admin dashboards
-- [ ] No-code visual editor (GrapesJS / Craft.js)
-- [ ] Stripe checkout + escrow + payouts
-- [ ] Messaging / WebSocket chat
-- [ ] Wishlist & notifications system
-- [ ] Admin moderation tools
-- [ ] PWA service worker
-- [ ] Unit / integration / E2E tests (Jest, Playwright)
-- [ ] Deployment pipeline (Vercel + Railway / AWS)
-
-## Security Notes
-
-- Zero secrets in client-side bundles (`.env` excluded)
-- CSP and security headers applied globally
-- Rate limiting and RBAC architecture defined
-- No internal IDs or stack traces exposed in sample API
+> **Runs with zero setup.** The app ships with a self-contained, seeded in-memory data layer, so every feature works out of the box — no database, no API keys, no external services required. When you're ready for production, point it at PostgreSQL via Prisma (see below).
 
 ---
 
-Built on branch `arena/019f94c0-webmers`.
+## ✨ Features (all working)
+
+- **Marketplace** — browse, search, and filter websites by category
+- **Listing detail pages** — gallery, tech stack, reviews, related listings, live demo link
+- **Auth** — email/password sign-up & sign-in (role: Buyer or Seller), optional Google OAuth, session with `id` + `role`
+- **Checkout** — real order creation, layout selection, code-unlock add-on, server-computed totals, escrow messaging
+- **Wishlist** — toggle hearts on any listing, synced to your account
+- **Newsletter** — validated signup
+- **Dashboards** — Buyer (orders + wishlist), Seller (listings + revenue), Admin (users, transactions, health) — all role-protected
+- **Visual Editor** — interactive: device preview (desktop/tablet/mobile), themes, accent colors, typography, section toggles, inline text editing, save/publish feedback
+- **Cinematic landing page** — animated night sky (stars, moon, fireflies) → daytime footer, fully self-contained (no external images)
+
+## 🧰 Stack
+
+- **Frontend:** Next.js 14 (App Router) + React 18 + Tailwind CSS + lucide-react
+- **Auth:** NextAuth (JWT sessions) — Credentials + optional Google
+- **Data:** Resilient data layer — in-memory (default) with a transparent Prisma/PostgreSQL bridge
+- **Security:** CSP, HSTS-ready headers, X-Frame-Options, Referrer-Policy, Permissions-Policy, role-based route protection
+
+---
+
+## 🚀 Getting started
+
+```bash
+npm install
+npm run dev
+```
+
+Visit **http://localhost:3000**. That's it — no `.env` needed.
+
+### Demo accounts
+
+| Role   | Email               | Password     |
+|--------|---------------------|--------------|
+| Buyer  | `buyer@webmers.io`  | `Buyer@123`  |
+| Seller | `seller@webmers.io` | `Seller@123` |
+| Admin  | `admin@webmers.io`  | `Admin@123`  |
+
+These are also one click away on the sign-in page.
+
+---
+
+## 🗄️ Using a real database (optional)
+
+The app defaults to an in-memory store. To use PostgreSQL:
+
+1. Set `DATABASE_URL` in `.env` (see `.env.example`).
+2. Generate the client, push the schema, and seed demo data:
+
+   ```bash
+   npm run db:generate   # generate the Prisma client
+   npm run db:push       # create tables in your database
+   npm run db:seed       # seed demo users & listings
+   ```
+
+3. Restart the dev server. The data layer automatically uses Prisma and
+   gracefully falls back to in-memory if the DB is unreachable.
+
+> The build never depends on a generated Prisma client, so `npm run build`
+> works whether or not a database is configured.
+
+---
+
+## 📁 Structure
+
+```
+app/
+  page.tsx                    # Cinematic landing page (server component)
+  marketplace/                # Browse + search + category filters
+  listing/[id]/               # Listing detail (gallery, reviews, buy)
+  checkout/                   # Checkout + confirmation
+  editor/                     # Interactive no-code visual editor
+  dashboard/{buyer,seller,admin}/
+  auth/{signin,signup}/
+  api/
+    auth/[...nextauth]/       # NextAuth handler
+    auth/signup/              # Account creation
+    listings/                 # Public marketplace API
+    checkout/                 # Order creation (server-priced)
+    wishlist/                 # Wishlist toggle + list
+    newsletter/               # Newsletter signup
+components/                   # Reusable UI (thumbnails, cards, header, footer…)
+lib/
+  data.ts                     # Resilient data layer (in-memory + Prisma bridge)
+  auth/                       # NextAuth options, shared secret, helpers
+prisma/schema.prisma          # Production DB schema
+scripts/seed.ts               # Prisma seed (for real DBs)
+middleware.ts                 # Auth + role-based route protection
+```
+
+---
+
+## 🔒 Security notes
+
+- Tight Content-Security-Policy and security headers on every response.
+- Order amounts are computed **server-side** (never trust the client).
+- No secrets shipped to the client bundle; `.env` is git-ignored.
+- Dashboards are protected at the edge (middleware) and again on the server.
+
+---
+
+## 🗺️ Roadmap
+
+- Stripe integration (payment intents + webhooks)
+- Real-time messaging (WebSockets)
+- Image/file uploads (S3/R2)
+- 2FA, email verification
+- PWA + tests (Jest/Playwright)
+```

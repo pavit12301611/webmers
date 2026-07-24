@@ -2,36 +2,34 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/authOptions';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, ShoppingBag, Heart, Settings, LogOut, BarChart3, Users, Shield } from 'lucide-react';
+import { LayoutDashboard, PenTool, ShoppingBag } from 'lucide-react';
+import SignOutButton from './SignOutButton';
 
-export default async function DashboardLayout({ children, role }: { children: React.ReactNode; role: string }) {
+/**
+ * Shared dashboard shell. Verifies the session and role on the server (in
+ * addition to the edge middleware) and renders the sidebar + header.
+ */
+export default async function DashboardLayout({
+  children,
+  role,
+}: {
+  children: React.ReactNode;
+  role: 'BUYER' | 'SELLER' | 'ADMIN';
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect('/auth/signin');
-  if (session.user.role !== role && session.user.role !== 'ADMIN') redirect('/');
+
+  const userRole = session.user.role;
+  const isAdmin = userRole === 'ADMIN';
+  const allowed =
+    userRole === role || isAdmin || (role === 'BUYER' && userRole === 'SELLER');
+  if (!allowed) redirect('/');
 
   const basePath = `/dashboard/${role.toLowerCase()}`;
   const navItems = [
     { label: 'Overview', href: basePath, icon: LayoutDashboard },
-    ...(role === 'BUYER'
-      ? [
-          { label: 'My Websites', href: `${basePath}/websites`, icon: ShoppingBag },
-          { label: 'Wishlist', href: `${basePath}/wishlist`, icon: Heart },
-        ]
-      : []),
-    ...(role === 'SELLER'
-      ? [
-          { label: 'My Listings', href: `${basePath}/listings`, icon: BarChart3 },
-          { label: 'Analytics', href: `${basePath}/analytics`, icon: BarChart3 },
-        ]
-      : []),
-    ...(role === 'ADMIN'
-      ? [
-          { label: 'Users', href: `${basePath}/users`, icon: Users },
-          { label: 'Moderation', href: `${basePath}/moderation`, icon: Shield },
-          { label: 'Transactions', href: `${basePath}/transactions`, icon: BarChart3 },
-        ]
-      : []),
-    { label: 'Settings', href: `${basePath}/settings`, icon: Settings },
+    { label: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
+    { label: 'Visual Editor', href: '/editor', icon: PenTool },
   ];
 
   return (
@@ -43,24 +41,31 @@ export default async function DashboardLayout({ children, role }: { children: Re
         </div>
         <nav className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all">
+            <Link
+              key={item.label}
+              href={item.href}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all"
+            >
               <item.icon size={18} />
               {item.label}
             </Link>
           ))}
         </nav>
         <div className="p-4 border-t border-white/5">
-          <a href="/api/auth/signout" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-400/10 transition-all">
-            <LogOut size={18} /> Sign Out
-          </a>
+          <SignOutButton />
         </div>
       </aside>
-      <main className="ml-72 flex-1 p-8 md:p-12 max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-2 capitalize">{role} Dashboard</h1>
-          <p className="text-white/30">Welcome back, <span className="text-white/60">{session.user.name || session.user.email}</span></p>
+
+      <main className="ml-72 flex-1 p-8 md:p-12">
+        <div className="mb-10 max-w-5xl">
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-2 capitalize">
+            {role} Dashboard
+          </h1>
+          <p className="text-white/30">
+            Welcome back, <span className="text-white/60">{session.user.name || session.user.email}</span>
+          </p>
         </div>
-        {children}
+        <div className="max-w-5xl">{children}</div>
       </main>
     </div>
   );

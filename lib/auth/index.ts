@@ -1,14 +1,33 @@
-import { authOptions } from '@/lib/auth/authOptions';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { Session } from 'next-auth';
-import { JWT } from 'next-auth/jwt';
-import { AdapterUser } from 'next-auth/adapters';
+/**
+ * Auth helpers shared across the app (server components, route handlers and
+ * middleware).
+ */
+import { getServerSession } from 'next-auth';
+import { authOptions } from './authOptions';
 
-// Re-export for use in middleware/pages
 export { authOptions };
+export { AUTH_SECRET } from './secret';
+
 export type AuthUser = {
   id: string;
   email: string | null;
   name: string | null;
-  role: string;
+  role: 'BUYER' | 'SELLER' | 'ADMIN';
 };
+
+/** Returns the current session on the server, or `null`. */
+export function getSession() {
+  return getServerSession(authOptions);
+}
+
+/** Returns the signed-in user on the server, or `null`. */
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return null;
+  return {
+    id: session.user.id,
+    email: session.user.email ?? null,
+    name: session.user.name ?? null,
+    role: session.user.role,
+  };
+}
