@@ -4,8 +4,13 @@
 
 @layer base {
   :root {
-    --bg: #050505;
-    --fg: #fafafa;
+    --bg: #07130e;
+    --fg: #f7f5ea;
+    --moss: #86a873;
+    --leaf: #56b46f;
+    --fern: #0d2a1d;
+    --bark: #7b5f3f;
+    --sun: #f4d58d;
     /* Self-contained font stack: uses Inter / Space Grotesk if installed
        locally, otherwise falls back to high-quality system fonts. No external
        font downloads are required. */
@@ -18,7 +23,10 @@
   }
 
   body {
-    background-color: var(--bg);
+    background:
+      radial-gradient(circle at 15% -10%, rgba(148, 191, 124, 0.18), transparent 34rem),
+      radial-gradient(circle at 88% 18%, rgba(244, 213, 141, 0.10), transparent 28rem),
+      linear-gradient(180deg, #07130e 0%, #091b13 38%, #06100c 100%);
     color: var(--fg);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -27,8 +35,8 @@
   }
 
   ::selection {
-    background: rgba(255, 255, 255, 0.18);
-    color: #fff;
+    background: rgba(134, 168, 115, 0.35);
+    color: #fffdf2;
   }
 
   /* Subtle custom scrollbar */
@@ -37,14 +45,15 @@
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #050505;
+    background: #07130e;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(134, 168, 115, 0.35);
     border-radius: 9999px;
+    border: 2px solid #07130e;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(186, 214, 159, 0.55);
   }
 }
 
@@ -54,66 +63,180 @@
     inset: 0;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 200px;
+    opacity: 0.025;
+    mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 220px;
+  }
+
+  .nature-page {
+    position: relative;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(116, 162, 93, 0.14), transparent 28rem),
+      radial-gradient(circle at 92% 8%, rgba(244, 213, 141, 0.10), transparent 26rem),
+      linear-gradient(180deg, #07130e 0%, #0a1b13 45%, #06100c 100%);
+  }
+
+  .nature-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 72%);
+  }
+
+  .nature-container {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .nature-container {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+
+  .leaf-card {
+    position: relative;
+    border: 1px solid rgba(212, 232, 191, 0.12);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025));
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(18px);
+  }
+
+  .leaf-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent 34%, rgba(134,168,115,0.10));
+    opacity: 0.45;
+  }
+
+  .leaf-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(186, 214, 159, 0.18);
+    background: rgba(134, 168, 115, 0.10);
+    padding: 0.45rem 0.8rem;
+    color: rgba(226, 245, 204, 0.82);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .btn-forest {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #e7f7cf, #86c975 52%, #4d9b5f);
+    color: #07130e;
+    font-weight: 800;
+    box-shadow: 0 16px 44px rgba(86, 180, 111, 0.24);
+    transition: transform 260ms ease, box-shadow 260ms ease, filter 260ms ease;
+  }
+
+  .btn-forest:hover {
+    transform: translateY(-2px);
+    filter: saturate(1.08);
+    box-shadow: 0 22px 60px rgba(86, 180, 111, 0.30);
+  }
+
+  .btn-bark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(226, 245, 204, 0.16);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(247, 245, 234, 0.86);
+    font-weight: 700;
+    backdrop-filter: blur(14px);
+    transition: transform 260ms ease, background-color 260ms ease, border-color 260ms ease;
+  }
+
+  .btn-bark:hover {
+    transform: translateY(-2px);
+    border-color: rgba(226, 245, 204, 0.30);
+    background: rgba(255, 255, 255, 0.075);
+  }
+
+  .reveal-soft {
+    animation: fade-up 0.72s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
 /* Keyframes are defined here (not only in Tailwind config) so they are always
    emitted, even when referenced via inline `animation` styles. */
 @keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.2;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
+  0%, 100% { opacity: 0.18; transform: scale(0.9); }
+  50% { opacity: 0.82; transform: scale(1.15); }
 }
 
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  50% {
-    transform: translateY(-22px) translateX(6px);
-  }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(8px, -22px, 0); }
 }
 
 @keyframes sway {
-  0%,
-  100% {
-    transform: rotate(-3deg);
-  }
-  50% {
-    transform: rotate(3deg);
-  }
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
 }
 
 @keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.6s ease-out both;
+@keyframes drift-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(18px, -14px, 0) rotate(7deg); }
 }
+
+@keyframes sun-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.035); opacity: 1; }
+}
+
+@keyframes river-flow {
+  from { transform: translateX(-12%); }
+  to { transform: translateX(12%); }
+}
+
+.animate-fade-up { animation: fade-up 0.6s ease-out both; }
+.animate-drift-slow { animation: drift-slow 9s ease-in-out infinite; }
+.animate-sun-breathe { animation: sun-breathe 7s ease-in-out infinite; }
+.animate-river-flow { animation: river-flow 12s ease-in-out infinite alternate; }
 
 /* Respect users who prefer reduced motion. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

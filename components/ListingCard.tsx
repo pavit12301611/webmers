@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Star } from 'lucide-react';
+import { Leaf, Star } from 'lucide-react';
 import { ListingThumbnail } from './Thumbnail';
 import WishlistButton from './WishlistButton';
 import { getCurrentUser } from '@/lib/auth';
@@ -13,28 +13,29 @@ export default async function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listing/${listing.id}`}
-      className="group block relative overflow-hidden rounded-3xl aspect-[4/5] border border-white/[0.08] bg-white/[0.02] hover:border-white/25 transition-all duration-500 hover:-translate-y-1 shadow-xl shadow-black/50"
+      className="group leaf-card block relative overflow-hidden rounded-[2rem] aspect-[4/5] transition-all duration-500 hover:-translate-y-1.5 hover:border-lime-100/25"
     >
-      <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.03]">
+      <div className="absolute inset-3 overflow-hidden rounded-[1.45rem] transition-transform duration-700 group-hover:scale-[1.025]">
         <ListingThumbnail listing={listing} showChrome={false} />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#07130e]/95 via-[#07130e]/20 to-transparent" />
+      <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-50/10 bg-[#07130e]/45 px-3 py-1 text-xs font-medium text-emerald-50/75 backdrop-blur-md">
+        <Leaf size={12} /> {listing.category}
+      </div>
 
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-5 right-5">
         <WishlistButton listingId={listing.id} initial={wishlisted} />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-7">
-        <h3 className="text-2xl md:text-[1.7rem] font-display font-bold mb-1 leading-tight">{listing.title}</h3>
-        <p className="text-sm text-white/45 mb-3 line-clamp-1">{listing.tagline}</p>
-        <div className="flex items-center gap-3 text-sm">
-          <span className="font-semibold text-white text-base">${listing.price}</span>
-          <span className="text-white/30">·</span>
-          <span className="flex items-center gap-1 text-white/70">
-            <Star size={13} fill="currentColor" className="text-amber-400" /> {listing.rating.toFixed(1)}
+        <h3 className="mb-1 font-display text-2xl font-bold leading-tight md:text-[1.7rem]">{listing.title}</h3>
+        <p className="mb-4 line-clamp-1 text-sm text-emerald-50/46">{listing.tagline}</p>
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <span className="rounded-full bg-lime-200/90 px-3 py-1 font-bold text-[#07130e]">${listing.price}</span>
+          <span className="flex items-center gap-1 text-emerald-50/76">
+            <Star size={13} fill="currentColor" className="text-[#f4d58d]" /> {listing.rating.toFixed(1)}
           </span>
-          <span className="text-white/30">·</span>
-          <span className="text-white/40">{listing.sales} sales</span>
+          <span className="text-emerald-50/40">{listing.sales} sales</span>
         </div>
       </div>
     </Link>

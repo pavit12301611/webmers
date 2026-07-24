@@ -37,7 +37,7 @@ export default function Newsletter() {
 
   if (state === 'success') {
     return (
-      <div className="flex items-center justify-center gap-3 text-emerald-300 py-4">
+      <div className="flex items-center justify-center gap-3 py-4 text-emerald-200">
         <CheckCircle size={22} />
         <span className="text-lg font-medium">{message}</span>
       </div>
@@ -45,26 +45,26 @@ export default function Newsletter() {
   }
 
   return (
-    <form className="max-w-md mx-auto" onSubmit={onSubmit} noValidate>
-      <div className="flex flex-col sm:flex-row gap-3">
+    <form className="mx-auto max-w-md" onSubmit={onSubmit} noValidate>
+      <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
           aria-label="Email address"
-          className="flex-1 px-6 py-4 rounded-full bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+          className="flex-1 rounded-full border border-emerald-50/12 bg-[#07130e]/45 px-6 py-4 text-emerald-50 placeholder-emerald-50/30 outline-none transition-colors focus:border-lime-100/35"
           required
         />
         <button
           type="submit"
           disabled={state === 'loading'}
-          className="px-8 py-4 rounded-full bg-white text-black font-medium hover:scale-[1.02] transition-transform disabled:opacity-60"
+          className="btn-forest px-8 py-4 disabled:opacity-60"
         >
           {state === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
-      {state === 'error' && <p className="mt-3 text-sm text-rose-300">{message}</p>}
+      {state === 'error' && <p className="mt-3 text-sm text-rose-200">{message}</p>}
     </form>
   );
 }

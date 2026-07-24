@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowDown, ArrowRight, Sparkles, Star } from 'lucide-react';
+import { ArrowDown, ArrowRight, Code2, Globe2, Leaf, MessageCircle, RefreshCw, ShieldCheck, Sparkles, Star, Wand2 } from 'lucide-react';
 import Header from '@/components/Header';
 import NightSky from '@/components/NightSky';
 import ListingCard from '@/components/ListingCard';
@@ -7,6 +7,21 @@ import Newsletter from '@/components/Newsletter';
 import SiteFooter from '@/components/SiteFooter';
 import Thumbnail, { ListingThumbnail } from '@/components/Thumbnail';
 import { getCategories, getFeaturedListings, getLandingStats } from '@/lib/data';
+
+const steps = [
+  { step: '01', title: 'Explore', desc: 'Walk through curated, launch-ready websites organized by niche, stack and growth stage.' },
+  { step: '02', title: 'Secure', desc: 'Buy with confidence through protected checkout and a clear satisfaction window.' },
+  { step: '03', title: 'Cultivate', desc: 'Open the visual editor, tune the brand, connect a domain and let your site grow.' },
+];
+
+const benefits = [
+  { icon: Wand2, title: 'No-Code Editor', desc: 'Change copy, images, colors and sections in a calm visual workspace.' },
+  { icon: ShieldCheck, title: 'Secure Payments', desc: 'Stripe-ready checkout with escrow-style protection and buyer confidence.' },
+  { icon: Code2, title: 'Code Ownership', desc: 'Unlock the complete source when you need full customization freedom.' },
+  { icon: Globe2, title: 'Custom Domains', desc: 'Launch on your own domain with SSL-ready publishing flows.' },
+  { icon: MessageCircle, title: 'Human Support', desc: 'Talk with sellers and get admin mediation if anything needs attention.' },
+  { icon: RefreshCw, title: 'Fair Guarantee', desc: 'Refund protection when a purchase does not match the listing description.' },
+];
 
 export default async function Home() {
   const [featured, categories, stats] = await Promise.all([
@@ -16,52 +31,63 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="relative overflow-hidden">
+    <main className="nature-page overflow-hidden">
       <Header />
 
-      {/* ------------------------------------------------ Night Hero */}
-      <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#02020a] via-[#0a0a14] to-[#121224] z-0" />
+      {/* ------------------------------------------------ Nature Hero */}
+      <section className="relative flex min-h-screen items-center overflow-hidden px-6 pt-28 pb-20 md:px-16">
         <NightSky />
+        <div className="relative z-20 mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="reveal-soft max-w-4xl">
+            <span className="section-eyebrow"><Leaf size={14} /> Nature-built digital launches</span>
+            <h1 className="text-balance font-display text-5xl font-bold leading-[0.96] tracking-tight md:text-7xl lg:text-[6.8rem]">
+              Websites that feel ready to bloom.
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/62 md:text-xl">
+              A calmer marketplace for fully-built websites. Buy a polished site, edit it visually, and own a launch-ready digital home without the heavy load.
+            </p>
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Link href="/marketplace" className="btn-forest px-8 py-4">
+                Explore the grove <ArrowDown size={18} />
+              </Link>
+              <Link href="/auth/signup" className="btn-bark px-8 py-4">
+                Start selling <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
 
-        <div className="relative z-20 text-center px-6 max-w-5xl mx-auto animate-fade-up">
-          <h1 className="font-display text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tight leading-[0.9] mb-8">
-            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/60">Buy.</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white/80 via-white/60 to-white/30">Edit.</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-white/60 via-white/40 to-white/20">Own.</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/60 font-light tracking-wide mb-12 max-w-2xl mx-auto">
-            The premium marketplace for fully-built websites.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              href="/marketplace"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-medium hover:scale-[1.02] transition-transform duration-300 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
-            >
-              Explore Websites <ArrowDown size={18} />
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 text-white rounded-full font-medium hover:bg-white/5 transition-colors duration-300 backdrop-blur-sm"
-            >
-              Start Selling
-            </Link>
+          <div className="reveal-soft relative hidden lg:block" style={{ animationDelay: '120ms' }}>
+            <div className="leaf-card relative overflow-hidden rounded-[2rem] p-4 shadow-2xl">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-emerald-50/10">
+                {featured[0] ? <ListingThumbnail listing={featured[0]} showChrome /> : <Thumbnail title="Forest Portfolio" />}
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                {stats.slice(0, 3).map((stat) => (
+                  <div key={stat.label} className="rounded-2xl bg-emerald-950/35 p-3 ring-1 ring-emerald-50/10">
+                    <div className="font-display text-xl font-bold text-emerald-50">{stat.value}</div>
+                    <div className="text-[11px] text-emerald-50/45">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-lime-300/15 blur-2xl" />
+            <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-emerald-400/15 blur-2xl" />
           </div>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce">
-          <ArrowDown size={24} className="text-white/40" />
+        <div className="absolute bottom-7 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-2 text-xs uppercase tracking-[0.3em] text-emerald-50/35 md:flex">
+          Scroll <ArrowDown size={16} className="animate-bounce" />
         </div>
       </section>
 
       {/* ------------------------------------------------ Stats Bar */}
-      <section className="relative z-10 -mt-20 px-4 md:px-12">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">
+      <section className="relative z-10 -mt-10 px-4 md:px-12">
+        <div className="leaf-card mx-auto max-w-6xl rounded-[2rem] p-6 md:p-10">
+          <div className="grid grid-cols-2 gap-5 text-center md:grid-cols-4 md:gap-8">
             {stats.map((stat) => (
-              <div key={stat.label}>
-                <div className="text-3xl md:text-5xl font-display font-bold text-white mb-2">{stat.value}</div>
-                <div className="text-sm md:text-base text-white/40">{stat.label}</div>
+              <div key={stat.label} className="rounded-3xl bg-emerald-950/20 p-4">
+                <div className="mb-1 font-display text-3xl font-bold text-emerald-50 md:text-5xl">{stat.value}</div>
+                <div className="text-sm text-emerald-50/45 md:text-base">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -69,37 +95,38 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------ How It Works */}
-      <section id="how" className="relative z-10 pt-32 pb-20 px-6 md:px-16 max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-display font-bold mb-16 md:mb-24 tracking-tight">How It Works</h2>
-        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-          {[
-            { step: '01', title: 'Browse', desc: 'Discover fully-built websites across categories, tech stacks, and price points.' },
-            { step: '02', title: 'Purchase', desc: 'Secure checkout. Funds held in escrow for a 72-hour satisfaction window.' },
-            { step: '03', title: 'Edit / Own', desc: 'Launch the no-code visual editor. Customize everything. Publish instantly.' },
-          ].map((item) => (
-            <div
-              key={item.step}
-              className="group relative p-8 md:p-10 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08] hover:border-white/20 transition-all duration-500 hover:-translate-y-2"
-            >
-              <span className="text-7xl md:text-8xl font-display font-bold text-white/[0.04] group-hover:text-white/[0.08] transition-colors absolute top-4 right-6 select-none">
-                {item.step}
-              </span>
-              <h3 className="text-2xl md:text-3xl font-display font-semibold mb-4 relative z-10">{item.title}</h3>
-              <p className="text-white/50 leading-relaxed relative z-10">{item.desc}</p>
+      <section id="how" className="nature-container relative z-10 pt-28 pb-16">
+        <span className="section-eyebrow"><Sparkles size={14} /> How it grows</span>
+        <div className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+          <h2 className="text-balance font-display text-4xl font-bold tracking-tight md:text-6xl">From seed to launch in three smooth steps.</h2>
+          <p className="max-w-md text-emerald-50/52">No bulky frames, no confusing setup — just a clean path from finding a site to making it yours.</p>
+        </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          {steps.map((item) => (
+            <div key={item.step} className="group leaf-card overflow-hidden rounded-[2rem] p-7 transition duration-500 hover:-translate-y-1 hover:border-emerald-200/25 md:p-9">
+              <div className="mb-10 flex items-center justify-between">
+                <span className="font-display text-6xl font-bold text-emerald-100/[0.07] transition-colors group-hover:text-emerald-100/[0.12]">{item.step}</span>
+                <span className="h-11 w-11 rounded-full bg-lime-200/10 ring-1 ring-lime-100/15" />
+              </div>
+              <h3 className="mb-3 font-display text-2xl font-semibold md:text-3xl">{item.title}</h3>
+              <p className="leading-relaxed text-emerald-50/52">{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ------------------------------------------------ Featured Websites */}
-      <section id="marketplace" className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-7xl mx-auto">
-        <div className="flex items-end justify-between mb-12 md:mb-16">
-          <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight">Featured Websites</h2>
-          <Link href="/marketplace" className="text-white/40 hover:text-white transition-colors text-sm md:text-base flex items-center gap-2">
-            View All <ArrowRight size={16} />
+      <section id="marketplace" className="nature-container relative z-10 pt-16 pb-24">
+        <div className="mb-10 flex items-end justify-between gap-6">
+          <div>
+            <span className="section-eyebrow"><Leaf size={14} /> Featured canopy</span>
+            <h2 className="font-display text-4xl font-bold tracking-tight md:text-6xl">Fresh websites, hand picked.</h2>
+          </div>
+          <Link href="/marketplace" className="hidden items-center gap-2 rounded-full border border-emerald-50/10 px-5 py-3 text-sm text-emerald-50/55 transition hover:border-emerald-50/25 hover:text-emerald-50 md:inline-flex">
+            View all <ArrowRight size={16} />
           </Link>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((site) => (
             <ListingCard key={site.id} listing={site} />
           ))}
@@ -107,88 +134,88 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------ Editor Showcase */}
-      <section className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <section className="nature-container relative z-10 py-24">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight mb-8">Visual Editor</h2>
-            <p className="text-xl md:text-2xl text-white/50 leading-relaxed mb-10">
-              After purchase, unlock an in-browser visual editor. Edit text inline, swap images, rearrange sections, and publish — all without touching a single line of code.
+            <span className="section-eyebrow"><Wand2 size={14} /> Visual editor</span>
+            <h2 className="text-balance font-display text-4xl font-bold tracking-tight md:text-6xl">Tune every detail without touching code.</h2>
+            <p className="mt-6 text-lg leading-8 text-emerald-50/55 md:text-xl">
+              After purchase, unlock an in-browser editor for text, imagery, layout and brand changes. Everything feels light, clear and immediate.
             </p>
-            <ul className="space-y-4 text-white/60">
-              {['Edit text inline (click-to-edit)', 'Swap images from library or upload', 'Rearrange layout sections', 'Change colors and fonts', 'Version history & rollback'].map((f) => (
-                <li key={f} className="flex items-center gap-3">
-                  <Sparkles size={18} className="text-white/30 shrink-0" /> {f}
+            <ul className="mt-8 grid gap-3 text-emerald-50/62 sm:grid-cols-2">
+              {['Inline text editing', 'Image swapping', 'Section rearranging', 'Colors and fonts', 'Version rollback', 'Instant publish'].map((f) => (
+                <li key={f} className="flex items-center gap-3 rounded-2xl bg-emerald-950/25 px-4 py-3 ring-1 ring-emerald-50/8">
+                  <Sparkles size={16} className="shrink-0 text-lime-200/70" /> {f}
                 </li>
               ))}
             </ul>
-            <Link
-              href="/editor"
-              className="mt-10 inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-white/15 text-white font-medium hover:bg-white/5 transition-colors"
-            >
-              Try the Editor <ArrowRight size={16} />
+            <Link href="/editor" className="btn-bark mt-9 px-7 py-3.5">
+              Try the editor <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-black/60 aspect-[3/2]">
-            {featured[0] && <ListingThumbnail listing={featured[0]} showChrome />}
+          <div className="leaf-card relative overflow-hidden rounded-[2rem] p-3">
+            <div className="aspect-[3/2] overflow-hidden rounded-[1.5rem] border border-emerald-50/10">
+              {featured[0] && <ListingThumbnail listing={featured[0]} showChrome />}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ------------------------------------------------ Categories */}
-      <section className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight mb-12 md:mb-16">Categories</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+      <section className="nature-container relative z-10 py-24">
+        <span className="section-eyebrow"><Leaf size={14} /> Browse by habitat</span>
+        <h2 className="mb-10 font-display text-4xl font-bold tracking-tight md:text-6xl">Find your niche naturally.</h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
           {categories.map((cat) => (
             <Link
               key={cat.name}
               href={`/marketplace?cat=${encodeURIComponent(cat.name)}`}
-              className="group p-6 md:p-8 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.06] hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+              className="leaf-card group rounded-[1.7rem] p-5 transition duration-300 hover:-translate-y-1 hover:border-lime-100/25 md:p-7"
             >
-              <h3 className="text-xl md:text-2xl font-display font-semibold mb-1">{cat.name}</h3>
-              <span className="text-white/30 text-sm">{cat.count} {cat.count === 1 ? 'listing' : 'listings'}</span>
+              <h3 className="mb-1 font-display text-xl font-semibold md:text-2xl">{cat.name}</h3>
+              <span className="text-sm text-emerald-50/40">{cat.count} {cat.count === 1 ? 'listing' : 'listings'}</span>
             </Link>
           ))}
         </div>
       </section>
 
       {/* ------------------------------------------------ Why Webmers */}
-      <section className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight mb-12 md:mb-16">Why Webmers</h2>
-        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-          {[
-            { title: 'No-Code Editor', desc: 'Modify your purchase instantly without code exposure. Full abstract component tree.' },
-            { title: 'Secure Payments', desc: 'Stripe-ready checkout with escrow. Funds held for a 72-hour satisfaction window.' },
-            { title: 'Code Ownership', desc: 'Unlock the full source code with a premium add-on. Download as a ZIP.' },
-            { title: 'Custom Domains', desc: 'Connect your domain with auto-provisioned SSL certificates.' },
-            { title: '24/7 Support', desc: 'Real-time messaging with sellers. Admin mediation for disputes.' },
-            { title: 'Money-Back Guarantee', desc: 'Full refund within 48 hours if the site does not match its description.' },
-          ].map((item) => (
-            <div key={item.title} className="p-8 md:p-10 rounded-3xl bg-gradient-to-b from-white/[0.02] to-transparent border border-white/[0.06]">
-              <h3 className="text-xl md:text-2xl font-display font-semibold mb-3">{item.title}</h3>
-              <p className="text-white/50 text-sm md:text-base leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
+      <section className="nature-container relative z-10 py-24">
+        <div className="mb-10 max-w-3xl">
+          <span className="section-eyebrow"><ShieldCheck size={14} /> Why Webmers</span>
+          <h2 className="text-balance font-display text-4xl font-bold tracking-tight md:text-6xl">Designed to feel trustworthy, light and alive.</h2>
+        </div>
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {benefits.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.title} className="leaf-card rounded-[1.8rem] p-7">
+                <Icon className="mb-5 text-lime-200/75" size={24} />
+                <h3 className="mb-3 font-display text-xl font-semibold md:text-2xl">{item.title}</h3>
+                <p className="leading-relaxed text-emerald-50/52">{item.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
       {/* ------------------------------------------------ Layout Options */}
-      <section className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-7xl mx-auto">
-        <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight mb-6">Layout Options</h2>
-          <p className="text-xl text-white/50">
-            Each website offers multiple layout variants. Pick your preferred style during checkout or change it later in the editor.
-          </p>
+      <section className="nature-container relative z-10 py-24">
+        <div className="mx-auto mb-12 max-w-3xl text-center">
+          <span className="section-eyebrow"><Sparkles size={14} /> Layout options</span>
+          <h2 className="text-balance font-display text-4xl font-bold tracking-tight md:text-6xl">Choose a shape that fits your story.</h2>
+          <p className="mt-5 text-lg text-emerald-50/52">Each website offers layout variants you can pick during checkout or adjust later in the editor.</p>
         </div>
-        <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid gap-6 md:grid-cols-3">
           {['Hero-Centered', 'Split-Screen', 'Video-Hero'].map((layout) => (
-            <div key={layout} className="group relative overflow-hidden rounded-3xl aspect-[3/4] border border-white/10 shadow-2xl shadow-black/40">
-              <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+            <div key={layout} className="group leaf-card relative aspect-[3/4] overflow-hidden rounded-[2rem] p-3">
+              <div className="absolute inset-3 overflow-hidden rounded-[1.5rem] transition-transform duration-700 group-hover:scale-[1.025]">
                 <Thumbnail title={layout} palette={undefined} showChrome />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                <h3 className="text-2xl md:text-3xl font-display font-bold">{layout}</h3>
-                <p className="text-white/50 text-sm mt-2">Variant {layout.replace('-', ' ')}</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#07130e]/92 via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-7">
+                <h3 className="font-display text-2xl font-bold md:text-3xl">{layout}</h3>
+                <p className="mt-2 text-sm text-emerald-50/48">Variant {layout.replace('-', ' ')}</p>
               </div>
             </div>
           ))}
@@ -196,27 +223,26 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------ Testimonials */}
-      <section className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-6xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight mb-12 md:mb-16">Testimonials</h2>
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+      <section className="nature-container relative z-10 py-24">
+        <span className="section-eyebrow"><Star size={14} /> Field notes</span>
+        <h2 className="mb-10 font-display text-4xl font-bold tracking-tight md:text-6xl">Loved by fast launchers.</h2>
+        <div className="grid gap-6 md:grid-cols-2">
           {[
             { quote: 'Webmers made it possible to launch a professional website in a weekend. The visual editor is incredible.', name: 'Sarah K.', role: 'Freelancer', site: 'Meridian SaaS' },
             { quote: 'I unlocked the code and customized everything. Delivery was instant and secure.', name: 'David R.', role: 'Developer', site: 'Lumina E-commerce' },
           ].map((t) => (
-            <div key={t.name} className="p-8 md:p-10 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08]">
-              <div className="flex gap-1 mb-4">
+            <div key={t.name} className="leaf-card rounded-[2rem] p-7 md:p-9">
+              <div className="mb-5 flex gap-1">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} size={16} fill="currentColor" className="text-amber-400" />
+                  <Star key={i} size={16} fill="currentColor" className="text-[#f4d58d]" />
                 ))}
               </div>
-              <blockquote className="text-xl md:text-2xl font-display font-medium leading-snug mb-6 text-white/90">
-                “{t.quote}”
-              </blockquote>
+              <blockquote className="mb-7 font-display text-xl font-medium leading-snug text-emerald-50/90 md:text-2xl">“{t.quote}”</blockquote>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-400 to-amber-400" />
+                <div className="h-11 w-11 rounded-full bg-gradient-to-br from-lime-200 to-emerald-600 ring-4 ring-lime-100/10" />
                 <div>
                   <div className="font-semibold">{t.name}</div>
-                  <div className="text-sm text-white/40">{t.role} · Purchased {t.site}</div>
+                  <div className="text-sm text-emerald-50/42">{t.role} · Purchased {t.site}</div>
                 </div>
               </div>
             </div>
@@ -225,32 +251,27 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------ Pricing / Code Unlock */}
-      <section id="pricing" className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-5xl mx-auto text-center">
-        <h2 className="text-4xl md:text-6xl font-display font-bold tracking-tight mb-6">Own the Code</h2>
-        <p className="text-xl md:text-2xl text-white/50 mb-12 max-w-2xl mx-auto">
-          Every purchase includes full visual editing. Unlock the raw source with a premium add-on for complete ownership.
-        </p>
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8 text-left">
-          <div className="p-8 md:p-10 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.10]">
-            <h3 className="text-2xl font-display font-bold mb-4">Visual Edit</h3>
-            <div className="text-5xl font-display font-bold mb-6">Included</div>
-            <ul className="space-y-3 text-white/50 text-sm md:text-base">
+      <section id="pricing" className="nature-container relative z-10 py-24 text-center">
+        <span className="section-eyebrow"><Code2 size={14} /> Ownership</span>
+        <h2 className="mx-auto max-w-3xl text-balance font-display text-4xl font-bold tracking-tight md:text-6xl">Own the code when your roots go deeper.</h2>
+        <p className="mx-auto mt-5 mb-10 max-w-2xl text-lg text-emerald-50/52 md:text-xl">Every purchase includes full visual editing. Unlock raw source as a premium add-on for complete ownership.</p>
+        <div className="mx-auto grid max-w-5xl gap-6 text-left md:grid-cols-2">
+          <div className="leaf-card rounded-[2rem] p-8 md:p-10">
+            <h3 className="mb-4 font-display text-2xl font-bold">Visual Edit</h3>
+            <div className="mb-6 font-display text-5xl font-bold">Included</div>
+            <ul className="space-y-3 text-sm text-emerald-50/55 md:text-base">
               {['In-browser editor', 'Text, images, layout', 'Theme presets', 'Auto-save & rollback', 'Publish to live site'].map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" /> {f}
-                </li>
+                <li key={f} className="flex items-center gap-2"><span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" /> {f}</li>
               ))}
             </ul>
           </div>
-          <div className="p-8 md:p-10 rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent border border-white/[0.15] relative overflow-hidden">
-            <div className="absolute top-0 right-0 px-3 py-1 bg-amber-400 text-black text-xs font-bold rounded-bl-xl">PREMIUM</div>
-            <h3 className="text-2xl font-display font-bold mb-4">Full Code Access</h3>
-            <div className="text-5xl font-display font-bold mb-6">$49 <span className="text-xl font-normal text-white/30">/ add-on</span></div>
-            <ul className="space-y-3 text-white/50 text-sm md:text-base">
+          <div className="leaf-card relative overflow-hidden rounded-[2rem] p-8 md:p-10">
+            <div className="absolute right-0 top-0 rounded-bl-2xl bg-[#f4d58d] px-3 py-1 text-xs font-bold text-[#07130e]">PREMIUM</div>
+            <h3 className="mb-4 font-display text-2xl font-bold">Full Code Access</h3>
+            <div className="mb-6 font-display text-5xl font-bold">$49 <span className="text-xl font-normal text-emerald-50/35">/ add-on</span></div>
+            <ul className="space-y-3 text-sm text-emerald-50/55 md:text-base">
               {['Complete source code ZIP', 'Private GitHub repo access', 'Delivered to your inbox', 'Single-use time-limited download', 'Full customization freedom'].map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" /> {f}
-                </li>
+                <li key={f} className="flex items-center gap-2"><span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#f4d58d]" /> {f}</li>
               ))}
             </ul>
           </div>
@@ -258,10 +279,11 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------ Newsletter */}
-      <section className="relative z-10 pt-16 pb-32 px-6 md:px-16 max-w-4xl mx-auto text-center">
-        <div className="p-10 md:p-16 rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent border border-white/[0.10] shadow-2xl shadow-black/50">
-          <h2 className="text-3xl md:text-5xl font-display font-bold mb-6">Get Weekly Curated Sites</h2>
-          <p className="text-white/50 mb-8">Discover the best new websites. No spam. Unsubscribe anytime.</p>
+      <section className="nature-container relative z-10 py-24 text-center">
+        <div className="leaf-card mx-auto max-w-4xl overflow-hidden rounded-[2.2rem] p-9 md:p-14">
+          <span className="section-eyebrow"><Leaf size={14} /> Weekly harvest</span>
+          <h2 className="mb-5 font-display text-3xl font-bold md:text-5xl">Get curated sites in your inbox.</h2>
+          <p className="mb-8 text-emerald-50/52">Discover the best new websites. No spam. Unsubscribe anytime.</p>
           <Newsletter />
         </div>
       </section>

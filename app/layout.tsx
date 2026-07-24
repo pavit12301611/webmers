@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#050505',
+  themeColor: '#07130e',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-webmers-black text-webmers-white antialiased">
+      <body className="bg-[#07130e] text-[#f7f5ea] antialiased">
         <Providers>
           <div className="grain-overlay" aria-hidden="true" />
           {children}
