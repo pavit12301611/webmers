@@ -1,87 +1,198 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth/authOptions';
 import DashboardLayout from '@/components/DashboardLayout';
-import { Shield, TrendingUp, Users } from 'lucide-react';
-import { getAdminStats, getRecentOrders, getRecentUsers } from '@/lib/data';
+import StatCard from '@/components/StatCard';
+import EmptyState from '@/components/EmptyState';
+import { Database, Package, Receipt, Shield, TrendingUp, Users, Wallet } from 'lucide-react';
+import {
+  getAdminStats,
+  getRecentOrders,
+  getRecentUsers,
+  PLATFORM_FEE_RATE,
+  type OrderStatus,
+} from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Admin Dashboard' };
 
-export default async function AdminDashboard() {
-  const [{ totalUsers, gmv, queue }, recentUsers, recentOrders] = await Promise.all([
-    getAdminStats(),
-    getRecentUsers(5),
-    getRecentOrders(5),
-  ]);
+const ORDER_STATUS_STYLES: Record<OrderStatus, string> = {
+  PENDING: 'text-white/55',
+  PAID: 'text-amber-300',
+  COMPLETED: 'text-emerald-300',
+  REFUNDED: 'text-rose-300',
+  DISPUTED: 'text-rose-300',
+};
 
-  const stats = [
-    { label: 'Total Users', value: totalUsers.toLocaleString(), icon: Users },
-    { label: 'Platform GMV', value: `$${(gmv / 1_000_000).toFixed(1)}M`, icon: TrendingUp },
-    { label: 'Moderation Queue', value: String(queue), icon: Shield },
-  ];
+const currency = (n: number) =>
+  n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+const dateFmt = (d: Date) =>
+  new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+export default async function AdminDashboard() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) redirect('/auth/signin?callbackUrl=/dashboard/admin');
+
+  const [stats, recentUsers, recentOrders] = await Promise.all([
+    getAdminStats(),
+    getRecentUsers(6),
+    getRecentOrders(6),
+  ]);
 
   return (
     <DashboardLayout role="ADMIN">
-      <section className="grid md:grid-cols-3 gap-6 mb-12">
-        {stats.map((stat) => (
-          <div key={stat.label} className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08]">
-            <div className="flex items-center gap-3 mb-4 text-white/30">
-              <stat.icon size={20} />
-              <span className="text-sm">{stat.label}</span>
-            </div>
-            <div className="text-4xl font-display font-bold">{stat.value}</div>
-          </div>
-        ))}
+      <section className="mb-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Total Users"
+          value={stats.totalUsers.toLocaleString()}
+          icon={Users}
+          hint={`${stats.buyers} buyers · ${stats.sellers} sellers`}
+        />
+        <StatCard
+          label="Platform GMV"
+          value={currency(stats.gmv)}
+          icon={TrendingUp}
+          hint={`${stats.orderCount} order${stats.orderCount === 1 ? '' : 's'}`}
+        />
+        <StatCard
+          label="Platform Fees"
+          value={currency(stats.platformFees)}
+          icon={Wallet}
+          tone="positive"
+          hint={`${Math.round(PLATFORM_FEE_RATE * 100)}% of settled GMV`}
+        />
+        <StatCard
+          label="Refunded"
+          value={currency(stats.refunded)}
+          icon={Receipt}
+          tone={stats.refunded > 0 ? 'negative' : 'default'}
+        />
       </section>
 
-      <section className="grid md:grid-cols-2 gap-6">
+      <section className="mb-12 grid gap-5 sm:grid-cols-3">
+        <StatCard
+          label="Listings"
+          value={String(stats.listingCount)}
+          icon={Package}
+          hint={`${stats.activeListings} active`}
+        />
+        <StatCard
+          label="Moderation Queue"
+          value={String(stats.queue)}
+          icon={Shield}
+          tone={stats.queue > 0 ? 'warning' : 'default'}
+          hint={stats.queue > 0 ? 'Drafts awaiting review' : 'Nothing pending'}
+        />
+        <StatCard
+          label="Newsletter"
+          value={stats.newsletterCount.toLocaleString()}
+          icon={Users}
+          hint="Confirmed subscribers"
+        />
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
         {/* Recent users */}
-        <div className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08]">
-          <h3 className="text-xl font-display font-bold mb-4">Recent Users</h3>
-          <ul className="space-y-3">
-            {recentUsers.map((u) => (
-              <li key={u.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                <div>
-                  <div className="font-medium">{u.name}</div>
-                  <div className="text-xs text-white/30">{u.email}</div>
-                </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-white/5 text-white/50">{u.role}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="leaf-card rounded-[1.6rem] p-6">
+          <h2 className="mb-4 font-display text-xl font-semibold">Recent Users</h2>
+          {recentUsers.length > 0 ? (
+            <ul className="divide-y divide-emerald-50/[0.06]">
+              {recentUsers.map((u) => (
+                <li key={u.id} className="flex items-center justify-between gap-3 py-2.5">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium">{u.name}</div>
+                    <div className="truncate text-xs text-emerald-50/35">{u.email}</div>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-emerald-50/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-50/55">
+                    {u.role}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="py-6 text-center text-sm text-emerald-50/35">No users registered yet.</p>
+          )}
         </div>
 
         {/* Recent transactions */}
-        <div className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08]">
-          <h3 className="text-xl font-display font-bold mb-4">Recent Transactions</h3>
-          <ul className="space-y-3">
-            {recentOrders.map((o) => (
-              <li key={o.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                <div>
-                  <div className="font-medium">{o.listingTitle}</div>
-                  <div className="text-xs text-white/30">{o.status} · {o.layoutChoice}</div>
-                </div>
-                <span className="text-sm font-display font-semibold">${o.amount}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="leaf-card rounded-[1.6rem] p-6">
+          <h2 className="mb-4 font-display text-xl font-semibold">Recent Transactions</h2>
+          {recentOrders.length > 0 ? (
+            <ul className="divide-y divide-emerald-50/[0.06]">
+              {recentOrders.map((o) => (
+                <li key={o.id} className="flex items-center justify-between gap-3 py-2.5">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium">{o.listingTitle}</div>
+                    <div className="text-xs text-emerald-50/35">
+                      {dateFmt(o.createdAt)} · {o.layoutChoice}
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <div className="text-sm font-semibold tabular-nums">{currency(o.amount)}</div>
+                    <div
+                      className={`text-[10px] font-medium uppercase tracking-wide ${ORDER_STATUS_STYLES[o.status]}`}
+                    >
+                      {o.status}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="py-6 text-center text-sm text-emerald-50/35">No transactions yet.</p>
+          )}
         </div>
       </section>
 
       {/* System health */}
-      <section className="mt-6 p-6 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08]">
-        <h3 className="text-xl font-display font-bold mb-4">System Health</h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { label: 'API Response', value: '42ms', status: 'healthy' },
-            { label: 'Data Layer', value: process.env.DATABASE_URL ? 'PostgreSQL' : 'In-memory', status: 'healthy' },
-            { label: 'Queue Jobs', value: '3 pending', status: 'warning' },
-          ].map((s) => (
-            <div key={s.label} className="flex items-center justify-between py-3 px-4 rounded-2xl bg-white/[0.02] border border-white/5">
-              <span className="text-sm text-white/50">{s.label}</span>
-              <span className={`text-sm font-medium ${s.status === 'healthy' ? 'text-emerald-400' : 'text-amber-400'}`}>{s.value}</span>
-            </div>
-          ))}
+      <section className="mt-6 leaf-card rounded-[1.6rem] p-6">
+        <h2 className="mb-4 font-display text-xl font-semibold">System</h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <HealthRow
+            icon={Database}
+            label="Data Layer"
+            value={process.env.DATABASE_URL ? 'PostgreSQL' : 'In-memory + snapshot'}
+            healthy
+          />
+          <HealthRow
+            icon={Shield}
+            label="Session Secret"
+            value={process.env.NEXTAUTH_SECRET ? 'Configured' : 'Dev fallback'}
+            healthy={!!process.env.NEXTAUTH_SECRET}
+          />
+          <HealthRow
+            icon={Receipt}
+            label="Email Transport"
+            value={process.env.SMTP_HOST ? 'SMTP configured' : 'Ethereal (test)'}
+            healthy={!!process.env.SMTP_HOST}
+          />
         </div>
       </section>
     </DashboardLayout>
+  );
+}
+
+function HealthRow({
+  icon: Icon,
+  label,
+  value,
+  healthy,
+}: {
+  icon: typeof Database;
+  label: string;
+  value: string;
+  healthy: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-50/[0.07] bg-emerald-50/[0.02] px-4 py-3">
+      <span className="flex items-center gap-2 text-sm text-emerald-50/50">
+        <Icon size={15} aria-hidden="true" />
+        {label}
+      </span>
+      <span className={`text-sm font-medium ${healthy ? 'text-emerald-300' : 'text-amber-300'}`}>
+        {value}
+      </span>
+    </div>
   );
 }

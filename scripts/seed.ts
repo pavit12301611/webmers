@@ -13,6 +13,7 @@
  */
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
+import { BCRYPT_ROUNDS } from '../lib/data';
 
 const prisma = new PrismaClient();
 
@@ -28,9 +29,9 @@ async function main() {
   await prisma.user.deleteMany();
 
   // Demo users
-  const adminPass = await hash('Admin@123', 12);
-  const sellerPass = await hash('Seller@123', 12);
-  const buyerPass = await hash('Buyer@123', 12);
+  const adminPass = await hash('Admin@123', BCRYPT_ROUNDS);
+  const sellerPass = await hash('Seller@123', BCRYPT_ROUNDS);
+  const buyerPass = await hash('Buyer@123', BCRYPT_ROUNDS);
 
   const admin = await prisma.user.create({
     data: {

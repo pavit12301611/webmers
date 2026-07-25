@@ -28,6 +28,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
   const [codeUnlocked, setCodeUnlocked] = useState(false);
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [error, setError] = useState('');
+  const [alreadyOwned, setAlreadyOwned] = useState(false);
 
   const total = useMemo(() => listing.price + (codeUnlocked ? CODE_UNLOCK_PRICE : 0), [listing.price, codeUnlocked]);
 
@@ -41,6 +42,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
 
     setState('loading');
     setError('');
+    setAlreadyOwned(false);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -50,9 +52,16 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.orderId) {
         router.push(`/checkout/confirmation?order=${encodeURIComponent(data.orderId)}`);
+        return;
+      }
+
+      setState('error');
+      if (res.status === 409) {
+        // Already owned — point at the dashboard rather than a dead end.
+        setError(data.error || 'You already own this website.');
+        setAlreadyOwned(true);
       } else {
-        setState('error');
-        setError(data.error || 'Payment failed. Please try again.');
+        setError(data.error || 'Checkout failed. Please try again.');
       }
     } catch {
       setState('error');
@@ -150,11 +159,24 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
             <h3 className="font-display font-bold">Escrow Protected</h3>
           </div>
           <p className="text-sm text-emerald-50/45 leading-relaxed">
-            Funds are held securely for 72 hours. Confirm satisfaction before release. Full refund within 48 hours if the site doesn&apos;t match its description.
+            Funds are held for 72 hours after checkout. Confirm satisfaction to release them early, or request a full refund within 48 hours if the site doesn&apos;t match its description.
           </p>
         </section>
 
-        {error && <p className="text-sm text-rose-300">{error}</p>}
+        {error && (
+          <div role="alert" className="rounded-xl border border-rose-400/20 bg-rose-400/[0.07] px-4 py-3 text-sm text-rose-200">
+            {error}
+            {alreadyOwned && (
+              <>
+                {' '}
+                <Link href="/dashboard/buyer" className="underline underline-offset-4">
+                  Go to your dashboard
+                </Link>
+                .
+              </>
+            )}
+          </div>
+        )}
 
         {status !== 'loading' && !session && (
           <p className="text-sm text-emerald-50/45">

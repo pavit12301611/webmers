@@ -8,9 +8,27 @@ import ListingCard from '@/components/ListingCard';
 import Thumbnail from '@/components/Thumbnail';
 import WishlistButton from '@/components/WishlistButton';
 import { getCurrentUser } from '@/lib/auth';
-import { getListing, getListings, getReviews, isWishlisted } from '@/lib/data';
+import { getListing, getListings, getReviews, hasPurchased, isWishlisted } from '@/lib/data';
 
-export const metadata: Metadata = { title: 'Website' };
+/** Per-listing metadata — every listing previously shared the title "Website". */
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const listing = await getListing(params.id);
+  if (!listing) return { title: 'Website not found' };
+
+  return {
+    title: listing.title,
+    description: listing.tagline || listing.description.slice(0, 155),
+    openGraph: {
+      title: `${listing.title} — ${listing.category} website`,
+      description: listing.tagline || listing.description.slice(0, 155),
+      type: 'website',
+    },
+  };
+}
 
 export default async function ListingPage({ params }: { params: { id: string } }) {
   const listing = await getListing(params.id);
@@ -21,10 +39,19 @@ export default async function ListingPage({ params }: { params: { id: string } }
     getListings({ category: listing.category }),
     getCurrentUser(),
   ]);
-  const wishlisted = user ? await isWishlisted(user.id, listing.id) : false;
+  const [wishlisted, owned] = user
+    ? await Promise.all([isWishlisted(user.id, listing.id), hasPurchased(user.id, listing.id)])
+    : [false, false];
+  const isOwnListing = user?.id === listing.sellerId;
   const relatedListings = related.filter((l) => l.id !== listing.id).slice(0, 3);
 
-  const galleryTitles = [listing.title, `${listing.title} alt`, `${listing.title} preview`];
+  // Distinct seeds so the three previews actually differ (the Thumbnail
+  // variant is derived from this string).
+  const galleryTitles = [
+    listing.title,
+    `${listing.title} ${listing.category} layout`,
+    `${listing.title} ${listing.techStack[0] ?? 'preview'} view`,
+  ];
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
@@ -50,8 +77,16 @@ export default async function ListingPage({ params }: { params: { id: string } }
               </div>
               <div className="mt-4 grid grid-cols-3 gap-4">
                 {galleryTitles.map((t, i) => (
-                  <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 opacity-80 transition-opacity hover:opacity-100">
-                    <Thumbnail title={t} palette={listing.palette} showChrome={false} />
+                  <div
+                    key={t}
+                    className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/10 opacity-80 transition-opacity hover:opacity-100"
+                  >
+                    <Thumbnail
+                      title={t}
+                      palette={listing.palette}
+                      showChrome={false}
+                    />
+                    <span className="sr-only">{`Preview ${i + 1} of ${galleryTitles.length}`}</span>
                   </div>
                 ))}
               </div>
@@ -97,9 +132,25 @@ export default async function ListingPage({ params }: { params: { id: string } }
                     <WishlistButton listingId={listing.id} initial={wishlisted} size={20} />
                   </div>
                 </div>
-                <Link href={`/checkout?listing=${listing.id}`} className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-medium text-black transition hover:bg-white/90">
-                  Buy Now <ArrowRight size={14} />
-                </Link>
+                {owned ? (
+                  <Link
+                    href="/dashboard/buyer"
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-emerald-400/15 py-4 text-sm font-medium text-emerald-200 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400/25"
+                  >
+                    <BadgeCheck size={15} /> You own this — open dashboard
+                  </Link>
+                ) : isOwnListing ? (
+                  <div className="w-full rounded-full bg-white/[0.06] py-4 text-center text-sm font-medium text-white/45 ring-1 ring-white/10">
+                    This is your listing
+                  </div>
+                ) : (
+                  <Link
+                    href={`/checkout?listing=${listing.id}`}
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-medium text-black transition hover:bg-white/90"
+                  >
+                    Buy Now <ArrowRight size={14} />
+                  </Link>
+                )}
                 {listing.demoUrl && (
                   <a href={listing.demoUrl} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/10 py-3 text-sm text-white/60 transition hover:bg-white/[0.04] hover:text-white">
                     <ExternalLink size={14} /> View live demo

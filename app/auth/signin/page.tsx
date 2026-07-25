@@ -11,6 +11,13 @@ const DEMO_ACCOUNTS = [
   { label: 'Admin', email: 'admin@webmers.io', password: 'Admin@123' },
 ];
 
+/**
+ * Demo credentials are public, so the shortcut buttons must never reach a
+ * production build. The seeded demo users are also omitted from the data layer
+ * when NODE_ENV is production.
+ */
+const SHOW_DEMO_ACCOUNTS = process.env.NODE_ENV !== 'production';
+
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -125,6 +132,7 @@ function SignInForm() {
           </>
         )}
 
+        {SHOW_DEMO_ACCOUNTS && (
         <div className="mb-6 mt-6">
           <p className="mb-2 text-[11px] uppercase tracking-widest text-white/25">Demo accounts</p>
           <div className="grid grid-cols-3 gap-2">
@@ -144,6 +152,7 @@ function SignInForm() {
             ))}
           </div>
         </div>
+        )}
 
         <div className="mt-6 text-center text-sm text-white/30">
           Don&apos;t have an account?{' '}

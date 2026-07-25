@@ -2,7 +2,9 @@
 
 A premium, production-grade **website marketplace** — *Buy. Edit. Own.* Browse fully-built websites, purchase with escrow-protected checkout, edit them in a no-code visual editor, and optionally unlock the full source code.
 
-> **Runs with zero setup.** The app ships with a self-contained, seeded in-memory data layer, so every feature works out of the box — no database, no API keys, no external services required. When you're ready for production, point it at PostgreSQL via Prisma (see below).
+> **Runs with zero setup in development.** The app ships with a self-contained, seeded data layer, so every feature works out of the box — no database, no API keys, no external services required. Data is snapshotted to `.data/store.json`, so it survives restarts.
+>
+> ⚠️ **Before deploying, read [Production checklist](#-production-checklist).** `NEXTAUTH_SECRET` is mandatory, and checkout does **not** take real payments yet.
 
 ---
 
@@ -11,11 +13,11 @@ A premium, production-grade **website marketplace** — *Buy. Edit. Own.* Browse
 - **Marketplace** — browse, search, and filter websites by category
 - **Listing detail pages** — gallery, tech stack, reviews, related listings, live demo link
 - **Auth** — email/password sign-up & sign-in (role: Buyer or Seller), optional Google OAuth, session with `id` + `role`
-- **Checkout** — real order creation, layout selection, code-unlock add-on, server-computed totals, escrow messaging
+- **Checkout** — order creation, layout selection, code-unlock add-on, server-computed totals, duplicate-purchase and self-purchase protection, 72-hour escrow tracking *(simulated — no payment processor is wired up yet)*
 - **Wishlist** — toggle hearts on any listing, synced to your account
 - **Newsletter** — validated signup
-- **Dashboards** — Buyer (orders + wishlist), Seller (listings + revenue), Admin (users, transactions, health) — all role-protected
-- **Visual Editor** — interactive: device preview (desktop/tablet/mobile), themes, accent colors, typography, section toggles, inline text editing, save/publish feedback
+- **Dashboards** — Buyer (owned sites, escrow countdown, wishlist), Seller (gross/net revenue, per-listing performance, recent sales), Admin (users, GMV, fees, moderation queue, system status) — all role-protected, all computed from real data
+- **Visual Editor** — gated behind an owned order; device preview, themes, accent colors, typography, section toggles, inline text editing, **real persistence**, undo/redo and ⌘S / ⌘Z shortcuts
 - **Cinematic landing page** — animated night sky (stars, moon, fireflies) → daytime footer, fully self-contained (no external images)
 
 ## 🧰 Stack
@@ -23,7 +25,7 @@ A premium, production-grade **website marketplace** — *Buy. Edit. Own.* Browse
 - **Frontend:** Next.js 14 (App Router) + React 18 + Tailwind CSS + lucide-react
 - **Auth:** NextAuth (JWT sessions) — Credentials + optional Google
 - **Data:** Resilient data layer — in-memory (default) with a transparent Prisma/PostgreSQL bridge
-- **Security:** CSP, HSTS-ready headers, X-Frame-Options, Referrer-Policy, Permissions-Policy, role-based route protection
+- **Security:** CSP (no `unsafe-eval` in production), HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy, role-based route protection, per-IP/per-account rate limiting, bcrypt(12) password hashing, hashed + attempt-limited OTPs
 
 ---
 
@@ -34,9 +36,9 @@ npm install
 npm run dev
 ```
 
-Visit **http://localhost:3000**. That's it — no `.env` needed.
+Visit **http://localhost:3000**. That's it — no `.env` needed for local development.
 
-### Demo accounts
+### Demo accounts (development only)
 
 | Role   | Email               | Password     |
 |--------|---------------------|--------------|
@@ -44,7 +46,7 @@ Visit **http://localhost:3000**. That's it — no `.env` needed.
 | Seller | `seller@webmers.io` | `Seller@123` |
 | Admin  | `admin@webmers.io`  | `Admin@123`  |
 
-These are also one click away on the sign-in page.
+One click away on the sign-in page. **These accounts and the shortcut buttons do not exist in a production build** (`NODE_ENV=production`) — the passwords are public, so seeding them into a live deployment would be an open door.
 
 ---
 
@@ -84,12 +86,21 @@ app/
     auth/[...nextauth]/       # NextAuth handler
     auth/signup/              # Account creation
     listings/                 # Public marketplace API
+    auth/forgot-password/     # Request an OTP
+    auth/reset-password/      # Verify OTP + set new password
     checkout/                 # Order creation (server-priced)
+    editor/                   # Save/load editor state (ownership-checked)
     wishlist/                 # Wishlist toggle + list
     newsletter/               # Newsletter signup
+  legal/[slug]/               # Privacy, Terms, Cookies
 components/                   # Reusable UI (thumbnails, cards, header, footer…)
+  editor/EditorWorkspace.tsx  # Visual editor client
 lib/
-  data.ts                     # Resilient data layer (in-memory + Prisma bridge)
+  data.ts                     # Data layer (in-memory + snapshot + Prisma bridge)
+  types.ts / palette.ts       # Client-safe shared types & palettes
+  persistence.ts              # Atomic JSON snapshot of the store
+  rateLimit.ts                # Fixed-window rate limiter
+  validation.ts               # Shared input validation & limits
   auth/                       # NextAuth options, shared secret, helpers
 prisma/schema.prisma          # Production DB schema
 scripts/seed.ts               # Prisma seed (for real DBs)
@@ -100,18 +111,50 @@ middleware.ts                 # Auth + role-based route protection
 
 ## 🔒 Security notes
 
-- Tight Content-Security-Policy and security headers on every response.
-- Order amounts are computed **server-side** (never trust the client).
-- No secrets shipped to the client bundle; `.env` is git-ignored.
-- Dashboards are protected at the edge (middleware) and again on the server.
+- **No fallback session secret.** `NEXTAUTH_SECRET` is required in production; the app refuses to boot without it rather than signing tokens with a guessable value.
+- Order amounts are computed **server-side** — the client cannot influence pricing.
+- **Ownership is enforced on every private resource**: order confirmations, editor state and dashboards all verify the signed-in user owns the record (admins excepted).
+- **Rate limiting** on signup, login, password reset, checkout, newsletter and editor saves (per IP and per account).
+- Password reset codes are stored **hashed**, compared in constant time, expire after 10 minutes and self-destruct after 5 wrong guesses. A reset invalidates existing sessions.
+- Passwords: bcrypt cost 12, length + complexity + common-password denylist.
+- Tight CSP (no `unsafe-eval` in production) and HSTS on every response.
+- Demo accounts are excluded from production builds.
+- `.env` and the local `.data/` snapshot are git-ignored.
+
+---
+
+## ✅ Production checklist
+
+**Required before going live:**
+
+1. **Set `NEXTAUTH_SECRET`** — `openssl rand -base64 32`. The app will not start in production without it.
+2. **Set `NEXTAUTH_URL`** to your public origin.
+3. **Provision PostgreSQL** and set `DATABASE_URL`, then run `npm run db:generate && npm run db:push && npm run db:seed`. The file snapshot is single-instance only and is disabled automatically when `DATABASE_URL` is set.
+4. **Configure SMTP** (`SMTP_HOST`/`SMTP_USER`/`SMTP_PASS`/`SMTP_FROM`). Without it, password reset falls back to Ethereal and will fail closed with a 503 rather than pretending to send.
+5. **Wire a payment processor.** Checkout currently records an order and marks it `PAID` without charging anything. Integrate Stripe PaymentIntents, create orders as `PENDING`, and promote to `PAID` only from a verified webhook.
+
+**Recommended:**
+
+- Move rate limiting to a shared store (Redis/Upstash) if you run more than one instance — `lib/rateLimit.ts` is per-process.
+- Complete the Prisma bridge: reads for orders, wishlist, reviews and editor state still use the in-memory store (see *Known limitations*).
+- Set `GOOGLE_ALLOW_ACCOUNT_LINKING=true` only if you accept that a matching Google email can attach to an existing password account.
+
+---
+
+## ⚠️ Known limitations
+
+- **Payments are simulated.** No processor is connected; escrow is tracked in application state only.
+- **Partial Prisma coverage.** `getUserByEmail`, `createUser`, `getListings`, `getListing*` and `createOrder` hit the database; orders, wishlist, reviews and editor state are still served from the in-memory store. Finish these before relying on a multi-instance deployment.
+- **Single-instance persistence.** The default JSON snapshot cannot be shared across instances — use PostgreSQL for anything beyond one server.
+- **The editor edits a demo document**, not the buyer's actual purchased source.
 
 ---
 
 ## 🗺️ Roadmap
 
 - Stripe integration (payment intents + webhooks)
+- Complete the Prisma repository layer
 - Real-time messaging (WebSockets)
 - Image/file uploads (S3/R2)
 - 2FA, email verification
 - PWA + tests (Jest/Playwright)
-```

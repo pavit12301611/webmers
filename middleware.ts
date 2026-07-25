@@ -3,18 +3,23 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { AUTH_SECRET } from '@/lib/auth/secret';
 
-const AUTH_PAGES = ['/auth/signin', '/auth/signup'];
+/** Pages a signed-in user has no reason to see. */
+const AUTH_PAGES = ['/auth/signin', '/auth/signup', '/auth/forgot-password'];
+
+/** Routes that require a session (role checks happen further down). */
+const PROTECTED_PREFIXES = ['/dashboard', '/editor', '/checkout/confirmation'];
 
 /**
  * Edge middleware responsible for auth-aware routing:
  *
- * - Signed-in users are redirected away from the sign-in / sign-up pages.
- * - `/dashboard/*` is protected and gated by role (BUYER / SELLER / ADMIN).
+ * - Signed-in users are redirected away from the auth pages.
+ * - `/dashboard/*`, `/editor` and order confirmations require a session.
+ * - `/dashboard/*` is additionally gated by role (BUYER / SELLER / ADMIN).
  *
  * Security headers are applied globally in `next.config.mjs`.
  */
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const { pathname, search } = req.nextUrl;
   const token = await getToken({ req, secret: AUTH_SECRET });
 
   // Keep already signed-in users away from the auth pages.
@@ -22,14 +27,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/', req.url));
   }
 
-  // Role-based protection for the dashboards.
-  if (pathname.startsWith('/dashboard')) {
-    if (!token) {
-      const url = new URL('/auth/signin', req.url);
-      url.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(url);
-    }
+  const needsAuth = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
 
+  if (needsAuth && !token) {
+    const url = new URL('/auth/signin', req.url);
+    // Preserve the query string so e.g. ?order=… survives the round trip.
+    url.searchParams.set('callbackUrl', `${pathname}${search}`);
+    return NextResponse.redirect(url);
+  }
+
+  // Role-based protection for the dashboards.
+  if (pathname.startsWith('/dashboard') && token) {
     const role = (token.role as string | undefined) ?? '';
     const isAdmin = role === 'ADMIN';
 
@@ -39,7 +47,10 @@ export async function middleware(req: NextRequest) {
     if (pathname.startsWith('/dashboard/seller') && !(role === 'SELLER' || isAdmin)) {
       return NextResponse.redirect(new URL('/', req.url));
     }
-    if (pathname.startsWith('/dashboard/buyer') && !(role === 'BUYER' || role === 'SELLER' || isAdmin)) {
+    if (
+      pathname.startsWith('/dashboard/buyer') &&
+      !(role === 'BUYER' || role === 'SELLER' || isAdmin)
+    ) {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
@@ -48,5 +59,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*'],
+  matcher: ['/dashboard/:path*', '/auth/:path*', '/editor/:path*', '/checkout/confirmation'],
 };

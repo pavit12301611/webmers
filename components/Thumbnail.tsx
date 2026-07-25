@@ -1,4 +1,5 @@
-import { paletteFor, type Listing } from '@/lib/data';
+import { paletteFor } from '@/lib/palette';
+import type { Listing } from '@/lib/types';
 
 /**
  * A self-contained, dependency-free "website preview" thumbnail.

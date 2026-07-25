@@ -1,82 +1,245 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/authOptions';
 import DashboardLayout from '@/components/DashboardLayout';
-import { BarChart3, DollarSign, Eye } from 'lucide-react';
-import { getSellerStats, type ListingStatus } from '@/lib/data';
+import StatCard from '@/components/StatCard';
+import EmptyState from '@/components/EmptyState';
+import { ListingThumbnail } from '@/components/Thumbnail';
+import {
+  BarChart3,
+  DollarSign,
+  Package,
+  Star,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react';
+import {
+  getSellerListingPerformance,
+  getSellerStats,
+  PLATFORM_FEE_RATE,
+  type ListingStatus,
+  type OrderStatus,
+} from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Seller Dashboard' };
 
-const STATUS_STYLES: Record<ListingStatus, string> = {
-  ACTIVE: 'bg-emerald-400/10 text-emerald-400',
-  DRAFT: 'bg-white/10 text-white/60',
-  PAUSED: 'bg-amber-400/10 text-amber-400',
-  SOLD: 'bg-rose-400/10 text-rose-400',
+const LISTING_STATUS_STYLES: Record<ListingStatus, string> = {
+  ACTIVE: 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/25',
+  DRAFT: 'bg-white/10 text-white/55 ring-white/15',
+  PAUSED: 'bg-amber-400/10 text-amber-300 ring-amber-400/25',
+  SOLD: 'bg-sky-400/10 text-sky-300 ring-sky-400/25',
 };
+
+const ORDER_STATUS_STYLES: Record<OrderStatus, string> = {
+  PENDING: 'text-white/55',
+  PAID: 'text-amber-300',
+  COMPLETED: 'text-emerald-300',
+  REFUNDED: 'text-rose-300',
+  DISPUTED: 'text-rose-300',
+};
+
+const currency = (n: number) =>
+  n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+const dateFmt = (d: Date) =>
+  new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 export default async function SellerDashboard() {
   const session = await getServerSession(authOptions);
-  const userId = session!.user.id;
-  const { active, revenue, views, listings } = await getSellerStats(userId);
+  if (!session?.user?.id) redirect('/auth/signin?callbackUrl=/dashboard/seller');
+  const userId = session.user.id;
 
-  const stats = [
-    { label: 'Active Listings', value: String(active), icon: BarChart3 },
-    { label: 'Total Revenue', value: `$${revenue.toLocaleString()}`, icon: DollarSign },
-    { label: 'Total Views', value: views.toLocaleString(), icon: Eye },
-  ];
+  const [stats, performance] = await Promise.all([
+    getSellerStats(userId),
+    getSellerListingPerformance(userId),
+  ]);
+
+  const recentOrders = stats.orders.slice(0, 6);
 
   return (
     <DashboardLayout role="SELLER">
-      <section className="grid md:grid-cols-3 gap-6 mb-12">
-        {stats.map((stat) => (
-          <div key={stat.label} className="p-6 rounded-3xl bg-gradient-to-b from-white/[0.03] to-transparent border border-white/[0.08]">
-            <div className="flex items-center gap-3 mb-4 text-white/30">
-              <stat.icon size={20} />
-              <span className="text-sm">{stat.label}</span>
-            </div>
-            <div className="text-4xl font-display font-bold">{stat.value}</div>
-          </div>
-        ))}
+      {/* Headline metrics */}
+      <section className="mb-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Gross Revenue"
+          value={currency(stats.revenue)}
+          icon={DollarSign}
+          hint={`${currency(stats.revenue30d)} in last 30 days`}
+        />
+        <StatCard
+          label="Net Payout"
+          value={currency(stats.netRevenue)}
+          icon={Wallet}
+          tone="positive"
+          hint={`After ${Math.round(PLATFORM_FEE_RATE * 100)}% platform fee`}
+        />
+        <StatCard
+          label="Units Sold"
+          value={String(stats.unitsSold)}
+          icon={Package}
+          hint={stats.avgOrderValue ? `${currency(stats.avgOrderValue)} avg order` : 'No sales yet'}
+        />
+        <StatCard
+          label="Avg Rating"
+          value={stats.avgRating ? `${stats.avgRating.toFixed(1)}★` : '—'}
+          icon={Star}
+          hint={
+            stats.reviewCount
+              ? `${stats.reviewCount} review${stats.reviewCount === 1 ? '' : 's'}`
+              : 'Awaiting reviews'
+          }
+        />
       </section>
 
-      <section>
-        <h2 className="text-2xl font-display font-bold mb-6">My Listings</h2>
-        {listings.length > 0 ? (
-          <div className="overflow-x-auto rounded-3xl border border-white/10">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-white/30 uppercase bg-white/5">
-                <tr>
-                  <th className="px-6 py-4 font-medium">Title</th>
-                  <th className="px-6 py-4 font-medium">Price</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 font-medium">Sales</th>
-                  <th className="px-6 py-4 font-medium">Rating</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {listings.map((l) => (
-                  <tr key={l.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-4">
-                      <Link href={`/listing/${l.id}`} className="font-medium hover:text-white/80 transition-colors">{l.title}</Link>
-                      <div className="text-xs text-white/30">{l.category}</div>
-                    </td>
-                    <td className="px-6 py-4 text-white/60">${l.price}</td>
-                    <td className="px-6 py-4">
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${STATUS_STYLES[l.status]}`}>{l.status}</span>
-                    </td>
-                    <td className="px-6 py-4 text-white/60">{l.sales}</td>
-                    <td className="px-6 py-4 text-white/60">{l.rating.toFixed(1)}★</td>
+      {/* Secondary metrics */}
+      <section className="mb-12 grid gap-5 sm:grid-cols-3">
+        <StatCard
+          label="Active Listings"
+          value={String(stats.active)}
+          icon={BarChart3}
+          hint={stats.drafts ? `${stats.drafts} draft/paused` : 'All listings live'}
+        />
+        <StatCard
+          label="Best Seller"
+          value={stats.topListing ? `${stats.topListing.sales} sales` : '—'}
+          icon={TrendingUp}
+          hint={stats.topListing?.title ?? 'No sales recorded yet'}
+        />
+        <StatCard
+          label="Refunded"
+          value={currency(stats.refunded)}
+          icon={DollarSign}
+          tone={stats.refunded > 0 ? 'negative' : 'default'}
+          hint={stats.refunded > 0 ? 'Deducted from payouts' : 'No refunds'}
+        />
+      </section>
+
+      {/* Listing performance */}
+      <section className="mb-12">
+        <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight">
+          Listing Performance
+        </h2>
+
+        {performance.length > 0 ? (
+          <div className="leaf-card overflow-hidden rounded-[1.6rem]">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <caption className="sr-only">
+                  Revenue, units sold and rating for each of your listings
+                </caption>
+                <thead>
+                  <tr className="border-b border-emerald-50/[0.08] bg-emerald-50/[0.03] text-[10px] uppercase tracking-[0.14em] text-emerald-50/40">
+                    <th scope="col" className="px-5 py-3.5 font-medium">Website</th>
+                    <th scope="col" className="px-5 py-3.5 font-medium">Status</th>
+                    <th scope="col" className="px-5 py-3.5 text-right font-medium">Price</th>
+                    <th scope="col" className="px-5 py-3.5 text-right font-medium">Sold</th>
+                    <th scope="col" className="px-5 py-3.5 text-right font-medium">Revenue</th>
+                    <th scope="col" className="px-5 py-3.5 text-right font-medium">Rating</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {performance.map(({ listing, revenue, unitsSold, rating, reviewCount }) => (
+                    <tr
+                      key={listing.id}
+                      className="border-b border-emerald-50/[0.05] transition-colors last:border-0 hover:bg-emerald-50/[0.03]"
+                    >
+                      <td className="px-5 py-3.5">
+                        <Link
+                          href={`/listing/${listing.id}`}
+                          className="flex items-center gap-3 transition-opacity hover:opacity-80"
+                        >
+                          <span className="h-10 w-14 shrink-0 overflow-hidden rounded-lg border border-emerald-50/10">
+                            <ListingThumbnail listing={listing} showChrome={false} />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium">{listing.title}</span>
+                            <span className="block truncate text-xs text-emerald-50/35">
+                              {listing.category}
+                            </span>
+                          </span>
+                        </Link>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ring-1 ${LISTING_STATUS_STYLES[listing.status]}`}
+                        >
+                          {listing.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums text-emerald-50/70">
+                        {currency(listing.price)}
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums text-emerald-50/70">
+                        {unitsSold}
+                      </td>
+                      <td className="px-5 py-3.5 text-right font-semibold tabular-nums">
+                        {currency(revenue)}
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums text-emerald-50/70">
+                        {reviewCount ? (
+                          <span title={`${reviewCount} review${reviewCount === 1 ? '' : 's'}`}>
+                            {rating.toFixed(1)}★
+                          </span>
+                        ) : (
+                          <span className="text-emerald-50/25">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
-          <div className="text-center py-16 rounded-3xl border border-white/[0.06] bg-white/[0.02]">
-            <p className="text-xl font-display font-semibold mb-2">No listings yet</p>
-            <p className="text-white/40">Your published websites will appear here.</p>
-          </div>
+          <EmptyState
+            icon={Package}
+            title="No listings yet"
+            message="Once you publish a website it will appear here with its live sales performance."
+            cta={{ label: 'Browse the marketplace', href: '/marketplace' }}
+          />
+        )}
+      </section>
+
+      {/* Recent orders */}
+      <section>
+        <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight">Recent Sales</h2>
+
+        {recentOrders.length > 0 ? (
+          <ul className="leaf-card divide-y divide-emerald-50/[0.06] rounded-[1.6rem] px-5">
+            {recentOrders.map((order) => (
+              <li key={order.id} className="flex items-center justify-between gap-4 py-3.5">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{order.listingTitle}</p>
+                  <p className="text-xs text-emerald-50/35">
+                    {dateFmt(order.createdAt)} · {order.layoutChoice}
+                    {order.codeUnlocked && ' · source included'}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p
+                    className={`text-sm font-semibold tabular-nums ${
+                      order.status === 'REFUNDED' ? 'text-emerald-50/35 line-through' : ''
+                    }`}
+                  >
+                    {currency(order.amount)}
+                  </p>
+                  <p
+                    className={`text-[10px] font-medium uppercase tracking-wide ${ORDER_STATUS_STYLES[order.status]}`}
+                  >
+                    {order.status}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState
+            icon={TrendingUp}
+            title="No sales yet"
+            message="When a buyer purchases one of your websites, the order will show up here."
+          />
         )}
       </section>
     </DashboardLayout>

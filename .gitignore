@@ -3,4 +3,8 @@ node_modules/
 .env.local
 .env
 *.log
+.env*.local
+tsconfig.tsbuildinfo
 
+# Local data snapshot written by the built-in store (see lib/persistence.ts)
+.data/

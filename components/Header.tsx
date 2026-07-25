@@ -10,12 +10,14 @@ function dashboardHref(role?: string) {
   return '/dashboard/buyer';
 }
 
+// Fragment-only hrefs (#stories) resolve to nothing on any page other than the
+// landing page, so these are absolute: they navigate home *and* scroll.
 const NAV_ITEMS = [
   { label: 'Marketplace', href: '/marketplace' },
-  { label: 'Real Stories', href: '#stories' },
+  { label: 'Real Stories', href: '/#stories' },
   { label: 'Editor', href: '/editor' },
-  { label: 'Plans', href: '#pricing' },
-  { label: 'Reach Us', href: '#footer' },
+  { label: 'Plans', href: '/#pricing' },
+  { label: 'Reach Us', href: '/#footer' },
 ];
 
 export default function Header() {

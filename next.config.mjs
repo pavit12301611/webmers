@@ -19,9 +19,15 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   async headers() {
+    const isProd = process.env.NODE_ENV === 'production';
+
     const CSP = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com",
+      // 'unsafe-eval' is only needed by the dev-mode React refresh runtime.
+      // Allowing it in production defeats much of the point of a CSP.
+      isProd
+        ? "script-src 'self' 'unsafe-inline' https://accounts.google.com"
+        : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: https: blob:",
       "media-src 'self' https: blob:",
@@ -41,7 +47,15 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          // HSTS is only meaningful over HTTPS, so it is production-only.
+          ...(isProd
+            ? [{
+                key: 'Strict-Transport-Security',
+                value: 'max-age=63072000; includeSubDomains; preload',
+              }]
+            : []),
         ],
       },
       {

@@ -53,6 +53,8 @@ model User {
   passwordHash  String?
   twoFAEnabled  Boolean   @default(false)
   twoFASecret   String?
+  /// Bumped on password reset to invalidate previously issued JWTs.
+  sessionVersion Int      @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -76,8 +78,14 @@ enum Role {
 model Listing {
   id            String    @id @default(uuid())
   title         String
+  /// Short one-line summary shown on cards; falls back to description.
+  tagline       String?
   description   String
   price         Float
+  /// Denormalised aggregates so listing cards don't need a join.
+  rating        Float     @default(0)
+  sales         Int       @default(0)
+  featured      Boolean   @default(false)
   category      String
   techStack     String[]
   images        String[]
@@ -112,6 +120,7 @@ model Order {
   codeUnlocked  Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  editorState   EditorState?
 }
 
 enum OrderStatus {
@@ -151,4 +160,19 @@ model Message {
   seller        User      @relation("SellerMessages", fields: [sellerId], references: [id])
   content       String
   createdAt     DateTime  @default(now())
+}
+
+/// Saved visual-editor document for one purchased order.
+model EditorState {
+  id            String   @id @default(uuid())
+  orderId       String   @unique
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  theme         String   @default("Night")
+  accent        String   @default("#ffffff")
+  font          String   @default("Inter")
+  sections      Json
+  content       Json
+  published     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

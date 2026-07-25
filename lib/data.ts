@@ -11,72 +11,54 @@
  * goes wrong, so the app never crashes because of a missing DB.
  */
 import { compare, hashSync } from 'bcryptjs';
+import { createHash, randomInt, randomUUID, timingSafeEqual } from 'crypto';
+import { installShutdownFlush, loadSnapshot, scheduleSnapshot } from './persistence';
+import { paletteFor as computePalette } from './palette';
+import type {
+  Category,
+  EditorState,
+  Listing,
+  ListingStatus,
+  Order,
+  OrderStatus,
+  Review,
+  Role,
+  User,
+} from './types';
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 
-export type Role = 'BUYER' | 'SELLER' | 'ADMIN';
-export type ListingStatus = 'DRAFT' | 'ACTIVE' | 'SOLD' | 'PAUSED';
-export type OrderStatus = 'PENDING' | 'PAID' | 'COMPLETED' | 'REFUNDED' | 'DISPUTED';
+export type {
+  Role,
+  ListingStatus,
+  OrderStatus,
+  User,
+  Listing,
+  Order,
+  Review,
+  Category,
+  EditorState,
+} from './types';
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: Role;
-  image?: string | null;
-  passwordHash?: string | null;
-  createdAt: Date;
-}
+export { paletteFor } from './palette';
 
-export interface Listing {
-  id: string;
-  title: string;
-  tagline: string;
-  description: string;
-  price: number;
-  category: string;
-  techStack: string[];
-  /** Two hex colors used to render the self-contained thumbnail. */
-  palette: [string, string];
-  demoUrl?: string | null;
-  status: ListingStatus;
-  sellerId: string;
-  sellerName: string;
-  rating: number;
-  sales: number;
-  featured: boolean;
-  createdAt: Date;
-}
+/** bcrypt cost factor for real user passwords (signup + password reset). */
+export const BCRYPT_ROUNDS = 12;
 
-export interface Order {
-  id: string;
-  buyerId: string;
-  listingId: string;
-  listingTitle: string;
-  amount: number;
-  status: OrderStatus;
-  layoutChoice: string;
-  codeUnlocked: boolean;
-  createdAt: Date;
-}
+/**
+ * Cheaper cost for the throwaway demo fixtures only — these are public
+ * credentials in development, so spending 4x the CPU on them at every cold
+ * start buys nothing.
+ */
+const SEED_ROUNDS = 10;
 
-export interface Review {
-  id: string;
-  listingId: string;
-  buyerId: string;
-  buyerName: string;
-  rating: number;
-  comment: string;
-  verified: boolean;
-  createdAt: Date;
-}
-
-export interface Category {
-  name: string;
-  count: number;
-}
+/**
+ * Demo accounts (public passwords) must never exist in a production database.
+ * See `seed()` — they are omitted entirely when NODE_ENV is production.
+ */
+export const DEMO_ACCOUNTS_ENABLED = process.env.NODE_ENV !== 'production';
 
 /** Price of the "unlock full source code" add-on, in USD. */
 export const CODE_UNLOCK_PRICE = 49;
@@ -95,7 +77,15 @@ interface Store {
   reviews: Review[];
   wishlist: WishlistItem[];
   newsletter: string[];
-  passwordResets: Array<{ email: string; otp: string; expiresAt: number }>;
+  /** Saved visual-editor documents, keyed by order id. */
+  editorStates: Record<string, EditorState>;
+  passwordResets: Array<{
+    email: string;
+    /** SHA-256 of the OTP — the plaintext code is never stored. */
+    otpHash: string;
+    expiresAt: number;
+    attempts: number;
+  }>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -135,8 +125,15 @@ function getPrismaClient(): Promise<any | null> {
 
 const g = globalThis as unknown as { __webmersStore?: Store };
 
+/**
+ * Cryptographically secure identifier.
+ *
+ * Order IDs in particular must not be guessable — they used to be derived from
+ * `Math.random()` (~41 bits, predictable PRNG), which made order records
+ * enumerable.
+ */
 function id(prefix: string): string {
-  return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
+  return `${prefix}_${randomUUID().replace(/-/g, '')}`;
 }
 
 function seed(): Store {
@@ -144,10 +141,10 @@ function seed(): Store {
   const days = (n: number) => new Date(now - n * 86_400_000);
 
   const users: User[] = [
-    { id: 'u_admin', email: 'admin@webmers.io', name: 'Admin User', role: 'ADMIN', passwordHash: hashSync('Admin@123', 10), createdAt: days(400) },
-    { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', passwordHash: hashSync('Seller@123', 10), createdAt: days(320) },
-    { id: 'u_buyer', email: 'buyer@webmers.io', name: 'David R.', role: 'BUYER', passwordHash: hashSync('Buyer@123', 10), createdAt: days(210) },
-    { id: 'u_maria', email: 'maria@example.com', name: 'Maria L.', role: 'BUYER', passwordHash: hashSync('Maria@123', 10), createdAt: days(90) },
+    { id: 'u_admin', email: 'admin@webmers.io', name: 'Admin User', role: 'ADMIN', passwordHash: hashSync('Admin@123', SEED_ROUNDS), createdAt: days(400) },
+    { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', passwordHash: hashSync('Seller@123', SEED_ROUNDS), createdAt: days(320) },
+    { id: 'u_buyer', email: 'buyer@webmers.io', name: 'David R.', role: 'BUYER', passwordHash: hashSync('Buyer@123', SEED_ROUNDS), createdAt: days(210) },
+    { id: 'u_maria', email: 'maria@example.com', name: 'Maria L.', role: 'BUYER', passwordHash: hashSync('Maria@123', SEED_ROUNDS), createdAt: days(90) },
   ];
 
   const listings: Listing[] = [
@@ -268,9 +265,11 @@ function seed(): Store {
   ];
 
   const orders: Order[] = [
-    { id: 'o_1', buyerId: 'u_buyer', listingId: 'meridian', listingTitle: 'Meridian SaaS', amount: 299, status: 'COMPLETED', layoutChoice: 'Hero-Centered', codeUnlocked: true, createdAt: days(50) },
-    { id: 'o_2', buyerId: 'u_buyer', listingId: 'nocturne', listingTitle: 'Nocturne Portfolio', amount: 149, status: 'COMPLETED', layoutChoice: 'Split-Screen', codeUnlocked: false, createdAt: days(30) },
-    { id: 'o_3', buyerId: 'u_buyer', listingId: 'lumina', listingTitle: 'Lumina E-commerce', amount: 399, status: 'PAID', layoutChoice: 'Video-Hero', codeUnlocked: false, createdAt: days(5) },
+    { id: 'o_1', buyerId: 'u_buyer', sellerId: 'u_seller', listingId: 'meridian', listingTitle: 'Meridian SaaS', amount: 299, status: 'COMPLETED', layoutChoice: 'Hero-Centered', codeUnlocked: true, createdAt: days(50) },
+    { id: 'o_2', buyerId: 'u_buyer', sellerId: 'u_seller', listingId: 'nocturne', listingTitle: 'Nocturne Portfolio', amount: 149, status: 'COMPLETED', layoutChoice: 'Split-Screen', codeUnlocked: false, createdAt: days(30) },
+    { id: 'o_3', buyerId: 'u_buyer', sellerId: 'u_seller', listingId: 'lumina', listingTitle: 'Lumina E-commerce', amount: 399, status: 'PAID', layoutChoice: 'Video-Hero', codeUnlocked: false, createdAt: days(5) },
+    { id: 'o_4', buyerId: 'u_maria', sellerId: 'u_seller', listingId: 'meridian', listingTitle: 'Meridian SaaS', amount: 348, status: 'COMPLETED', layoutChoice: 'Hero-Centered', codeUnlocked: true, createdAt: days(18) },
+    { id: 'o_5', buyerId: 'u_maria', sellerId: 'u_seller', listingId: 'aurora', listingTitle: 'Aurora Blog', amount: 89, status: 'REFUNDED', layoutChoice: 'Split-Screen', codeUnlocked: false, createdAt: days(8) },
   ];
 
   const reviews: Review[] = [
@@ -285,12 +284,56 @@ function seed(): Store {
     { id: 'w_2', userId: 'u_buyer', listingId: 'atlas', createdAt: days(3) },
   ];
 
-  return { users, listings, orders, reviews, wishlist, newsletter: [], passwordResets: [] };
+  if (!DEMO_ACCOUNTS_ENABLED) {
+    // Production: keep the catalogue, drop every demo identity and the
+    // activity attached to it. Nobody can sign in with a published password.
+    return {
+      users: [],
+      listings,
+      orders: [],
+      reviews: [],
+      wishlist: [],
+      newsletter: [],
+      editorStates: {},
+      passwordResets: [],
+    };
+  }
+
+  return {
+    users,
+    listings,
+    orders,
+    reviews,
+    wishlist,
+    newsletter: [],
+    editorStates: {},
+    passwordResets: [],
+  };
 }
 
 function store(): Store {
-  if (!g.__webmersStore) g.__webmersStore = seed();
+  if (!g.__webmersStore) {
+    // Restore the previous snapshot when present so accounts, orders and
+    // wishlists survive a restart; otherwise start from the demo seed.
+    const restored = loadSnapshot<Store>();
+    if (restored) {
+      // Tolerate snapshots written by an older build.
+      restored.editorStates ??= {};
+      restored.passwordResets ??= [];
+      restored.newsletter ??= [];
+    }
+    g.__webmersStore = restored ?? seed();
+    installShutdownFlush();
+  }
   return g.__webmersStore;
+}
+
+/**
+ * Marks the store dirty so it is written to disk shortly after.
+ * Call this after every mutation.
+ */
+function persist(): void {
+  scheduleSnapshot(() => g.__webmersStore);
 }
 
 /* ------------------------------------------------------------------ */
@@ -337,7 +380,7 @@ export async function createUser(input: {
           email,
           name: input.name,
           role,
-          passwordHash: hashSync(input.password, 10),
+          passwordHash: hashSync(input.password, BCRYPT_ROUNDS),
         },
       });
       return normalizeUser(created);
@@ -351,10 +394,11 @@ export async function createUser(input: {
     email,
     name: input.name,
     role,
-    passwordHash: hashSync(input.password, 10),
+    passwordHash: hashSync(input.password, BCRYPT_ROUNDS),
     createdAt: new Date(),
   };
   store().users.push(user);
+  persist();
   return user;
 }
 
@@ -424,9 +468,47 @@ export async function getFeaturedListings(limit = 3): Promise<Listing[]> {
   return (featured.length ? featured : all).slice(0, limit);
 }
 
+/**
+ * Public lookup — only returns listings that are currently on sale.
+ * Use this for checkout and marketplace browsing.
+ */
 export async function getListing(listingId: string): Promise<Listing | null> {
   const all = await getListings();
   return all.find((l) => l.id === listingId) ?? null;
+}
+
+/**
+ * Lookup that ignores status.
+ *
+ * A buyer keeps access to a website after the seller pauses or delists it, so
+ * dashboards must be able to resolve those listings — `getListing` filters to
+ * ACTIVE and would drop them.
+ */
+export async function getListingAnyStatus(listingId: string): Promise<Listing | null> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const row = await prisma.listing.findUnique({
+        where: { id: listingId },
+        include: { seller: true },
+      });
+      if (row) return normalizeListing(row);
+    } catch (err) {
+      console.error('[data] Listing lookup failed, using in-memory store:', err);
+    }
+  }
+  return store().listings.find((l) => l.id === listingId) ?? null;
+}
+
+/** Batch variant of `getListingAnyStatus`, for dashboard lists. */
+export async function getListingsByIds(ids: string[]): Promise<Map<string, Listing>> {
+  const unique = Array.from(new Set(ids));
+  const entries = await Promise.all(
+    unique.map(async (listingId) => [listingId, await getListingAnyStatus(listingId)] as const),
+  );
+  const map = new Map<string, Listing>();
+  for (const [listingId, listing] of entries) if (listing) map.set(listingId, listing);
+  return map;
 }
 
 function normalizeListing(r: any): Listing {
@@ -438,7 +520,7 @@ function normalizeListing(r: any): Listing {
     price: r.price,
     category: r.category,
     techStack: r.techStack ?? [],
-    palette: paletteFor(r.category || r.title),
+    palette: computePalette(r.category || r.title),
     demoUrl: r.demoUrl ?? null,
     status: r.status,
     sellerId: r.sellerId,
@@ -463,16 +545,38 @@ export async function getCategories(): Promise<Category[]> {
     .sort((a, b) => b.count - a.count);
 }
 
+/**
+ * Landing page metrics.
+ *
+ * These are computed from real store data. They used to add invented constants
+ * (+340 sales, "10,000+" users, "$2M+" earned), which misrepresents the
+ * marketplace to visitors.
+ */
 export async function getLandingStats() {
   const listings = await getListings();
+  const s = store();
+
   const totalSales = listings.reduce((sum, l) => sum + l.sales, 0);
-  const avgRating =
-    listings.reduce((sum, l) => sum + l.rating, 0) / (listings.length || 1);
+  const rated = listings.filter((l) => l.rating > 0);
+  const avgRating = rated.length
+    ? rated.reduce((sum, l) => sum + l.rating, 0) / rated.length
+    : 0;
+
+  const sellerEarnings =
+    s.orders
+      .filter((o) => o.status !== 'REFUNDED')
+      .reduce((sum, o) => sum + o.amount, 0) * (1 - PLATFORM_FEE_RATE);
+
+  const compact = (n: number) =>
+    n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(1)}M`
+    : n >= 1_000 ? `$${(n / 1_000).toFixed(1)}K`
+    : `$${Math.round(n)}`;
+
   return [
-    { label: 'Websites Sold', value: `${totalSales + 340}+` },
-    { label: 'Users', value: '10,000+' },
-    { label: 'Earned by Sellers', value: '$2M+' },
-    { label: 'Average Rating', value: `${avgRating.toFixed(1)}★` },
+    { label: 'Websites Listed', value: `${listings.length}` },
+    { label: 'Websites Sold', value: `${totalSales}` },
+    { label: 'Earned by Sellers', value: compact(sellerEarnings) },
+    { label: 'Average Rating', value: avgRating ? `${avgRating.toFixed(1)}★` : '—' },
   ];
 }
 
@@ -490,6 +594,16 @@ export async function getReviews(listingId: string): Promise<Review[]> {
 /* Orders / checkout                                                   */
 /* ------------------------------------------------------------------ */
 
+/** Orders that represent a live entitlement to a listing. */
+const OWNING_STATUSES: OrderStatus[] = ['PENDING', 'PAID', 'COMPLETED', 'DISPUTED'];
+
+/** True when the buyer already holds this listing (blocks double purchases). */
+export async function hasPurchased(buyerId: string, listingId: string): Promise<boolean> {
+  return store().orders.some(
+    (o) => o.buyerId === buyerId && o.listingId === listingId && OWNING_STATUSES.includes(o.status),
+  );
+}
+
 export async function createOrder(input: {
   buyerId: string;
   listingId: string;
@@ -501,6 +615,7 @@ export async function createOrder(input: {
   const order: Order = {
     id: id('o'),
     buyerId: input.buyerId,
+    sellerId: listing?.sellerId ?? '',
     listingId: input.listingId,
     listingTitle: listing?.title ?? 'Website',
     amount: Math.round(input.amount * 100) / 100,
@@ -513,7 +628,7 @@ export async function createOrder(input: {
   const prisma = await getPrismaClient();
   if (prisma) {
     try {
-      await prisma.order.create({
+      const created = await prisma.order.create({
         data: {
           buyerId: order.buyerId,
           listingId: order.listingId,
@@ -523,13 +638,16 @@ export async function createOrder(input: {
           codeUnlocked: order.codeUnlocked,
         },
       });
-    } catch {
-      /* keep in-memory copy regardless */
+      // Keep the same identifier on both sides so lookups agree.
+      if (created?.id) order.id = created.id;
+    } catch (err) {
+      console.error('[data] Order write to database failed, keeping in-memory copy:', err);
     }
   }
 
   store().orders.push(order);
   if (listing) listing.sales += 1;
+  persist();
   return order;
 }
 
@@ -559,9 +677,11 @@ export async function toggleWishlist(
   const existing = s.wishlist.find((w) => w.userId === userId && w.listingId === listingId);
   if (existing) {
     s.wishlist = s.wishlist.filter((w) => w.id !== existing.id);
+    persist();
     return { wishlisted: false };
   }
   s.wishlist.push({ id: id('w'), userId, listingId, createdAt: new Date() });
+  persist();
   return { wishlisted: true };
 }
 
@@ -580,17 +700,150 @@ export async function getWishlistCount(userId: string): Promise<number> {
 /* ------------------------------------------------------------------ */
 
 export async function getSellerListings(sellerId: string): Promise<Listing[]> {
-  return store().listings.filter((l) => l.sellerId === sellerId);
+  return store()
+    .listings.filter((l) => l.sellerId === sellerId)
+    .sort((a, b) => +b.createdAt - +a.createdAt);
 }
 
-export async function getSellerStats(sellerId: string) {
+/** Every order placed against a given seller's listings. */
+export async function getSellerOrders(sellerId: string): Promise<Order[]> {
+  const listingIds = new Set(
+    store().listings.filter((l) => l.sellerId === sellerId).map((l) => l.id),
+  );
+  return store()
+    .orders.filter((o) => o.sellerId === sellerId || listingIds.has(o.listingId))
+    .sort((a, b) => +b.createdAt - +a.createdAt);
+}
+
+export interface SellerStats {
+  active: number;
+  drafts: number;
+  revenue: number;
+  /** Revenue booked in the last 30 days. */
+  revenue30d: number;
+  netRevenue: number;
+  refunded: number;
+  unitsSold: number;
+  avgOrderValue: number;
+  avgRating: number;
+  reviewCount: number;
+  conversionBase: number;
+  listings: Listing[];
+  orders: Order[];
+  topListing: Listing | null;
+}
+
+/** Platform commission withheld from seller payouts. */
+export const PLATFORM_FEE_RATE = 0.1;
+
+export async function getSellerStats(sellerId: string): Promise<SellerStats> {
   const listings = await getSellerListings(sellerId);
-  const active = listings.filter((l) => l.status === 'ACTIVE').length;
-  const revenue = store()
-    .orders.filter((o) => listings.some((l) => l.id === o.listingId) && o.status !== 'REFUNDED')
+  const orders = await getSellerOrders(sellerId);
+  const listingIds = new Set(listings.map((l) => l.id));
+
+  const paidOrders = orders.filter((o) => o.status !== 'REFUNDED');
+  const refundedOrders = orders.filter((o) => o.status === 'REFUNDED');
+
+  const revenue = paidOrders.reduce((sum, o) => sum + o.amount, 0);
+  const refunded = refundedOrders.reduce((sum, o) => sum + o.amount, 0);
+
+  const cutoff = Date.now() - 30 * 86_400_000;
+  const revenue30d = paidOrders
+    .filter((o) => +o.createdAt >= cutoff)
     .reduce((sum, o) => sum + o.amount, 0);
-  const views = listings.reduce((sum, l) => sum + l.sales * 78, 0);
-  return { active, revenue, views, listings };
+
+  const reviews = store().reviews.filter((r) => listingIds.has(r.listingId));
+  const avgRating = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
+
+  const topListing =
+    [...listings].sort((a, b) => b.sales - a.sales).find((l) => l.sales > 0) ?? null;
+
+  return {
+    active: listings.filter((l) => l.status === 'ACTIVE').length,
+    drafts: listings.filter((l) => l.status === 'DRAFT' || l.status === 'PAUSED').length,
+    revenue: Math.round(revenue * 100) / 100,
+    revenue30d: Math.round(revenue30d * 100) / 100,
+    netRevenue: Math.round(revenue * (1 - PLATFORM_FEE_RATE) * 100) / 100,
+    refunded: Math.round(refunded * 100) / 100,
+    unitsSold: paidOrders.length,
+    avgOrderValue: paidOrders.length ? Math.round((revenue / paidOrders.length) * 100) / 100 : 0,
+    avgRating: Math.round(avgRating * 10) / 10,
+    reviewCount: reviews.length,
+    conversionBase: listings.reduce((sum, l) => sum + l.sales, 0),
+    listings,
+    orders,
+    topListing,
+  };
+}
+
+/** Per-listing performance breakdown for the seller table. */
+export async function getSellerListingPerformance(sellerId: string) {
+  const listings = await getSellerListings(sellerId);
+  const orders = await getSellerOrders(sellerId);
+  const reviews = store().reviews;
+
+  return listings.map((listing) => {
+    const listingOrders = orders.filter(
+      (o) => o.listingId === listing.id && o.status !== 'REFUNDED',
+    );
+    const listingReviews = reviews.filter((r) => r.listingId === listing.id);
+    const rating = listingReviews.length
+      ? listingReviews.reduce((sum, r) => sum + r.rating, 0) / listingReviews.length
+      : listing.rating;
+
+    return {
+      listing,
+      revenue: Math.round(listingOrders.reduce((sum, o) => sum + o.amount, 0) * 100) / 100,
+      unitsSold: listingOrders.length,
+      rating: Math.round(rating * 10) / 10,
+      reviewCount: listingReviews.length,
+    };
+  });
+}
+
+export interface BuyerStats {
+  ownedCount: number;
+  wishlistCount: number;
+  totalSpent: number;
+  codeUnlocks: number;
+  activeEscrow: number;
+  refunded: number;
+}
+
+export async function getBuyerStats(buyerId: string): Promise<BuyerStats> {
+  const orders = await getBuyerOrders(buyerId);
+  const settled = orders.filter((o) => o.status !== 'REFUNDED');
+
+  return {
+    ownedCount: settled.length,
+    wishlistCount: await getWishlistCount(buyerId),
+    totalSpent: Math.round(settled.reduce((sum, o) => sum + o.amount, 0) * 100) / 100,
+    codeUnlocks: settled.filter((o) => o.codeUnlocked).length,
+    activeEscrow: orders.filter((o) => o.status === 'PAID').length,
+    refunded: orders.filter((o) => o.status === 'REFUNDED').length,
+  };
+}
+
+/**
+ * Escrow window helper — orders sit in escrow for 72 hours after payment.
+ */
+export const ESCROW_WINDOW_MS = 72 * 60 * 60 * 1000;
+
+export function escrowStatus(order: Order): {
+  inEscrow: boolean;
+  hoursRemaining: number;
+  releasesAt: Date;
+} {
+  const releasesAt = new Date(+order.createdAt + ESCROW_WINDOW_MS);
+  const remainingMs = +releasesAt - Date.now();
+  const inEscrow = order.status === 'PAID' && remainingMs > 0;
+  return {
+    inEscrow,
+    hoursRemaining: inEscrow ? Math.ceil(remainingMs / 3_600_000) : 0,
+    releasesAt,
+  };
 }
 
 export async function getRecentOrders(limit = 5): Promise<Order[]> {
@@ -599,9 +852,26 @@ export async function getRecentOrders(limit = 5): Promise<Order[]> {
 
 export async function getAdminStats() {
   const s = store();
-  const users = s.users.length + 10240;
-  const gmv = s.orders.reduce((sum, o) => sum + o.amount, 0) + 2_100_000;
-  return { totalUsers: users, gmv, queue: 12 };
+  const gmv = s.orders
+    .filter((o) => o.status !== 'REFUNDED')
+    .reduce((sum, o) => sum + o.amount, 0);
+  const refunded = s.orders
+    .filter((o) => o.status === 'REFUNDED')
+    .reduce((sum, o) => sum + o.amount, 0);
+
+  return {
+    totalUsers: s.users.length,
+    sellers: s.users.filter((u) => u.role === 'SELLER').length,
+    buyers: s.users.filter((u) => u.role === 'BUYER').length,
+    gmv: Math.round(gmv * 100) / 100,
+    refunded: Math.round(refunded * 100) / 100,
+    platformFees: Math.round(gmv * PLATFORM_FEE_RATE * 100) / 100,
+    orderCount: s.orders.length,
+    listingCount: s.listings.length,
+    activeListings: s.listings.filter((l) => l.status === 'ACTIVE').length,
+    queue: s.listings.filter((l) => l.status === 'DRAFT').length,
+    newsletterCount: s.newsletter.length,
+  };
 }
 
 export async function getRecentUsers(limit = 5): Promise<User[]> {
@@ -620,18 +890,36 @@ export function isValidEmail(email: string): boolean {
   return EMAIL_RE.test(email.trim());
 }
 
-export async function subscribeNewsletter(email: string): Promise<{ ok: boolean; error?: string }> {
+export async function subscribeNewsletter(
+  email: string,
+): Promise<{ ok: boolean; error?: string; alreadySubscribed?: boolean }> {
   const value = email.trim().toLowerCase();
   if (!isValidEmail(value)) return { ok: false, error: 'Please enter a valid email address.' };
   const s = store();
-  if (s.newsletter.includes(value)) return { ok: true };
+  if (s.newsletter.includes(value)) return { ok: true, alreadySubscribed: true };
   s.newsletter.push(value);
+  persist();
   return { ok: true };
 }
 
 /* ------------------------------------------------------------------ */
 /* Password reset (OTP)                                                */
 /* ------------------------------------------------------------------ */
+
+/** Maximum wrong OTP guesses before the code is destroyed. */
+const MAX_OTP_ATTEMPTS = 5;
+
+function hashOtp(otp: string): string {
+  return createHash('sha256').update(otp).digest('hex');
+}
+
+/** Constant-time string comparison to avoid leaking the code via timing. */
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, 'utf8');
+  const bufB = Buffer.from(b, 'utf8');
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
 
 export async function requestPasswordReset(email: string): Promise<{ ok: boolean; otp?: string; error?: string }> {
   const normalized = email.trim().toLowerCase();
@@ -642,12 +930,15 @@ export async function requestPasswordReset(email: string): Promise<{ ok: boolean
   }
 
   const s = store();
-  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+  // crypto-grade randomness — Math.random() is predictable and unsuitable here.
+  const otp = String(randomInt(0, 1_000_000)).padStart(6, '0');
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   // Remove previous for this email
-  s.passwordResets = s.passwordResets.filter(r => r.email !== normalized);
-  s.passwordResets.push({ email: normalized, otp, expiresAt });
+  s.passwordResets = s.passwordResets.filter((r) => r.email !== normalized);
+  // Only the hash is retained, so a snapshot leak cannot reveal live codes.
+  s.passwordResets.push({ email: normalized, otpHash: hashOtp(otp), expiresAt, attempts: 0 });
+  persist();
 
   return { ok: true, otp };
 }
@@ -660,21 +951,35 @@ export async function verifyAndResetPassword(
   const normalized = email.trim().toLowerCase();
   const s = store();
 
-  const reset = s.passwordResets.find(
-    (r) => r.email === normalized && r.otp === otp && r.expiresAt > Date.now()
-  );
+  const reset = s.passwordResets.find((r) => r.email === normalized);
 
-  if (!reset) {
+  if (!reset || reset.expiresAt <= Date.now()) {
+    if (reset) {
+      s.passwordResets = s.passwordResets.filter((r) => r.email !== normalized);
+      persist();
+    }
+    return { ok: false, error: 'Invalid or expired code.' };
+  }
+
+  if (!safeEqual(reset.otpHash, hashOtp(otp))) {
+    reset.attempts += 1;
+    // Burn the code after too many guesses so it cannot be brute-forced.
+    if (reset.attempts >= MAX_OTP_ATTEMPTS) {
+      s.passwordResets = s.passwordResets.filter((r) => r.email !== normalized);
+      persist();
+      return { ok: false, error: 'Too many incorrect attempts. Please request a new code.' };
+    }
+    persist();
     return { ok: false, error: 'Invalid or expired code.' };
   }
 
   const user = await getUserByEmail(normalized);
   if (!user) {
-    return { ok: false, error: 'User not found.' };
+    return { ok: false, error: 'Invalid or expired code.' };
   }
 
   const prisma = await getPrismaClient();
-  const newHash = hashSync(newPassword, 10);
+  const newHash = hashSync(newPassword, BCRYPT_ROUNDS);
 
   if (prisma) {
     try {
@@ -682,38 +987,62 @@ export async function verifyAndResetPassword(
         where: { email: normalized },
         data: { passwordHash: newHash },
       });
-    } catch {
-      // fall through
+    } catch (err) {
+      console.error('[data] Password update in database failed:', err);
     }
   }
 
   // Update in-memory
   const memUser = s.users.find((u) => u.email.toLowerCase() === normalized);
-  if (memUser) memUser.passwordHash = newHash;
+  if (memUser) {
+    memUser.passwordHash = newHash;
+    // Invalidate sessions issued before the reset.
+    memUser.sessionVersion = (memUser.sessionVersion ?? 0) + 1;
+  }
 
   // Consume the reset token
-  s.passwordResets = s.passwordResets.filter((r) => !(r.email === normalized && r.otp === otp));
+  s.passwordResets = s.passwordResets.filter((r) => r.email !== normalized);
+  persist();
 
   return { ok: true };
 }
 
 /* ------------------------------------------------------------------ */
-/* Thumbnail palette helper (deterministic)                            */
+/* Visual editor state                                                 */
 /* ------------------------------------------------------------------ */
 
-const PALETTES: [string, string][] = [
-  ['#f59e0b', '#f43f5e'],
-  ['#8b5cf6', '#d946ef'],
-  ['#10b981', '#06b6d4'],
-  ['#0ea5e9', '#6366f1'],
-  ['#22d3ee', '#3b82f6'],
-  ['#fb7185', '#f59e0b'],
-  ['#a3e635', '#10b981'],
-  ['#f472b6', '#8b5cf6'],
-];
+export const DEFAULT_EDITOR_STATE: Omit<EditorState, 'orderId' | 'updatedAt'> = {
+  theme: 'Night',
+  accent: '#ffffff',
+  font: 'Inter',
+  sections: { Hero: true, Stats: true, Featured: true, Footer: true },
+  content: {},
+  published: false,
+};
 
-export function paletteFor(seedStr: string): [string, string] {
-  let hash = 0;
-  for (let i = 0; i < seedStr.length; i++) hash = (hash * 31 + seedStr.charCodeAt(i)) >>> 0;
-  return PALETTES[hash % PALETTES.length];
+export async function getEditorState(orderId: string): Promise<EditorState | null> {
+  return store().editorStates[orderId] ?? null;
+}
+
+export async function saveEditorState(
+  orderId: string,
+  patch: Partial<Omit<EditorState, 'orderId' | 'updatedAt'>>,
+): Promise<EditorState> {
+  const s = store();
+  const existing = s.editorStates[orderId];
+
+  const next: EditorState = {
+    orderId,
+    theme: patch.theme ?? existing?.theme ?? DEFAULT_EDITOR_STATE.theme,
+    accent: patch.accent ?? existing?.accent ?? DEFAULT_EDITOR_STATE.accent,
+    font: patch.font ?? existing?.font ?? DEFAULT_EDITOR_STATE.font,
+    sections: { ...DEFAULT_EDITOR_STATE.sections, ...existing?.sections, ...patch.sections },
+    content: { ...existing?.content, ...patch.content },
+    published: patch.published ?? existing?.published ?? false,
+    updatedAt: new Date(),
+  };
+
+  s.editorStates[orderId] = next;
+  persist();
+  return next;
 }

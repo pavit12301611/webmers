@@ -20,6 +20,9 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        // `font-display` is used across the dashboards, editor and checkout.
+        // Without this key those headings silently fell back to Inter.
+        display: ['Instrument Serif', 'Georgia', 'ui-serif', 'serif'],
         instrument: ['Instrument Serif', 'serif'],
         helvetica: ['Helvetica Neue Roman', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },

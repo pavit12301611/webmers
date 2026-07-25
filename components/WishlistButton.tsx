@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
@@ -24,6 +24,13 @@ export default function WishlistButton({
   const router = useRouter();
   const [wishlisted, setWishlisted] = useState(initial);
   const [pending, setPending] = useState(false);
+  const dirty = useRef(false);
+
+  // Re-sync when the server sends a new value (e.g. after client-side
+  // navigation), unless the user has already toggled it locally.
+  useEffect(() => {
+    if (!dirty.current) setWishlisted(initial);
+  }, [initial]);
 
   const onClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -36,6 +43,7 @@ export default function WishlistButton({
     }
 
     setPending(true);
+    dirty.current = true;
     const next = !wishlisted;
     setWishlisted(next); // optimistic
     try {

@@ -1,5 +1,9 @@
 # Webmers — Function-by-Function Audit
 
+> **STATUS: 18 of 20 fully resolved; 2 partially mitigated (#3 payments, #10 Prisma coverage).** See [`REMEDIATION.md`](./REMEDIATION.md) for
+> what changed, the verification evidence for each fix, and what remains before
+> taking real payments. This document is retained as the original audit record.
+
 **Date:** 2026-07-25 · **Commit:** `a7ffaf3` · **Scope:** every route, API handler, data-layer function and component (~5k LOC)
 
 **Method:** static review of all 48 source files + a live audit against a production build (`npm run build && next start`). Every claim below was reproduced against the running app; commands are included.
@@ -12,27 +16,27 @@ The app *looks* finished and the happy paths work. The problems are concentrated
 
 ## Severity summary
 
-| # | Finding | Severity | Area |
-|---|---|---|---|
-| 1 | Hardcoded fallback JWT secret → forge any session, full admin takeover | 🔴 Critical | Auth |
-| 2 | Order confirmation page has no authz → anyone reads any order (IDOR) | 🔴 Critical | Checkout |
-| 3 | "Payment" is fake — no processor, no escrow, order marked PAID unconditionally | 🔴 Critical | Payments |
-| 4 | All data is in-memory — every account, order and wishlist lost on restart | 🔴 Critical | Data |
-| 5 | Password reset silently fails; UI says the code was sent | 🟠 High | Auth |
-| 6 | No rate limiting anywhere (OTP brute-force, signup flood, login) | 🟠 High | Auth |
-| 7 | OTP compared non-constant-time, not attempt-limited, not single-use on failure | 🟠 High | Auth |
-| 8 | `/editor` is completely public and saves nothing | 🟠 High | Product |
-| 9 | Duplicate purchases allowed; no ownership check | 🟠 High | Checkout |
-| 10 | Prisma path half-implemented — DB config silently corrupts behaviour | 🟠 High | Data |
-| 11 | 6 CSS classes referenced but never defined → unstyled checkout & dashboards | 🟠 High | UI |
-| 12 | `layoutChoice` unvalidated, arbitrary string persisted | 🟡 Medium | Checkout |
-| 13 | Landing/admin stats are fabricated (`+340`, `$2.1M`, `10,000+`) | 🟡 Medium | Trust |
-| 14 | No input length limits — 5 KB names accepted | 🟡 Medium | Validation |
-| 15 | Weak password policy (`password123` passes) | 🟡 Medium | Auth |
-| 16 | Hero depends on 3 unreachable external assets; CSP allows `unsafe-eval` | 🟡 Medium | Perf/Sec |
-| 17 | Google sign-in always creates BUYER; role never re-synced | 🟡 Medium | Auth |
-| 18 | Nav/footer links point at non-existent anchors and pages | 🟡 Medium | UX |
-| 19 | Demo credentials published on the sign-in page + README | 🟡 Medium | Auth |
+| # | Finding | Severity | Area | Status |
+|---|---|---|---|---|
+| 1 | Hardcoded fallback JWT secret → forge any session, full admin takeover | 🔴 Critical | Auth | ✅ Fixed |
+| 2 | Order confirmation page has no authz → anyone reads any order (IDOR) | 🔴 Critical | Checkout | ✅ Fixed |
+| 3 | "Payment" is fake — no processor, no escrow, order marked PAID unconditionally | 🔴 Critical | Payments | ⚠️ Mitigated — needs PSP |
+| 4 | All data is in-memory — every account, order and wishlist lost on restart | 🔴 Critical | Data | ✅ Fixed |
+| 5 | Password reset silently fails; UI says the code was sent | 🟠 High | Auth | ✅ Fixed |
+| 6 | No rate limiting anywhere (OTP brute-force, signup flood, login) | 🟠 High | Auth | ✅ Fixed |
+| 7 | OTP compared non-constant-time, not attempt-limited, not single-use on failure | 🟠 High | Auth | ✅ Fixed |
+| 8 | `/editor` is completely public and saves nothing | 🟠 High | Product | ✅ Fixed |
+| 9 | Duplicate purchases allowed; no ownership check | 🟠 High | Checkout | ✅ Fixed |
+| 10 | Prisma path half-implemented — DB config silently corrupts behaviour | 🟠 High | Data | ⚠️ Partly — reads still in-memory |
+| 11 | 6 CSS classes referenced but never defined → unstyled checkout & dashboards | 🟠 High | UI | ✅ Fixed |
+| 12 | `layoutChoice` unvalidated, arbitrary string persisted | 🟡 Medium | Checkout | ✅ Fixed |
+| 13 | Landing/admin stats are fabricated (`+340`, `$2.1M`, `10,000+`) | 🟡 Medium | Trust | ✅ Fixed |
+| 14 | No input length limits — 5 KB names accepted | 🟡 Medium | Validation | ✅ Fixed |
+| 15 | Weak password policy (`password123` passes) | 🟡 Medium | Auth | ✅ Fixed |
+| 16 | Hero depends on 3 unreachable external assets; CSP allows `unsafe-eval` | 🟡 Medium | Perf/Sec | ✅ Fixed |
+| 17 | Google sign-in always creates BUYER; role never re-synced | 🟡 Medium | Auth | ✅ Fixed |
+| 18 | Nav/footer links point at non-existent anchors and pages | 🟡 Medium | UX | ✅ Fixed |
+| 19 | Demo credentials published on the sign-in page + README | 🟡 Medium | Auth | ✅ Fixed |
 | 20 | Accessibility + correctness nits (see §20) | 🔵 Low | A11y |
 
 ---

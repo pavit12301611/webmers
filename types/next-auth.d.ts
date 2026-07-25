@@ -20,5 +20,8 @@ declare module 'next-auth/jwt' {
   interface JWT extends DefaultJWT {
     id?: string;
     role?: Role;
+    /** Bumped on password reset to invalidate previously issued tokens. */
+    sessionVersion?: number;
+    invalidated?: boolean;
   }
 }

@@ -24,6 +24,9 @@ export default function Newsletter() {
         setState('success');
         setMessage(data.message || "You're on the list!");
         setEmail('');
+      } else if (res.status === 429) {
+        setState('error');
+        setMessage(data.error || 'Too many requests. Please try again shortly.');
       } else {
         setState('error');
         setMessage(data.error || 'Something went wrong. Please try again.');
@@ -44,7 +47,7 @@ export default function Newsletter() {
   }
 
   return (
-    <form className="mx-auto max-w-md" onSubmit={onSubmit} noValidate>
+    <form className="mx-auto max-w-md" onSubmit={onSubmit}>
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="email"

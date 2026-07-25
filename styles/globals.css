@@ -2,9 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global default: Inter per spec */
-* {
-  font-family: 'Inter', sans-serif;
+/* Global default: Inter per spec.
+   Scoped to `body` (inherited) rather than `*`, because a universal selector
+   overrides every font-family utility class (font-display, font-serif,
+   font-instrument) on elements that don't re-declare it. */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -86,6 +89,76 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* ---------------------------------------------------------------- */
+  /* Dashboard / checkout surface styles                              */
+  /*                                                                  */
+  /* These classes were referenced by the checkout page and dashboard */
+  /* shell but never defined, so those pages rendered with no         */
+  /* background, no card surfaces and unreadable dark-on-white text.  */
+  /* ---------------------------------------------------------------- */
+
+  .nature-page {
+    position: relative;
+    background:
+      radial-gradient(1100px circle at 12% -10%, rgba(16, 185, 129, 0.14), transparent 45%),
+      radial-gradient(900px circle at 88% 8%, rgba(163, 230, 53, 0.10), transparent 42%),
+      linear-gradient(180deg, #06120d 0%, #071510 45%, #050f0b 100%);
+    background-attachment: fixed;
+    color: #ecfdf5;
+  }
+
+  .leaf-card {
+    background: linear-gradient(180deg, rgba(236, 253, 245, 0.055), rgba(236, 253, 245, 0.015));
+    border: 1px solid rgba(236, 253, 245, 0.10);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 18px 48px -28px rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+  .leaf-card:hover {
+    border-color: rgba(190, 242, 100, 0.22);
+  }
+
+  .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.3rem 0.85rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(236, 253, 245, 0.12);
+    background: rgba(236, 253, 245, 0.04);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(236, 253, 245, 0.55);
+  }
+
+  .btn-forest {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #d9f99d 0%, #86efac 50%, #34d399 100%);
+    color: #07130e;
+    font-weight: 600;
+    box-shadow: 0 12px 34px -16px rgba(52, 211, 153, 0.75);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+  .btn-forest:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 40px -16px rgba(52, 211, 153, 0.9);
+  }
+  .btn-forest:disabled {
+    opacity: 0.6;
+    transform: none;
+    cursor: not-allowed;
+  }
 }
 
 @keyframes slideUpFade {
@@ -106,9 +179,16 @@
 .animate-fade-up { animation: fadeUp 0.5s ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Keep animations effectively instant but still let them *run*, so any
+     logic waiting on animationend/transitionend continues to fire. */
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
 @media (max-width: 768px) {

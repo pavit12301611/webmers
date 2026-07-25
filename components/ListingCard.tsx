@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { ListingThumbnail } from './Thumbnail';
 import WishlistButton from './WishlistButton';
-import type { Listing } from '@/lib/data';
+import type { Listing } from '@/lib/types';
 
 /**
  * Optimized ListingCard - no per-card auth fetch.

@@ -129,14 +129,28 @@ export default function MeasuredHero() {
         </svg>
       </div>
 
-      {/* Layer 2 — Background Image */}
+      {/* Layer 2 — Background Image
+          A self-contained gradient sits underneath so the hero still looks
+          intentional if the remote asset is slow, blocked or unreachable. */}
       <div className="absolute inset-0 z-10">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(120% 90% at 50% 8%, #1d2b3a 0%, #101a24 42%, #070b10 100%)',
+          }}
+        />
         <img
           src={BG_IMAGE}
           alt=""
           decoding="async"
           fetchPriority="high"
-          className="h-full w-full object-cover"
+          onError={(e) => {
+            // Remote asset unavailable — fall back to the gradient beneath.
+            e.currentTarget.style.display = 'none';
+          }}
+          className="relative h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/35" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
@@ -164,6 +178,9 @@ export default function MeasuredHero() {
         alt=""
         loading="lazy"
         decoding="async"
+        onError={(e) => {
+          e.currentTarget.style.display = 'none';
+        }}
         className="pointer-events-none absolute inset-0 z-[25] h-full w-full object-cover opacity-70 mix-blend-soft-light"
         aria-hidden="true"
       />
