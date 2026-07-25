@@ -7,9 +7,9 @@ export const metadata: Metadata = {
     default: 'Webmers — Buy. Edit. Own.',
     template: '%s · Webmers',
   },
-  description: 'The premium marketplace for fully-built websites. Buy a site, edit it visually, own the code.',
+  description: 'The premium marketplace for fully-built websites. Crafted with precision, measured to perfection.',
   openGraph: {
-    title: 'Webmers',
+    title: 'Webmers — Measured',
     description: 'Buy. Edit. Own. The premium marketplace for fully-built websites.',
     siteName: 'Webmers',
     type: 'website',
@@ -17,17 +17,29 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#07130e',
+  themeColor: '#0a0a0a',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-[#07130e] text-[#f7f5ea] antialiased">
-        <Providers>
-          <div className="grain-overlay" aria-hidden="true" />
-          {children}
-        </Providers>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Inter 300-700 per spec */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+          rel="stylesheet"
+        />
+        {/* Preload LCP hero image */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260713_140344_79e1296a-86d7-43fd-9b5f-63ffe560f291.png&w=1280&q=85"
+        />
+      </head>
+      <body className="bg-white text-[#0a0a0a] antialiased">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
