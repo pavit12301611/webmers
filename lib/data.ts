@@ -589,8 +589,19 @@ export async function getSellerStats(sellerId: string) {
   const revenue = store()
     .orders.filter((o) => listings.some((l) => l.id === o.listingId) && o.status !== 'REFUNDED')
     .reduce((sum, o) => sum + o.amount, 0);
-  const views = listings.reduce((sum, l) => sum + l.sales * 78, 0);
+  // Estimate views from sales with a realistic conversion rate (~3-5%)
+  // Each listing's views = sales / conversion_rate (seeded data uses ~3%)
+  const views = listings.reduce((sum, l) => {
+    const conversionRate = 0.03 + (hash(l.id) % 3) / 100; // 3-5%
+    return sum + Math.round(l.sales / conversionRate);
+  }, 0);
   return { active, revenue, views, listings };
+}
+
+function hash(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
 }
 
 export async function getRecentOrders(limit = 5): Promise<Order[]> {

@@ -62,6 +62,72 @@
   .font-instrument {
     font-family: var(--font-instrument);
   }
+  .font-display {
+    font-family: var(--font-instrument);
+  }
+
+  /* Dashboard nature theme */
+  .nature-page {
+    background: linear-gradient(180deg, #040d09 0%, #07130e 30%, #060f0b 70%, #030a07 100%);
+    color: #ecfdf5;
+  }
+
+  .leaf-card {
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, rgba(16, 185, 129, 0.01) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    backdrop-filter: blur(12px);
+  }
+
+  .btn-forest {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #a3e635, #10b981);
+    color: #07130e;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-forest:hover {
+    transform: scale(1.01);
+    opacity: 0.92;
+  }
+
+  .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    background: rgba(16, 185, 129, 0.04);
+    padding: 0.25rem 0.75rem;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(167, 243, 208, 0.5);
+    margin-bottom: 0.75rem;
+  }
+
+  .stat-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(16, 185, 129, 0.08);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, transparent 100%);
+    padding: 1.5rem;
+  }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
   .liquid-glass {
     background: rgba(255, 255, 255, 0.06);

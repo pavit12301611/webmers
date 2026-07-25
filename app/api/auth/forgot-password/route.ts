@@ -20,11 +20,12 @@ export async function POST(req: Request) {
       previewUrl = sendResult.previewUrl;
     }
 
-    // Always return success message for security (don't reveal if account exists)
+    // Always return success message for security (don't reveal if account exists).
+    // Never leak the OTP back to the client — it is sent via email only.
     return NextResponse.json({
       ok: true,
       message: 'If an account exists with that email, a reset code has been sent.',
-      previewUrl, // Only present when using Ethereal (dev mode)
+      ...(previewUrl ? { previewUrl } : {}),
     });
   } catch (err) {
     console.error('Forgot password error:', err);

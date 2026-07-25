@@ -20,6 +20,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+        display: ['Instrument Serif', 'serif'],
         instrument: ['Instrument Serif', 'serif'],
         helvetica: ['Helvetica Neue Roman', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
