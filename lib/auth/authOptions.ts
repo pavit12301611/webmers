@@ -72,12 +72,18 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = ((user as any).role as Role) || 'BUYER';
+        // Cache the time so we only refresh role from DB every 5 minutes
+        token.roleFetchedAt = Date.now();
       } else if (token.email) {
-        // On subsequent logins, make sure we have the latest role from DB
-        const dbUser = await getUserByEmail(token.email as string);
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.role = dbUser.role;
+        // Only refresh role from DB every 5 minutes to avoid hitting DB on every request
+        const fetchedAt = (token.roleFetchedAt as number) || 0;
+        if (Date.now() - fetchedAt > 5 * 60 * 1000) {
+          const dbUser = await getUserByEmail(token.email as string);
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.role = dbUser.role;
+            token.roleFetchedAt = Date.now();
+          }
         }
       }
       return token;
