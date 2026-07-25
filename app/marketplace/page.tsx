@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Leaf, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Header from '@/components/Header';
 import SiteFooter from '@/components/SiteFooter';
 import ListingCard from '@/components/ListingCard';
@@ -25,56 +25,68 @@ export default async function MarketplacePage({
   ]);
 
   return (
-    <main className="nature-page min-h-screen overflow-hidden">
+    <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
       <Header />
 
-      {/* Page head */}
-      <section className="nature-container relative pt-36 pb-12">
-        <div className="absolute left-0 top-20 -z-10 h-72 w-72 rounded-full bg-lime-300/10 blur-3xl" />
-        <span className="section-eyebrow"><Leaf size={14} /> Marketplace grove</span>
-        <h1 className="mb-4 font-display text-4xl font-bold tracking-tight md:text-6xl">Browse launch-ready websites.</h1>
-        <p className="max-w-2xl text-lg leading-8 text-emerald-50/55">
-          Fully-built websites, ready to launch. Filter by category or search for a stack with a smooth, lightweight experience.
-        </p>
+      {/* Page head with grid */}
+      <section className="relative px-6 pb-12 pt-36 md:px-10">
+        <div className="absolute inset-0 opacity-[0.04]">
+          <svg width="100%" height="100%"><defs><pattern id="mp-grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M 48 0 L 0 0 0 48" fill="none" stroke="#64748b" strokeWidth="0.6" /></pattern></defs><rect width="100%" height="100%" fill="url(#mp-grid)" /></svg>
+        </div>
 
-        {/* Search */}
-        <form action="/marketplace" method="get" className="leaf-card mt-8 flex max-w-3xl flex-col gap-3 rounded-[2rem] p-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-50/35" />
-            <input
-              type="search"
-              name="q"
-              defaultValue={q}
-              placeholder="Search by name, category or tech…"
-              className="w-full rounded-full border border-emerald-50/10 bg-[#07130e]/45 py-4 pl-12 pr-4 text-emerald-50 placeholder-emerald-50/32 outline-none transition-colors focus:border-lime-100/35"
-            />
+        <div className="relative mx-auto max-w-7xl">
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/40">
+            Marketplace grove
+          </span>
+          <h1
+            className="mb-4 max-w-3xl text-balance text-4xl leading-[0.95] tracking-tight text-white md:text-6xl"
+            style={{ fontFamily: "'Instrument Serif', serif" }}
+          >
+            Browse launch-ready websites.
+          </h1>
+          <p className="max-w-2xl text-[15px] leading-7 text-white/45">
+            Fully-built websites, ready to launch. Filter by category or search for a stack with a measured, precise experience.
+          </p>
+
+          {/* Search - liquid glass */}
+          <form action="/marketplace" method="get" className="mt-8 flex max-w-3xl flex-col gap-3 rounded-full border border-white/10 bg-white/[0.03] p-2 backdrop-blur-xl sm:flex-row">
+            <div className="relative flex-1">
+              <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" />
+              <input
+                type="search"
+                name="q"
+                defaultValue={q}
+                placeholder="Search by name, category or tech…"
+                className="w-full rounded-full bg-transparent py-3.5 pl-12 pr-4 text-white placeholder-white/25 outline-none"
+              />
+            </div>
+            {cat !== 'All' && <input type="hidden" name="cat" value={cat} />}
+            <button type="submit" className="rounded-full bg-white px-8 py-3.5 text-sm font-medium text-black transition hover:bg-white/90">
+              Search
+            </button>
+          </form>
+
+          {/* Category pills */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <CategoryPill label="All" active={cat === 'All'} href="/marketplace" />
+            {categories.map((c) => (
+              <CategoryPill
+                key={c.name}
+                label={`${c.name} (${c.count})`}
+                active={cat === c.name}
+                href={`/marketplace?cat=${encodeURIComponent(c.name)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              />
+            ))}
           </div>
-          {cat !== 'All' && <input type="hidden" name="cat" value={cat} />}
-          <button type="submit" className="btn-forest px-8 py-4">
-            Search
-          </button>
-        </form>
-
-        {/* Category pills */}
-        <div className="mt-6 flex flex-wrap gap-2">
-          <CategoryPill label="All" active={cat === 'All'} href="/marketplace" />
-          {categories.map((c) => (
-            <CategoryPill
-              key={c.name}
-              label={`${c.name} (${c.count})`}
-              active={cat === c.name}
-              href={`/marketplace?cat=${encodeURIComponent(c.name)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
-            />
-          ))}
         </div>
       </section>
 
       {/* Results */}
-      <section className="nature-container relative pb-32">
-        <div className="mb-6 text-sm text-emerald-50/42">
+      <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-10">
+        <div className="mb-6 text-[11px] uppercase tracking-[0.18em] text-white/30">
           {listings.length} {listings.length === 1 ? 'result' : 'results'}
-          {cat !== 'All' && <> in <span className="text-emerald-50/78">{cat}</span></>}
-          {q && <> for <span className="text-emerald-50/78">“{q}”</span></>}
+          {cat !== 'All' && <> in <span className="text-white/60">{cat}</span></>}
+          {q && <> for <span className="text-white/60">“{q}”</span></>}
         </div>
 
         {listings.length > 0 ? (
@@ -84,10 +96,10 @@ export default async function MarketplacePage({
             ))}
           </div>
         ) : (
-          <div className="leaf-card rounded-[2rem] py-24 text-center">
-            <p className="mb-2 font-display text-2xl font-semibold">No websites found</p>
-            <p className="mb-6 text-emerald-50/45">Try a different search or category.</p>
-            <Link href="/marketplace" className="btn-forest px-6 py-3">
+          <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.03] py-24 text-center backdrop-blur-xl">
+            <p className="mb-2 text-2xl tracking-tight text-white" style={{ fontFamily: "'Instrument Serif', serif" }}>No websites found</p>
+            <p className="mb-6 text-white/40">Try a different search or category.</p>
+            <Link href="/marketplace" className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-medium text-black">
               Clear filters
             </Link>
           </div>
@@ -103,10 +115,10 @@ function CategoryPill({ label, active, href }: { label: string; active: boolean;
   return (
     <Link
       href={href}
-      className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+      className={`rounded-full border px-4 py-2 text-[12px] font-medium transition-all ${
         active
-          ? 'border-lime-100/70 bg-lime-100 text-[#07130e] shadow-[0_10px_34px_rgba(217,249,157,0.14)]'
-          : 'border-emerald-50/10 bg-emerald-950/22 text-emerald-50/60 hover:-translate-y-0.5 hover:border-emerald-50/25 hover:text-emerald-50'
+          ? 'border-white bg-white text-black shadow-[0_8px_24px_rgba(255,255,255,0.12)]'
+          : 'border-white/10 bg-white/[0.03] text-white/50 hover:border-white/20 hover:text-white'
       }`}
     >
       {label}

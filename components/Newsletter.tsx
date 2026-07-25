@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
 
-/** Newsletter signup form wired to the /api/newsletter endpoint. */
 export default function Newsletter() {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -37,7 +36,7 @@ export default function Newsletter() {
 
   if (state === 'success') {
     return (
-      <div className="flex items-center justify-center gap-3 py-4 text-emerald-200">
+      <div className="flex items-center justify-center gap-3 py-4 text-white">
         <CheckCircle size={22} />
         <span className="text-lg font-medium">{message}</span>
       </div>
@@ -53,18 +52,18 @@ export default function Newsletter() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
           aria-label="Email address"
-          className="flex-1 rounded-full border border-emerald-50/12 bg-[#07130e]/45 px-6 py-4 text-emerald-50 placeholder-emerald-50/30 outline-none transition-colors focus:border-lime-100/35"
+          className="flex-1 rounded-full border border-white/10 bg-white/[0.04] px-6 py-4 text-white placeholder-white/30 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
           required
         />
         <button
           type="submit"
           disabled={state === 'loading'}
-          className="btn-forest px-8 py-4 disabled:opacity-60"
+          className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-sm font-medium text-black transition hover:bg-white/90 disabled:opacity-60"
         >
           {state === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
-      {state === 'error' && <p className="mt-3 text-sm text-rose-200">{message}</p>}
+      {state === 'error' && <p className="mt-3 text-sm text-rose-300">{message}</p>}
     </form>
   );
 }
