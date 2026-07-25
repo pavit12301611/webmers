@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
 import StatCard from '@/components/StatCard';
 import EmptyState from '@/components/EmptyState';
@@ -47,7 +46,7 @@ const dateFmt = (d: Date) =>
   new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 export default async function SellerDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user?.id) redirect('/auth/signin?callbackUrl=/dashboard/seller');
   const userId = session.user.id;
 

@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -32,7 +31,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
   role: Role;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user) redirect('/auth/signin');
 
   const userRole = session.user.role;

@@ -64,8 +64,24 @@ The module is imported by Edge middleware, so it deliberately avoids Node built-
 
 **Before:** forged an ADMIN cookie with the public secret → `200` on `/dashboard/admin`, all user emails leaked.
 **After:** same forged cookie → `307` redirect to sign-in.
-**Boot test:** production start without a secret → HTTP `500` and
-`NEXTAUTH_SECRET is required in production. Sessions cannot be signed securely without it. Generate one with: openssl rand -base64 32`.
+**Validation is lazy, not import-time.** The first version of this fix threw at module
+scope, which broke deploys: `next build` imports every route to collect page data, so the
+build aborted on hosts that only inject env vars at runtime (observed on Vercel —
+`Failed to collect page data for /api/auth/[...nextauth]`). The secret is now resolved on
+first *use*, with a build-phase escape hatch keyed off `NEXT_PHASE`.
+
+**Behaviour with a missing secret in production** — the site stays up but grants nothing:
+
+| Surface | Result |
+|---|---|
+| Public pages (`/`, `/marketplace`, `/listing/*`, `/legal/*`) | `200` — render as signed-out |
+| Protected routes (`/dashboard/*`, `/editor`) | `307` → sign-in (fails **closed**) |
+| Mutations (`POST /api/checkout`) | `500` — never silently proceeds |
+| Server log | `[auth] Could not read session — treating all requests as signed out.` |
+| Admin dashboard | Session Secret → "Dev fallback" (amber) |
+
+Also rejected at runtime: the two previously-committed placeholder values, and any secret
+shorter than 16 characters.
 
 ## 🔴 2. Order confirmation IDOR — **fixed**
 

@@ -1,7 +1,7 @@
 import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { AUTH_SECRET } from './secret';
+import { getAuthSecret } from './secret';
 import { getUserByEmail, verifyPassword, createUser, type Role } from '@/lib/data';
 import { clearRateLimit, rateLimit } from '@/lib/rateLimit';
 
@@ -15,7 +15,12 @@ import { clearRateLimit, rateLimit } from '@/lib/rateLimit';
  */
 export const authOptions: NextAuthOptions = {
   session: { strategy: 'jwt' },
-  secret: AUTH_SECRET,
+  // Lazy getter: `next build` imports this module to collect page data, so
+  // resolving the secret eagerly would abort the build on hosts that inject
+  // env vars only at runtime. This is read per-request instead.
+  get secret() {
+    return getAuthSecret();
+  },
   pages: {
     signIn: '/auth/signin',
     error: '/auth/signin',

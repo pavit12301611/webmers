@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
 import { Lock } from 'lucide-react';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
 import EditorWorkspace from '@/components/editor/EditorWorkspace';
 import {
   DEFAULT_EDITOR_STATE,
@@ -24,7 +23,7 @@ export default async function EditorPage({
 }: {
   searchParams: { order?: string };
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user?.id) {
     const target = searchParams.order
       ? `/editor?order=${encodeURIComponent(searchParams.order)}`

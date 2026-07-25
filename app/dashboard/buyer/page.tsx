@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
 import DashboardLayout from '@/components/DashboardLayout';
 import StatCard from '@/components/StatCard';
 import EmptyState from '@/components/EmptyState';
@@ -44,7 +43,7 @@ const dateFmt = (d: Date) =>
   new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 export default async function BuyerDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   // Defensive: middleware normally guarantees this, but never assume.
   if (!session?.user?.id) redirect('/auth/signin?callbackUrl=/dashboard/buyer');
   const userId = session.user.id;

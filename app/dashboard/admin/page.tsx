@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
+import { hasConfiguredAuthSecret } from '@/lib/auth/secret';
 import DashboardLayout from '@/components/DashboardLayout';
 import StatCard from '@/components/StatCard';
 import EmptyState from '@/components/EmptyState';
@@ -31,7 +31,7 @@ const dateFmt = (d: Date) =>
   new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user?.id) redirect('/auth/signin?callbackUrl=/dashboard/admin');
 
   const [stats, recentUsers, recentOrders] = await Promise.all([
@@ -158,8 +158,8 @@ export default async function AdminDashboard() {
           <HealthRow
             icon={Shield}
             label="Session Secret"
-            value={process.env.NEXTAUTH_SECRET ? 'Configured' : 'Dev fallback'}
-            healthy={!!process.env.NEXTAUTH_SECRET}
+            value={hasConfiguredAuthSecret() ? 'Configured' : 'Dev fallback'}
+            healthy={hasConfiguredAuthSecret()}
           />
           <HealthRow
             icon={Receipt}

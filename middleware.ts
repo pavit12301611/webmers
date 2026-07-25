@@ -1,7 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { AUTH_SECRET } from '@/lib/auth/secret';
+import { tryGetAuthSecret } from '@/lib/auth/secret';
 
 /** Pages a signed-in user has no reason to see. */
 const AUTH_PAGES = ['/auth/signin', '/auth/signup', '/auth/forgot-password'];
@@ -20,7 +20,12 @@ const PROTECTED_PREFIXES = ['/dashboard', '/editor', '/checkout/confirmation'];
  */
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
-  const token = await getToken({ req, secret: AUTH_SECRET });
+
+  // Non-throwing: a misconfigured secret must not 500 every public page. With
+  // no secret we simply cannot trust any cookie, so treat everyone as signed
+  // out — which still fails *closed* for protected routes below.
+  const secret = tryGetAuthSecret();
+  const token = secret ? await getToken({ req, secret }) : null;
 
   // Keep already signed-in users away from the auth pages.
   if (token && AUTH_PAGES.some((p) => pathname.startsWith(p))) {

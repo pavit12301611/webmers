@@ -111,7 +111,12 @@ middleware.ts                 # Auth + role-based route protection
 
 ## 🔒 Security notes
 
-- **No fallback session secret.** `NEXTAUTH_SECRET` is required in production; the app refuses to boot without it rather than signing tokens with a guessable value.
+- **No fallback session secret.** `NEXTAUTH_SECRET` is required in production. It is
+  validated lazily (on first use, not at import) so `next build` still works on hosts
+  that inject env vars only at runtime — but a missing, placeholder or too-short secret
+  means no session can be issued or verified. Public pages keep rendering as signed-out;
+  protected routes redirect; `/api/auth/*` errors loudly and the admin dashboard reports
+  the misconfiguration.
 - Order amounts are computed **server-side** — the client cannot influence pricing.
 - **Ownership is enforced on every private resource**: order confirmations, editor state and dashboards all verify the signed-in user owns the record (admins excepted).
 - **Rate limiting** on signup, login, password reset, checkout, newsletter and editor saves (per IP and per account).
@@ -127,7 +132,10 @@ middleware.ts                 # Auth + role-based route protection
 
 **Required before going live:**
 
-1. **Set `NEXTAUTH_SECRET`** — `openssl rand -base64 32`. The app will not start in production without it.
+1. **Set `NEXTAUTH_SECRET`** — `openssl rand -base64 32`, minimum 16 characters.
+   The build succeeds without it (so CI and preview builds don't break), but at
+   **runtime** in production every auth operation fails and nobody can sign in.
+   Known placeholder values and too-short secrets are rejected outright.
 2. **Set `NEXTAUTH_URL`** to your public origin.
 3. **Provision PostgreSQL** and set `DATABASE_URL`, then run `npm run db:generate && npm run db:push && npm run db:seed`. The file snapshot is single-instance only and is disabled automatically when `DATABASE_URL` is set.
 4. **Configure SMTP** (`SMTP_HOST`/`SMTP_USER`/`SMTP_PASS`/`SMTP_FROM`). Without it, password reset falls back to Ethereal and will fail closed with a 503 rather than pretending to send.

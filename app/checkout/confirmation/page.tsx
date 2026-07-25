@@ -3,8 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { CheckCircle, Download, PenTool, ShieldCheck } from 'lucide-react';
 import Header from '@/components/Header';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
 import { escrowStatus, getOrder } from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Purchase Confirmed' };
@@ -15,7 +14,7 @@ export default async function CheckoutConfirmation({
   searchParams: { order?: string };
 }) {
   // This page shows purchase details, so it requires a session.
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   if (!session?.user?.id) {
     const target = searchParams.order
       ? `/checkout/confirmation?order=${encodeURIComponent(searchParams.order)}`

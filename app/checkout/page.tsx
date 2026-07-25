@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { getServerSession } from 'next-auth';
 import { BadgeCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import CheckoutForm from '@/components/CheckoutForm';
-import { authOptions } from '@/lib/auth/authOptions';
+import { getSession } from '@/lib/auth';
 import { getListing, hasPurchased } from '@/lib/data';
 
 export const metadata: Metadata = {
@@ -18,7 +17,7 @@ export default async function CheckoutPage({
   searchParams: { listing?: string };
 }) {
   const listing = searchParams.listing ? await getListing(searchParams.listing) : null;
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
 
   // Surface these states before the buyer fills anything in, rather than
   // letting them press "Pay" and hit a server-side rejection.
