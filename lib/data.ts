@@ -95,6 +95,7 @@ interface Store {
   reviews: Review[];
   wishlist: WishlistItem[];
   newsletter: string[];
+  passwordResets: Array<{ email: string; otp: string; expiresAt: number }>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -284,7 +285,7 @@ function seed(): Store {
     { id: 'w_2', userId: 'u_buyer', listingId: 'atlas', createdAt: days(3) },
   ];
 
-  return { users, listings, orders, reviews, wishlist, newsletter: [] };
+  return { users, listings, orders, reviews, wishlist, newsletter: [], passwordResets: [] };
 }
 
 function store(): Store {
@@ -625,6 +626,74 @@ export async function subscribeNewsletter(email: string): Promise<{ ok: boolean;
   const s = store();
   if (s.newsletter.includes(value)) return { ok: true };
   s.newsletter.push(value);
+  return { ok: true };
+}
+
+/* ------------------------------------------------------------------ */
+/* Password reset (OTP)                                                */
+/* ------------------------------------------------------------------ */
+
+export async function requestPasswordReset(email: string): Promise<{ ok: boolean; otp?: string; error?: string }> {
+  const normalized = email.trim().toLowerCase();
+  const user = await getUserByEmail(normalized);
+  if (!user) {
+    // Don't reveal whether account exists
+    return { ok: true };
+  }
+
+  const s = store();
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  // Remove previous for this email
+  s.passwordResets = s.passwordResets.filter(r => r.email !== normalized);
+  s.passwordResets.push({ email: normalized, otp, expiresAt });
+
+  return { ok: true, otp };
+}
+
+export async function verifyAndResetPassword(
+  email: string,
+  otp: string,
+  newPassword: string
+): Promise<{ ok: boolean; error?: string }> {
+  const normalized = email.trim().toLowerCase();
+  const s = store();
+
+  const reset = s.passwordResets.find(
+    (r) => r.email === normalized && r.otp === otp && r.expiresAt > Date.now()
+  );
+
+  if (!reset) {
+    return { ok: false, error: 'Invalid or expired code.' };
+  }
+
+  const user = await getUserByEmail(normalized);
+  if (!user) {
+    return { ok: false, error: 'User not found.' };
+  }
+
+  const prisma = await getPrismaClient();
+  const newHash = hashSync(newPassword, 10);
+
+  if (prisma) {
+    try {
+      await prisma.user.update({
+        where: { email: normalized },
+        data: { passwordHash: newHash },
+      });
+    } catch {
+      // fall through
+    }
+  }
+
+  // Update in-memory
+  const memUser = s.users.find((u) => u.email.toLowerCase() === normalized);
+  if (memUser) memUser.passwordHash = newHash;
+
+  // Consume the reset token
+  s.passwordResets = s.passwordResets.filter((r) => !(r.email === normalized && r.otp === otp));
+
   return { ok: true };
 }
 
