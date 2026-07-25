@@ -1,33 +1,20 @@
 import Link from 'next/link';
+import GridPattern from './GridPattern';
 
 export default function SiteFooter() {
   return (
-    <footer id="footer" className="relative z-10 overflow-hidden bg-[#0a0a0a] pt-28 pb-12">
-      {/* Grid background layer */}
-      <div className="absolute inset-0 opacity-[0.06]">
-        <svg width="100%" height="100%" aria-hidden="true">
-          <defs>
-            <pattern id="footer-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#64748b" strokeWidth="0.6" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#footer-grid)" />
-        </svg>
-      </div>
-
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
+    <footer id="footer" className="relative z-10 overflow-hidden bg-[#0a0a0a] pb-12 pt-28">
+      <GridPattern id="footer-grid" opacity={0.06} />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
 
       <div className="relative mx-auto max-w-[120rem] px-6 md:px-10">
         <div className="flex flex-col items-start justify-between gap-12 rounded-[2rem] p-8 liquid-glass md:flex-row md:p-12">
           <div className="max-w-md">
             <div className="mb-6 flex items-center gap-3">
-              <svg viewBox="0 0 256 256" width="26" height="26" fill="white">
+              <svg viewBox="0 0 256 256" width="26" height="26" fill="white" aria-hidden="true">
                 <path d="M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 96 95 L 63.5 128 L 64 128 L 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 64 L 64 0 L 192 0 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z" />
               </svg>
-              <span
-                className="text-3xl tracking-tight text-white"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
-              >
+              <span className="text-3xl tracking-tight text-white" style={{ fontFamily: 'var(--font-instrument)' }}>
                 Webmers
               </span>
             </div>
@@ -36,9 +23,7 @@ export default function SiteFooter() {
             </p>
             <div className="mt-8 flex gap-2">
               <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.7)]" />
-              <span className="text-[11px] uppercase tracking-[0.2em] text-white/40">
-                All systems measured
-              </span>
+              <span className="text-[11px] uppercase tracking-[0.2em] text-white/40">All systems measured</span>
             </div>
           </div>
 

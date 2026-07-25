@@ -1,6 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+
+/**
+ * Optimized Measured hero
+ * - No React state in RAF loop (refs only) → zero rerenders
+ * - No canvas.toDataURL() → uses CSS radial-gradient mask (GPU accelerated)
+ * - Grid parallax via direct DOM transform
+ * - Passive listeners + single rAF
+ */
 
 const BG_IMAGE =
   'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260713_140344_79e1296a-86d7-43fd-9b5f-63ffe560f291.png&w=1280&q=85';
@@ -11,142 +19,107 @@ const OVERLAY_IMAGE =
 
 export default function MeasuredHero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [maskImage, setMaskImage] = useState<string | null>(null);
-
-  // Cursor tracking
-  const targetRef = useRef({ x: 0, y: 0 });
-  const smoothRef = useRef({ x: 0, y: 0 });
-  const gridTargetRef = useRef({ x: 0, y: 0 });
-  const gridSmoothRef = useRef({ x: 0, y: 0 });
-  const rafRef = useRef<number>(0);
-
-  const [gridOffset, setGridOffset] = useState({ x: 0, y: 0 });
+  const gridRef = useRef<HTMLDivElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const gridEl = gridRef.current;
+    const spotEl = spotlightRef.current;
+    if (!section || !gridEl || !spotEl) return;
 
-    // Initialize positions to center
-    const rect = section.getBoundingClientRect();
-    targetRef.current = { x: rect.width / 2, y: rect.height / 2 };
-    smoothRef.current = { x: rect.width / 2, y: rect.height / 2 };
+    // Cursor state in refs to avoid renders
+    const target = { x: section.clientWidth / 2, y: section.clientHeight / 2 };
+    const smooth = { x: target.x, y: target.y };
+    const gridTarget = { x: 0, y: 0 };
+    const gridSmooth = { x: 0, y: 0 };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!section) return;
-      const r = section.getBoundingClientRect();
-      const x = e.clientX - r.left;
-      const y = e.clientY - r.top;
-      targetRef.current = { x, y };
+    let raf = 0;
+    let isTicking = false;
 
-      // Grid parallax offset calculated as cursor pos relative to center * 16
-      const cx = r.width / 2;
-      const cy = r.height / 2;
-      gridTargetRef.current = {
-        x: ((x - cx) / cx) * 16,
-        y: ((y - cy) / cy) * 16,
-      };
+    const update = () => {
+      isTicking = false;
+
+      // lerp 0.1 for spotlight, 0.06 for grid
+      smooth.x += (target.x - smooth.x) * 0.1;
+      smooth.y += (target.y - smooth.y) * 0.1;
+
+      gridSmooth.x += (gridTarget.x - gridSmooth.x) * 0.06;
+      gridSmooth.y += (gridTarget.y - gridSmooth.y) * 0.06;
+
+      // Update grid via direct transform (no React state)
+      gridEl.style.transform = `translate3d(${gridSmooth.x}px, ${gridSmooth.y}px, 0)`;
+
+      // CSS mask gradient — identical visual to canvas spec but GPU only
+      // Stops: 0-40% white, 60% 0.75 alpha, 75% 0.4, 88% 0.12, 100% transparent
+      const mask = `radial-gradient(260px circle at ${smooth.x}px ${smooth.y}px, white 0%, white 40%, rgba(255,255,255,0.75) 60%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.12) 88%, transparent 100%)`;
+
+      spotEl.style.webkitMaskImage = mask;
+      spotEl.style.maskImage = mask;
+
+      raf = requestAnimationFrame(update);
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!section || e.touches.length === 0) return;
-      const r = section.getBoundingClientRect();
-      const x = e.touches[0].clientX - r.left;
-      const y = e.touches[0].clientY - r.top;
-      targetRef.current = { x, y };
-      const cx = r.width / 2;
-      const cy = r.height / 2;
-      gridTargetRef.current = {
-        x: ((x - cx) / cx) * 16,
-        y: ((y - cy) / cy) * 16,
-      };
-    };
-
-    section.addEventListener('mousemove', handleMouseMove);
-    section.addEventListener('touchmove', handleTouchMove, { passive: true });
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
-
-    const updateMask = () => {
-      if (!section || !canvas || !ctx) return;
-
-      const bounds = section.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      // Canvas matches section size scaled by dpr for crisp mask, but we keep low res for perf
-      const w = bounds.width;
-      const h = bounds.height;
-      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        canvas.style.width = `${w}px`;
-        canvas.style.height = `${h}px`;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const schedule = () => {
+      if (!isTicking) {
+        isTicking = true;
+        // already looping via update, but keep for safety
       }
-
-      // lerp smooth += (target - smooth) * 0.1
-      smoothRef.current.x += (targetRef.current.x - smoothRef.current.x) * 0.1;
-      smoothRef.current.y += (targetRef.current.y - smoothRef.current.y) * 0.1;
-
-      // grid lerp eased at 0.06
-      gridSmoothRef.current.x += (gridTargetRef.current.x - gridSmoothRef.current.x) * 0.06;
-      gridSmoothRef.current.y += (gridTargetRef.current.y - gridSmoothRef.current.y) * 0.06;
-      setGridOffset({ x: gridSmoothRef.current.x, y: gridSmoothRef.current.y });
-
-      ctx.clearRect(0, 0, w, h);
-
-      const radius = 260;
-      const gradient = ctx.createRadialGradient(
-        smoothRef.current.x,
-        smoothRef.current.y,
-        0,
-        smoothRef.current.x,
-        smoothRef.current.y,
-        radius
-      );
-      // Mask gradient stops: center full white (0-40%), then feathers
-      gradient.addColorStop(0, 'rgba(255,255,255,1)');
-      gradient.addColorStop(0.4, 'rgba(255,255,255,1)');
-      gradient.addColorStop(0.6, 'rgba(255,255,255,0.75)');
-      gradient.addColorStop(0.75, 'rgba(255,255,255,0.4)');
-      gradient.addColorStop(0.88, 'rgba(255,255,255,0.12)');
-      gradient.addColorStop(1, 'rgba(255,255,255,0)');
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, w, h);
-
-      const dataUrl = canvas.toDataURL();
-      setMaskImage(`url(${dataUrl})`);
-
-      rafRef.current = requestAnimationFrame(updateMask);
     };
 
-    rafRef.current = requestAnimationFrame(updateMask);
+    const onMouseMove = (e: MouseEvent) => {
+      const r = section.getBoundingClientRect();
+      target.x = e.clientX - r.left;
+      target.y = e.clientY - r.top;
+
+      const cx = r.width / 2;
+      const cy = r.height / 2;
+      gridTarget.x = ((target.x - cx) / cx) * 16;
+      gridTarget.y = ((target.y - cy) / cy) * 16;
+      schedule();
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!e.touches[0]) return;
+      const r = section.getBoundingClientRect();
+      target.x = e.touches[0].clientX - r.left;
+      target.y = e.touches[0].clientY - r.top;
+      const cx = r.width / 2;
+      const cy = r.height / 2;
+      gridTarget.x = ((target.x - cx) / cx) * 16;
+      gridTarget.y = ((target.y - cy) / cy) * 16;
+      schedule();
+    };
+
+    // Initialize centered mask
+    const initMask = `radial-gradient(260px circle at ${smooth.x}px ${smooth.y}px, white 0%, white 40%, rgba(255,255,255,0.75) 60%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.12) 88%, transparent 100%)`;
+    spotEl.style.webkitMaskImage = initMask;
+    spotEl.style.maskImage = initMask;
+
+    raf = requestAnimationFrame(update);
+    section.addEventListener('mousemove', onMouseMove, { passive: true });
+    section.addEventListener('touchmove', onTouchMove, { passive: true });
 
     return () => {
-      section.removeEventListener('mousemove', handleMouseMove);
-      section.removeEventListener('touchmove', handleTouchMove);
-      cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(raf);
+      section.removeEventListener('mousemove', onMouseMove);
+      section.removeEventListener('touchmove', onTouchMove);
     };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="font-helvetica-neue relative flex h-[100vh] w-full overflow-hidden bg-white"
-      aria-label="Webmers hero - Measured aesthetic"
+      className="font-helvetica-neue relative flex h-[100vh] w-full overflow-hidden bg-[#050505]"
+      aria-label="Webmers hero - measured aesthetic"
     >
-      {/* Layer 1 — Grid Background z-0 opacity 0.1 with parallax */}
+      {/* Layer 1 — Grid Background */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.1]"
-        style={{
-          transform: `translate3d(${gridOffset.x}px, ${gridOffset.y}px, 0)`,
-          willChange: 'transform',
-        }}
+        ref={gridRef}
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.08] will-change-transform"
+        aria-hidden="true"
       >
-        <svg width="100%" height="100%" className="absolute inset-0" aria-hidden="true">
+        <svg width="100%" height="100%" className="absolute inset-0">
           <defs>
             <pattern id="measured-grid" width="48" height="48" patternUnits="userSpaceOnUse">
               <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#64748b" strokeWidth="0.6" />
@@ -156,56 +129,56 @@ export default function MeasuredHero() {
         </svg>
       </div>
 
-      {/* Layer 2 — Background Image z-10 */}
-      <div
-        className="absolute inset-0 z-10 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${BG_IMAGE})` }}
-      >
+      {/* Layer 2 — Background Image */}
+      <div className="absolute inset-0 z-10">
+        <img
+          src={BG_IMAGE}
+          alt=""
+          decoding="async"
+          fetchPriority="high"
+          className="h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-black/35" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
       </div>
 
-      {/* Layer 3 — Hero Text z-20 */}
+      {/* Layer 3 — Hero Text */}
       <div className="pointer-events-none absolute inset-x-0 top-20 z-20 flex justify-center sm:top-28 md:top-32">
         <h1
-          className="select-none text-center font-instrument text-[4.5rem] leading-[0.9] tracking-[-0.02em] text-white xs:text-[5.5rem] sm:text-[10rem] md:text-[13rem] lg:text-[16rem]"
+          className="select-none text-center text-[4.5rem] leading-[0.9] tracking-[-0.02em] text-white xs:text-[5.5rem] sm:text-[10rem] md:text-[13rem] lg:text-[16rem]"
           style={{ fontFamily: "'Instrument Serif', serif" }}
         >
           WEBMERS
         </h1>
       </div>
 
-      {/* Sub-tag overlay on hero text for context - keep Webmers identity */}
       <div className="pointer-events-none absolute inset-x-0 top-[46%] z-20 flex flex-col items-center gap-3 px-6 sm:top-[52%]">
         <p className="max-w-[44ch] text-center text-[12px] font-medium uppercase tracking-[0.22em] text-white/60 md:text-[13px]">
           Buy · Edit · Own — Websites that feel measured
         </p>
       </div>
 
-      {/* Layer 4 — Overlay Image z-25 */}
+      {/* Layer 4 — Overlay Image */}
       <img
         src={OVERLAY_IMAGE}
         alt=""
-        className="pointer-events-none absolute inset-0 z-[25] h-full w-full object-cover mix-blend-soft-light opacity-70"
+        loading="lazy"
+        decoding="async"
+        className="pointer-events-none absolute inset-0 z-[25] h-full w-full object-cover opacity-70 mix-blend-soft-light"
         aria-hidden="true"
       />
 
-      {/* Layer 5 — Spotlight Reveal z-30 - video clipped to bottom 60% */}
+      {/* Layer 5 — Spotlight Reveal (GPU mask, clipped to bottom 60%) */}
       <div
-        className="absolute inset-0 z-30"
+        ref={spotlightRef}
+        className="absolute inset-0 z-30 will-change-[mask-image]"
         style={{
           clipPath: 'inset(40% 0 0 0)',
           WebkitClipPath: 'inset(40% 0 0 0)',
-          ...(maskImage
-            ? {
-                WebkitMaskImage: maskImage,
-                maskImage: maskImage,
-                WebkitMaskRepeat: 'no-repeat',
-                maskRepeat: 'no-repeat',
-                WebkitMaskSize: '100% 100%',
-                maskSize: '100% 100%',
-              }
-            : {}),
+          WebkitMaskRepeat: 'no-repeat',
+          maskRepeat: 'no-repeat',
+          WebkitMaskSize: '100% 100%',
+          maskSize: '100% 100%',
         }}
       >
         <video
@@ -214,27 +187,19 @@ export default function MeasuredHero() {
           loop
           muted
           playsInline
+          preload="metadata"
+          poster={BG_IMAGE}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
-      {/* Hidden canvas for mask generation */}
-      <canvas
-        ref={canvasRef}
-        className="pointer-events-none absolute left-0 top-0 -z-10 h-full w-full opacity-0"
-        aria-hidden="true"
-      />
-
-      {/* Bottom fade + micro copy */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-40 h-40 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
       <div className="absolute bottom-6 left-0 right-0 z-40 flex items-center justify-between px-6 md:px-8">
         <div className="hidden items-center gap-2 md:flex">
           <span className="h-px w-12 bg-white/20" />
-          <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">
-            Scroll to explore grove
-          </span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">Scroll to explore grove</span>
         </div>
         <div className="ml-auto flex items-center gap-2 rounded-full liquid-glass px-3 py-1">
           <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">Move cursor to reveal</span>
