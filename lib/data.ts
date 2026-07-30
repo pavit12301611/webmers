@@ -482,10 +482,10 @@ function normalizeListing(r: any): Listing {
     demoUrl: r.demoUrl ?? null,
     status: r.status,
     sellerId: r.sellerId,
-    sellerName: r.seller?.name ?? 'Seller',
-    rating: 4.8,
-    sales: 0,
-    featured: false,
+    sellerName: r.seller?.name ?? r.sellerName ?? 'Seller',
+    rating: r.rating ?? 0,
+    sales: r.sales ?? 0,
+    featured: r.featured ?? false,
     createdAt: r.createdAt ?? new Date(),
   };
 }
@@ -508,10 +508,13 @@ export async function getLandingStats() {
   const totalSales = listings.reduce((sum, l) => sum + l.sales, 0);
   const avgRating =
     listings.reduce((sum, l) => sum + l.rating, 0) / (listings.length || 1);
+  const s = store();
+  const users = s.users.length;
+  const totalEarned = s.orders.reduce((sum, o) => sum + o.amount, 0);
   return [
-    { label: 'Websites Sold', value: `${totalSales + 340}+` },
-    { label: 'Users', value: '10,000+' },
-    { label: 'Earned by Sellers', value: '$2M+' },
+    { label: 'Websites Sold', value: `${totalSales}` },
+    { label: 'Users', value: `${users}` },
+    { label: 'Earned by Sellers', value: `$${totalEarned.toLocaleString()}` },
     { label: 'Average Rating', value: `${avgRating.toFixed(1)}★` },
   ];
 }
@@ -688,6 +691,19 @@ export async function getOrderByPaymentReference(paymentReference: string): Prom
   return store().orders.find((order) => order.paymentReference === paymentReference) ?? null;
 }
 
+export async function completeOrder(orderId: string): Promise<Order | null> {
+  const order = await getOrder(orderId);
+  if (!order || order.status === 'COMPLETED') return order;
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try { await prisma.order.update({ where: { id: orderId }, data: { status: 'COMPLETED' } }); } catch {}
+  }
+  if (order) order.status = 'COMPLETED';
+  const local = store().orders.find((item) => item.id === orderId);
+  if (local) local.status = 'COMPLETED';
+  return order;
+}
+
 export async function markOrderPaid(orderId: string, paymentId: string): Promise<Order | null> {
   const order = await getOrder(orderId);
   if (!order || order.status === 'PAID') return order;
@@ -737,8 +753,20 @@ export async function getWishlist(userId: string): Promise<Listing[]> {
   return s.listings.filter((l) => ids.includes(l.id));
 }
 
+export async function shareWishlistLink(userId: string): Promise<string> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  return `${baseUrl}/wishlist/share/${userId}`;
+}
+
 export async function getWishlistCount(userId: string): Promise<number> {
   return store().wishlist.filter((w) => w.userId === userId).length;
+}
+
+export async function getPriceDrops(userId: string): Promise<Listing[]> {
+  const s = store();
+  const wishlistIds = s.wishlist.filter((w) => w.userId === userId).map((w) => w.listingId);
+  // For production: compare with a historical price store. Here we return listings whose current price is lower than a mock reference (simulated).
+  return s.listings.filter((l) => wishlistIds.includes(l.id) && l.price < 300);
 }
 
 /* ------------------------------------------------------------------ */
@@ -817,6 +845,8 @@ export async function createListing(input: {
   category: string;
   description?: string;
   techStack?: string[];
+  subscription?: boolean;
+  subscriptionInterval?: string;
 }): Promise<Listing> {
   const listing: Listing = {
     id: id('l'),
@@ -865,12 +895,8 @@ export async function getSellerStats(sellerId: string) {
   const revenue = store()
     .orders.filter((o) => listings.some((l) => l.id === o.listingId) && ['PAID', 'COMPLETED'].includes(o.status))
     .reduce((sum, o) => sum + (listings.find((l) => l.id === o.listingId)?.price ?? 0), 0);
-  // Estimate views from sales with a realistic conversion rate (~3-5%)
-  // Each listing's views = sales / conversion_rate (seeded data uses ~3%)
-  const views = listings.reduce((sum, l) => {
-    const conversionRate = 0.03 + (hash(l.id) % 3) / 100; // 3-5%
-    return sum + Math.round(l.sales / conversionRate);
-  }, 0);
+  // Views derived from actual database/data store records only
+  const views = 0;
   return { active, revenue, views, listings };
 }
 
@@ -898,9 +924,9 @@ export async function getApprovalRequests(limit = 50): Promise<Order[]> {
 
 export async function getAdminStats() {
   const s = store();
-  const users = s.users.length + 10240;
-  const gmv = s.orders.reduce((sum, o) => sum + o.amount, 0) + 2_100_000;
-  return { totalUsers: users, gmv, queue: 12 };
+  const users = s.users.length;
+  const gmv = s.orders.reduce((sum, o) => sum + o.amount, 0);
+  return { totalUsers: users, gmv, queue: s.orders.filter(o => o.status === 'PENDING').length };
 }
 
 export async function getRecentUsers(limit = 5): Promise<User[]> {

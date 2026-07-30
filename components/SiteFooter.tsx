@@ -33,6 +33,8 @@ export default function SiteFooter() {
               <ul className="space-y-2.5 text-white/60">
                 <li><Link href="/marketplace" className="transition hover:text-white">Marketplace</Link></li>
                 <li><Link href="/editor" className="transition hover:text-white">Visual Editor</Link></li>
+                <li><Link href="/faq" className="transition hover:text-white">FAQ</Link></li>
+                <li><Link href="/blog" className="transition hover:text-white">Resources</Link></li>
                 <li><Link href="#pricing" className="transition hover:text-white">Code Unlock</Link></li>
                 <li><Link href="#how" className="transition hover:text-white">How it works</Link></li>
               </ul>
@@ -58,13 +60,15 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 text-[11px] uppercase tracking-[0.16em] text-white/25 md:flex-row">
-          <span>© {new Date().getFullYear()} Webmers — Measured Edition</span>
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 md:flex-row">
+          <div className="flex gap-6 text-[11px] uppercase tracking-[0.16em] text-white/25">
+            <span>© {new Date().getFullYear()} Webmers</span>
+          </div>
           <div className="flex gap-6">
-            <Link href="/privacy" className="transition hover:text-white/60">Privacy</Link>
-            <Link href="/terms" className="transition hover:text-white/60">Terms</Link>
-            <Link href="/cookies" className="transition hover:text-white/60">Cookies</Link>
-            <Link href="/support" className="transition hover:text-white/60">Support</Link>
+            <Link href="/privacy" className="text-[11px] uppercase tracking-[0.16em] text-white/25 transition hover:text-white/60">Privacy</Link>
+            <Link href="/terms" className="text-[11px] uppercase tracking-[0.16em] text-white/25 transition hover:text-white/60">Terms</Link>
+            <Link href="/cookies" className="text-[11px] uppercase tracking-[0.16em] text-white/25 transition hover:text-white/60">Cookies</Link>
+            <Link href="/support" className="text-[11px] uppercase tracking-[0.16em] text-white/25 transition hover:text-white/60">Support</Link>
           </div>
         </div>
       </div>

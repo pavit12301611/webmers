@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Providers from '@/components/Providers';
+import CustomCursor from '@/components/CustomCursor';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -49,6 +50,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Webmers', url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', potentialAction: { '@type': 'SearchAction', target: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/marketplace?q={search_term_string}`, 'query-input': 'required name=search_term_string' } }) }}
         />
         <Providers>{children}</Providers>
+        <CustomCursor />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+              }
+              setInterval(() => {
+                fetch('/api/messages').catch(() => {});
+              }, 30000);
+            `,
+          }}
+        />
+        {/* Analytics setup for production monitoring */}
+        <script dangerouslySetInnerHTML={{ __html: `window.gtag = window.gtag || function() { (window.gtag.q = window.gtag.q || []).push(arguments); }; window.gtag('js', new Date()); window.gtag('config', 'GA_MEASUREMENT_ID');` }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
