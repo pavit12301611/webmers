@@ -28,6 +28,7 @@ export interface User {
   role: Role;
   image?: string | null;
   passwordHash?: string | null;
+  upiId?: string | null;
   createdAt: Date;
 }
 
@@ -160,7 +161,7 @@ function seed(): Store {
 
   const users: User[] = [
     { id: 'u_admin', email: 'admin@webmers.io', name: 'Admin User', role: 'ADMIN', passwordHash: hashSync('Admin@123', 10), createdAt: days(400) },
-    { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', passwordHash: hashSync('Seller@123', 10), createdAt: days(320) },
+    { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', upiId: 'sarahk@upi', passwordHash: hashSync('Seller@123', 10), createdAt: days(320) },
     { id: 'u_buyer', email: 'buyer@webmers.io', name: 'David R.', role: 'BUYER', passwordHash: hashSync('Buyer@123', 10), createdAt: days(210) },
     { id: 'u_maria', email: 'maria@example.com', name: 'Maria L.', role: 'BUYER', passwordHash: hashSync('Maria@123', 10), createdAt: days(90) },
   ];
@@ -340,8 +341,10 @@ export async function createUser(input: {
   name: string;
   password: string;
   role?: Role;
+  upiId?: string;
 }): Promise<User> {
   const email = input.email.trim().toLowerCase();
+  const upiId = input.upiId?.trim().toLowerCase() || null;
   const role: Role = input.role === 'SELLER' ? 'SELLER' : 'BUYER';
 
   const prisma = await getPrismaClient();
@@ -352,6 +355,7 @@ export async function createUser(input: {
           email,
           name: input.name,
           role,
+          upiId,
           passwordHash: hashSync(input.password, 10),
         },
       });
@@ -366,6 +370,7 @@ export async function createUser(input: {
     email,
     name: input.name,
     role,
+    upiId,
     passwordHash: hashSync(input.password, 10),
     createdAt: new Date(),
   };
@@ -381,6 +386,7 @@ function normalizeUser(u: any): User {
     role: (u.role as Role) ?? 'BUYER',
     image: u.image ?? null,
     passwordHash: u.passwordHash ?? null,
+    upiId: u.upiId ?? null,
     createdAt: u.createdAt ?? new Date(),
   };
 }
@@ -724,6 +730,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function isValidEmail(email: string): boolean {
   return EMAIL_RE.test(email.trim());
+}
+
+/** Basic VPA shape validation. The PSP validates whether the UPI ID exists at payout time. */
+export function isValidUpiId(upiId: string): boolean {
+  return /^[a-z0-9][a-z0-9._-]{1,63}@[a-z][a-z0-9.-]{1,63}$/i.test(upiId.trim());
 }
 
 export async function subscribeNewsletter(email: string): Promise<{ ok: boolean; error?: string }> {

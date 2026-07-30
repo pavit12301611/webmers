@@ -51,6 +51,7 @@ model User {
   role          Role      @default(BUYER)
   avatarUrl     String?
   passwordHash  String?
+  upiId         String?   @unique
   twoFAEnabled  Boolean   @default(false)
   twoFASecret   String?
   createdAt     DateTime  @default(now())

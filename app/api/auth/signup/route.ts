@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createUser, getUserByEmail, isValidEmail, type Role } from '@/lib/data';
+import { createUser, getUserByEmail, isValidEmail, isValidUpiId, type Role } from '@/lib/data';
 import { isTrustedMutation, mutationDeniedResponse, noStore, rateLimit, rateLimitResponse } from '@/lib/security';
 
 const MAX_NAME_LENGTH = 80;
@@ -16,12 +16,16 @@ export async function POST(req: Request) {
     const password = typeof body?.password === 'string' ? body.password : '';
     const name = typeof body?.name === 'string' ? body.name.trim().replace(/\s+/g, ' ') : '';
     const role: Role = body?.role === 'SELLER' ? 'SELLER' : 'BUYER';
+    const upiId = typeof body?.upiId === 'string' ? body.upiId.trim().toLowerCase() : '';
 
     if (!email || !password || !name) {
       return noStore(NextResponse.json({ error: 'Name, email and password are required.' }, { status: 400 }));
     }
     if (name.length > MAX_NAME_LENGTH || email.length > MAX_EMAIL_LENGTH || !isValidEmail(email)) {
       return noStore(NextResponse.json({ error: 'Please enter a valid name and email address.' }, { status: 400 }));
+    }
+    if (role === 'SELLER' && !isValidUpiId(upiId)) {
+      return noStore(NextResponse.json({ error: 'A valid UPI ID is required to register as a seller.' }, { status: 400 }));
     }
     // Require a reasonable baseline without imposing arbitrary special-character rules.
     if (password.length < 12 || password.length > 128) {
@@ -33,7 +37,7 @@ export async function POST(req: Request) {
       return noStore(NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 }));
     }
 
-    const user = await createUser({ email, name, password, role });
+    const user = await createUser({ email, name, password, role, upiId: role === 'SELLER' ? upiId : undefined });
     return noStore(NextResponse.json(
       { user: { id: user.id, email: user.email, name: user.name, role: user.role } },
       { status: 201 },

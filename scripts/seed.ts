@@ -46,6 +46,7 @@ async function main() {
       email: 'seller@webmers.io',
       name: 'Sarah K.',
       role: 'SELLER',
+      upiId: 'sarahk@upi',
       passwordHash: sellerPass,
     },
   });

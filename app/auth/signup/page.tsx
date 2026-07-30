@@ -16,6 +16,7 @@ function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('BUYER');
+  const [upiId, setUpiId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasGoogle, setHasGoogle] = useState(false);
@@ -34,7 +35,7 @@ function SignUpForm() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name, role }),
+        body: JSON.stringify({ email, password, name, role, upiId }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -115,6 +116,14 @@ function SignUpForm() {
               ))}
             </div>
           </div>
+
+          {role === 'SELLER' && (
+            <div className="rounded-[1.2rem] border border-amber-400/20 bg-amber-400/[0.04] p-4">
+              <label htmlFor="upiId" className="mb-1 block text-[11px] uppercase tracking-widest text-amber-100/70">UPI ID for seller payouts</label>
+              <input id="upiId" type="text" value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="yourname@okaxis" autoComplete="off" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" required />
+              <p className="mt-2 text-[11px] leading-5 text-amber-100/50">Required for seller registration and future payout requests. Enter only your UPI ID — never your UPI PIN or OTP.</p>
+            </div>
+          )}
 
           <button type="submit" disabled={loading} className="w-full rounded-full bg-white py-3.5 font-medium text-black transition hover:bg-white/90 disabled:opacity-50">
             {loading ? 'Creating…' : 'Create Account'}
