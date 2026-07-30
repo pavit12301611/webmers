@@ -24,6 +24,7 @@ function loadRazorpay() {
 
 /** Price of the code-unlock add-on (mirrors the server-side value). */
 const CODE_UNLOCK_PRICE = 49;
+const PLATFORM_MARKUP_RATE = 0.2;
 
 const LAYOUTS = ['Hero-Centered', 'Split-Screen', 'Video-Hero'] as const;
 
@@ -44,7 +45,8 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [error, setError] = useState('');
 
-  const total = useMemo(() => listing.price + (codeUnlocked ? CODE_UNLOCK_PRICE : 0), [listing.price, codeUnlocked]);
+  const customerPrice = useMemo(() => Math.round(listing.price * (1 + PLATFORM_MARKUP_RATE) * 100) / 100, [listing.price]);
+  const total = useMemo(() => customerPrice + (codeUnlocked ? CODE_UNLOCK_PRICE : 0), [customerPrice, codeUnlocked]);
 
   const onPay = async () => {
     if (state === 'loading') return;
@@ -109,7 +111,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
             <div className="flex-1">
               <h3 className="font-semibold">{listing.title}</h3>
               <p className="text-sm text-emerald-50/38">{listing.category}</p>
-              <div className="mt-2 text-lg font-display font-bold">₹{listing.price}</div>
+              <div className="mt-2 text-lg font-display font-bold">₹{customerPrice}</div>
             </div>
           </div>
         </section>
@@ -166,6 +168,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
           <h2 className="text-lg font-display font-bold mb-4">Order Summary</h2>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between text-emerald-50/55"><span>{listing.title}</span><span>₹{listing.price}</span></div>
+            <div className="flex justify-between text-emerald-50/55"><span>Marketplace service fee (20%)</span><span>₹{(customerPrice - listing.price).toFixed(2)}</span></div>
             <div className="flex justify-between text-emerald-50/55"><span>Layout: {layout}</span><span>Included</span></div>
             <div className="flex justify-between text-emerald-50/55"><span>Visual Editor</span><span>Included</span></div>
             <div className={`flex justify-between ${codeUnlocked ? 'text-[#f4d58d]/90' : 'text-emerald-50/38'}`}>

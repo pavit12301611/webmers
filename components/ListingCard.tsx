@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Star } from 'lucide-react';
 import { ListingThumbnail } from './Thumbnail';
 import WishlistButton from './WishlistButton';
-import type { Listing } from '@/lib/data';
+import { customerPrice, type Listing } from '@/lib/data';
 
 /**
  * Optimized ListingCard - no per-card auth fetch.
@@ -51,7 +51,7 @@ export default function ListingCard({
               <p className="mt-1 line-clamp-1 text-[13px] text-white/45">{listing.tagline}</p>
             </div>
             <span className="shrink-0 rounded-full bg-white px-3 py-1 text-[12px] font-semibold text-black">
-              ${listing.price}
+              ₹{customerPrice(listing.price)}
             </span>
           </div>
         </div>

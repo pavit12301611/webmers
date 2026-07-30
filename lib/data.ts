@@ -82,8 +82,19 @@ export interface Category {
   count: number;
 }
 
-/** Price of the "unlock full source code" add-on, in USD. */
+/** Marketplace commission is added to a seller's base listing price. */
+export const PLATFORM_MARKUP_RATE = 0.2;
+/** Price of the "unlock full source code" add-on, in INR. */
 export const CODE_UNLOCK_PRICE = 49;
+
+/** What a customer pays for a listing; the seller's `price` remains their base price. */
+export function customerPrice(sellerPrice: number): number {
+  return Math.round(sellerPrice * (1 + PLATFORM_MARKUP_RATE) * 100) / 100;
+}
+
+export function platformFee(sellerPrice: number): number {
+  return Math.round((customerPrice(sellerPrice) - sellerPrice) * 100) / 100;
+}
 
 interface WishlistItem {
   id: string;
@@ -656,9 +667,11 @@ export async function getSellerListings(sellerId: string): Promise<Listing[]> {
 export async function getSellerStats(sellerId: string) {
   const listings = await getSellerListings(sellerId);
   const active = listings.filter((l) => l.status === 'ACTIVE').length;
+  // Seller proceeds are always the seller-set base price. The 20% marketplace
+  // markup is retained by the platform and is never included in seller earnings.
   const revenue = store()
-    .orders.filter((o) => listings.some((l) => l.id === o.listingId) && o.status !== 'REFUNDED')
-    .reduce((sum, o) => sum + o.amount, 0);
+    .orders.filter((o) => listings.some((l) => l.id === o.listingId) && ['PAID', 'COMPLETED'].includes(o.status))
+    .reduce((sum, o) => sum + (listings.find((l) => l.id === o.listingId)?.price ?? 0), 0);
   // Estimate views from sales with a realistic conversion rate (~3-5%)
   // Each listing's views = sales / conversion_rate (seeded data uses ~3%)
   const views = listings.reduce((sum, l) => {
@@ -676,6 +689,18 @@ function hash(str: string): number {
 
 export async function getRecentOrders(limit = 5): Promise<Order[]> {
   return [...store().orders].sort((a, b) => +b.createdAt - +a.createdAt).slice(0, limit);
+}
+
+/** Orders awaiting an administrator's payment/manual-delivery review. */
+export async function getApprovalRequests(limit = 50): Promise<Order[]> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const rows = await prisma.order.findMany({ where: { status: 'PENDING' }, include: { listing: true }, orderBy: { createdAt: 'asc' }, take: limit });
+      return rows.map((row: any) => ({ id: row.id, buyerId: row.buyerId, listingId: row.listingId, listingTitle: row.listing?.title ?? 'Website', amount: row.amount, status: row.status, layoutChoice: row.layoutChoice ?? 'Hero-Centered', codeUnlocked: row.codeUnlocked, paymentProvider: row.paymentProvider, paymentReference: row.paymentReference, paymentId: row.paymentId, createdAt: row.createdAt }));
+    } catch { /* fall through */ }
+  }
+  return store().orders.filter((order) => order.status === 'PENDING').sort((a, b) => +a.createdAt - +b.createdAt).slice(0, limit);
 }
 
 export async function getAdminStats() {

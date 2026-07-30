@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/authOptions';
-import { CODE_UNLOCK_PRICE, createPendingOrder, getListing } from '@/lib/data';
+import { CODE_UNLOCK_PRICE, createPendingOrder, customerPrice, getListing } from '@/lib/data';
 import { getRazorpay, razorpayConfigured } from '@/lib/razorpay';
 import { isTrustedMutation, mutationDeniedResponse, noStore, rateLimit, rateLimitResponse } from '@/lib/security';
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     if (!listing || listing.status !== 'ACTIVE') return noStore(NextResponse.json({ error: 'Listing not found or unavailable.' }, { status: 404 }));
     if (listing.sellerId === session.user.id) return noStore(NextResponse.json({ error: 'You cannot purchase your own listing.' }, { status: 400 }));
 
-    const amount = listing.price + (codeUnlocked ? CODE_UNLOCK_PRICE : 0);
+    const amount = customerPrice(listing.price) + (codeUnlocked ? CODE_UNLOCK_PRICE : 0);
     const gatewayOrder = await getRazorpay().orders.create({ amount: Math.round(amount * 100), currency: 'INR', receipt: `wm_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, notes: { listingId, buyerId: session.user.id } });
     const order = await createPendingOrder({ buyerId: session.user.id, listingId, amount, layoutChoice, codeUnlocked, paymentProvider: 'RAZORPAY', paymentReference: gatewayOrder.id });
 

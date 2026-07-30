@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import DashboardLayout from '@/components/DashboardLayout';
+import ApproveOrderButton from '@/components/ApproveOrderButton';
 import {
   DollarSign,
   Shield,
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { getAdminStats, getRecentOrders, getRecentUsers } from '@/lib/data';
+import { getAdminStats, getApprovalRequests, getRecentOrders, getRecentUsers } from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Admin Dashboard' };
 
@@ -18,10 +19,11 @@ function formatDate(date: Date): string {
 }
 
 export default async function AdminDashboard() {
-  const [{ totalUsers, gmv, queue }, recentUsers, recentOrders] = await Promise.all([
+  const [{ totalUsers, gmv, queue }, recentUsers, recentOrders, approvals] = await Promise.all([
     getAdminStats(),
     getRecentUsers(5),
     getRecentOrders(5),
+    getApprovalRequests(),
   ]);
 
   const stats = [
@@ -36,6 +38,14 @@ export default async function AdminDashboard() {
         {stats.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
+      </section>
+
+      <section className="leaf-card rounded-2xl p-6 mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <div><h2 className="text-lg font-display font-bold">Approval Requests</h2><p className="mt-1 text-xs text-emerald-50/40">Review payment references and release orders only after you independently confirm receipt.</p></div>
+          <span className="rounded-full bg-amber-400/10 px-3 py-1 text-xs font-medium text-amber-300">{approvals.length} pending</span>
+        </div>
+        {approvals.length ? <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="border-b border-emerald-50/10 text-[11px] uppercase tracking-wider text-emerald-50/35"><tr><th className="pb-3 font-medium">Order</th><th className="pb-3 font-medium">Listing</th><th className="pb-3 font-medium">Amount</th><th className="pb-3 font-medium">Payment reference</th><th className="pb-3 font-medium">Requested</th><th className="pb-3 font-medium">Action</th></tr></thead><tbody className="divide-y divide-emerald-50/5">{approvals.map((order) => <tr key={order.id}><td className="py-3 font-mono text-xs text-emerald-50/60">{order.id}</td><td className="py-3">{order.listingTitle}</td><td className="py-3 font-semibold">₹{order.amount}</td><td className="py-3 font-mono text-xs text-emerald-50/45">{order.paymentReference || 'Awaiting UTR'}</td><td className="py-3 text-emerald-50/45">{formatDate(order.createdAt)}</td><td className="py-3"><ApproveOrderButton orderId={order.id} /></td></tr>)}</tbody></table></div> : <p className="mt-5 rounded-xl border border-emerald-50/8 bg-emerald-50/[0.02] p-4 text-sm text-emerald-50/40">No approval requests are waiting.</p>}
       </section>
 
       <section className="grid md:grid-cols-2 gap-6 mb-8">

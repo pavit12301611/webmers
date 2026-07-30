@@ -8,7 +8,7 @@ import ListingCard from '@/components/ListingCard';
 import Thumbnail from '@/components/Thumbnail';
 import WishlistButton from '@/components/WishlistButton';
 import { getCurrentUser } from '@/lib/auth';
-import { getListing, getListings, getReviews, isWishlisted } from '@/lib/data';
+import { customerPrice, getListing, getListings, getReviews, isWishlisted } from '@/lib/data';
 
 export const metadata: Metadata = { title: 'Website' };
 
@@ -91,7 +91,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
                 <div className="mb-5 flex items-end justify-between">
                   <div>
                     <div className="mb-1 text-[11px] uppercase tracking-widest text-white/30">One-time price</div>
-                    <div className="text-4xl text-white" style={{ fontFamily: "'Instrument Serif', serif" }}>${listing.price}</div>
+                    <div className="text-4xl text-white" style={{ fontFamily: "'Instrument Serif', serif" }}>₹{customerPrice(listing.price)}</div>
                   </div>
                   <div className="liquid-glass rounded-full p-1">
                     <WishlistButton listingId={listing.id} initial={wishlisted} size={20} />

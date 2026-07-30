@@ -21,11 +21,11 @@ export default async function CheckoutConfirmation({
           <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-[0_0_40px_rgba(52,211,153,0.3)]">
             <CheckCircle size={40} className="text-black" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-display font-bold mb-4">Purchase Confirmed</h1>
+          <h1 className="text-4xl md:text-6xl font-display font-bold mb-4">{order?.status === 'PAID' || order?.status === 'COMPLETED' ? 'Purchase Confirmed' : 'Payment Pending'}</h1>
           <p className="text-xl text-white/40 mb-8">
-            {order
+            {order && (order.status === 'PAID' || order.status === 'COMPLETED')
               ? `${order.listingTitle} is being delivered to your account.`
-              : 'Your website is being delivered. Check your dashboard to access the visual editor.'}
+              : 'Your payment is awaiting verification. Access is released after payment approval.'}
           </p>
 
           {order && (
@@ -35,8 +35,8 @@ export default async function CheckoutConfirmation({
                 <div className="flex justify-between"><dt className="text-white/40">Website</dt><dd className="font-medium">{order.listingTitle}</dd></div>
                 <div className="flex justify-between"><dt className="text-white/40">Layout</dt><dd>{order.layoutChoice}</dd></div>
                 <div className="flex justify-between"><dt className="text-white/40">Code Unlock</dt><dd>{order.codeUnlocked ? 'Included' : 'Not included'}</dd></div>
-                <div className="flex justify-between"><dt className="text-white/40">Status</dt><dd className="text-emerald-300">Paid (in escrow)</dd></div>
-                <div className="flex justify-between border-t border-white/10 pt-2 text-base"><dt className="font-semibold">Total</dt><dd className="font-display font-bold">${order.amount}</dd></div>
+                <div className="flex justify-between"><dt className="text-white/40">Status</dt><dd className={order.status === 'PAID' || order.status === 'COMPLETED' ? 'text-emerald-300' : 'text-amber-300'}>{order.status === 'PAID' || order.status === 'COMPLETED' ? 'Paid (in escrow)' : 'Awaiting payment approval'}</dd></div>
+                <div className="flex justify-between border-t border-white/10 pt-2 text-base"><dt className="font-semibold">Total</dt><dd className="font-display font-bold">₹{order.amount}</dd></div>
               </dl>
             </div>
           )}
