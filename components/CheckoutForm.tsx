@@ -7,8 +7,24 @@ import Link from 'next/link';
 import { CreditCard, Lock, ShieldCheck } from 'lucide-react';
 import Thumbnail from './Thumbnail';
 
+declare global {
+  interface Window { Razorpay?: new (options: Record<string, unknown>) => { open: () => void }; }
+}
+
+function loadRazorpay() {
+  return new Promise<boolean>((resolve) => {
+    if (window.Razorpay) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(Boolean(window.Razorpay));
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 /** Price of the code-unlock add-on (mirrors the server-side value). */
 const CODE_UNLOCK_PRICE = 49;
+const PLATFORM_MARKUP_RATE = 0.2;
 
 const LAYOUTS = ['Hero-Centered', 'Split-Screen', 'Video-Hero'] as const;
 
@@ -29,7 +45,8 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [error, setError] = useState('');
 
-  const total = useMemo(() => listing.price + (codeUnlocked ? CODE_UNLOCK_PRICE : 0), [listing.price, codeUnlocked]);
+  const customerPrice = useMemo(() => Math.round(listing.price * (1 + PLATFORM_MARKUP_RATE) * 100) / 100, [listing.price]);
+  const total = useMemo(() => customerPrice + (codeUnlocked ? CODE_UNLOCK_PRICE : 0), [customerPrice, codeUnlocked]);
 
   const onPay = async () => {
     if (state === 'loading') return;
@@ -48,11 +65,31 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
         body: JSON.stringify({ listingId: listing.id, layoutChoice: layout, codeUnlocked }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok && data.orderId) {
-        router.push(`/checkout/confirmation?order=${encodeURIComponent(data.orderId)}`);
+      if (res.ok && data.orderId && data.gatewayOrderId) {
+        const loaded = await loadRazorpay();
+        if (!loaded || !window.Razorpay) throw new Error('Unable to load secure payment window.');
+        new window.Razorpay({
+          key: data.keyId,
+          amount: data.amount,
+          currency: data.currency,
+          name: data.name,
+          description: data.description,
+          order_id: data.gatewayOrderId,
+          prefill: { email: session.user?.email || '' },
+          theme: { color: '#111111' },
+          handler: async (payment: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+            const verification = await fetch('/api/payments/razorpay/verify', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId: data.orderId, ...payment }),
+            });
+            if (verification.ok) router.push(`/checkout/confirmation?order=${encodeURIComponent(data.orderId)}`);
+            else { const result = await verification.json().catch(() => ({})); setState('error'); setError(result.error || 'Payment could not be verified.'); }
+          },
+          modal: { ondismiss: () => setState('idle') },
+        }).open();
       } else {
         setState('error');
-        setError(data.error || 'Payment failed. Please try again.');
+        setError(data.error || 'Unable to start payment. Please try again.');
       }
     } catch {
       setState('error');
@@ -74,7 +111,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
             <div className="flex-1">
               <h3 className="font-semibold">{listing.title}</h3>
               <p className="text-sm text-emerald-50/38">{listing.category}</p>
-              <div className="mt-2 text-lg font-display font-bold">${listing.price}</div>
+              <div className="mt-2 text-lg font-display font-bold">₹{customerPrice}</div>
             </div>
           </div>
         </section>
@@ -117,7 +154,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
                   className="accent-lime-300 w-5 h-5"
                 />
                 <span className="text-sm text-emerald-50/62">
-                  Add code unlock for <span className="font-semibold text-emerald-50">${CODE_UNLOCK_PRICE}</span>
+                  Add code unlock for <span className="font-semibold text-emerald-50">₹{CODE_UNLOCK_PRICE}</span>
                 </span>
               </label>
             </div>
@@ -130,16 +167,17 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
         <section className="leaf-card rounded-[1.8rem] p-6">
           <h2 className="text-lg font-display font-bold mb-4">Order Summary</h2>
           <div className="space-y-3 text-sm">
-            <div className="flex justify-between text-emerald-50/55"><span>{listing.title}</span><span>${listing.price}</span></div>
+            <div className="flex justify-between text-emerald-50/55"><span>{listing.title}</span><span>₹{listing.price}</span></div>
+            <div className="flex justify-between text-emerald-50/55"><span>Marketplace service fee (20%)</span><span>₹{(customerPrice - listing.price).toFixed(2)}</span></div>
             <div className="flex justify-between text-emerald-50/55"><span>Layout: {layout}</span><span>Included</span></div>
             <div className="flex justify-between text-emerald-50/55"><span>Visual Editor</span><span>Included</span></div>
             <div className={`flex justify-between ${codeUnlocked ? 'text-[#f4d58d]/90' : 'text-emerald-50/38'}`}>
               <span>Code Unlock</span>
-              <span>{codeUnlocked ? `+ $${CODE_UNLOCK_PRICE}` : '—'}</span>
+              <span>{codeUnlocked ? `+ ₹${CODE_UNLOCK_PRICE}` : '—'}</span>
             </div>
             <div className="border-t border-emerald-50/10 pt-3 flex justify-between text-xl font-display font-bold">
               <span>Total</span>
-              <span>${total}</span>
+              <span>₹{total}</span>
             </div>
           </div>
         </section>
@@ -150,8 +188,9 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
             <h3 className="font-display font-bold">Escrow Protected</h3>
           </div>
           <p className="text-sm text-emerald-50/45 leading-relaxed">
-            Funds are held securely for 72 hours. Confirm satisfaction before release. Full refund within 48 hours if the site doesn&apos;t match its description.
+            Pay securely with UPI or a QR code through Razorpay. Payment is verified with a signed payment response and webhook before an order is marked paid.
           </p>
+          <p className="mt-3 text-xs text-emerald-50/35">All checkout amounts are shown in INR (₹).</p>
         </section>
 
         {error && <p className="text-sm text-rose-300">{error}</p>}
@@ -168,7 +207,7 @@ export default function CheckoutForm({ listing }: { listing: ListingLite }) {
           disabled={state === 'loading'}
           className="flex items-center justify-center gap-2 w-full py-4 rounded-full bg-gradient-to-r from-lime-100 via-lime-200 to-emerald-400 text-[#07130e] text-center font-bold text-lg hover:scale-[1.01] transition-transform shadow-[0_0_40px_rgba(251,191,36,0.2)] disabled:opacity-60"
         >
-          <CreditCard size={20} /> {state === 'loading' ? 'Processing…' : `Pay $${total}`}
+          <CreditCard size={20} /> {state === 'loading' ? 'Processing…' : `Pay ₹${total}`}
         </button>
       </div>
     </div>

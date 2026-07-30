@@ -107,11 +107,22 @@ middleware.ts                 # Auth + role-based route protection
 
 ---
 
+## 🚢 Production deployment checklist
+
+The seeded store is intentional for local previews, but it is not durable storage. Before accepting real customers:
+
+1. Set `NODE_ENV=production`, `NEXTAUTH_URL`, `NEXT_PUBLIC_APP_URL`, and a unique `NEXTAUTH_SECRET` (for example `openssl rand -base64 32`). Never use the development fallback secret.
+2. Configure PostgreSQL, run `npm run db:generate && npm run db:push && npm run db:seed`, and verify the database has backups and connection pooling. Do not rely on the in-memory fallback for production data.
+3. Configure a verified SMTP sender (`SMTP_*`). Ethereal is development-only and does not deliver real customer email.
+4. Configure Razorpay with `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`, and `RAZORPAY_WEBHOOK_SECRET`. Add a `payment.captured` webhook at `/api/payments/razorpay/webhook`, test UPI QR payments end-to-end, and keep the webhook secret private. A mobile number is not a verifiable UPI payment address; use the merchant account connected to Razorpay.
+5. Configure your platform's shared rate limiter/WAF, object storage for uploads, error monitoring, analytics consent, and an uptime monitor for `GET /api/health`.
+6. Review the legal pages, support address, privacy obligations, taxes, seller agreements, and refund process with your counsel for the countries where you operate.
+7. Run `npm run build`, deploy over HTTPS, and validate the security headers, sitemap, robots file, sign-in, reset email, checkout, and role authorization in the deployed environment.
+
 ## 🗺️ Roadmap
 
-- Stripe integration (payment intents + webhooks)
+- Stripe Checkout + signed webhooks and durable order state
 - Real-time messaging (WebSockets)
 - Image/file uploads (S3/R2)
-- 2FA, email verification
-- PWA + tests (Jest/Playwright)
-```
+- 2FA and email verification
+- Automated unit, integration, and end-to-end tests

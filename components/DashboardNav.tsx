@@ -13,6 +13,7 @@ import {
   PenTool,
   Settings,
   ShoppingBag,
+  Shield,
   Store,
   Users,
   X,
@@ -63,6 +64,7 @@ export default function DashboardNav({
         ]
       : [
           { label: 'Overview', href: '/dashboard/admin', icon: LayoutDashboard },
+          { label: 'Approval Requests', href: '/dashboard/admin?tab=approvals', icon: Shield },
           { label: 'Users', href: '/dashboard/admin?tab=users', icon: Users },
           { label: 'Marketplace', href: '/marketplace', icon: Store },
           { label: 'Settings', href: '/dashboard/admin?tab=settings', icon: Settings },

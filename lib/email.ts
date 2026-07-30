@@ -10,6 +10,10 @@ import nodemailer from 'nodemailer';
 
 let transporter: nodemailer.Transporter | null = null;
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] as string));
+}
+
 async function getTransporter() {
   if (transporter) return transporter;
 
@@ -75,7 +79,7 @@ export async function sendPasswordResetEmail(
 
       <h1 style="font-size: 24px; margin: 0 0 12px; font-weight: 600;">Reset your password</h1>
       <p style="color: #888; margin: 0 0 24px; line-height: 1.5;">
-        We received a request to reset the password for <strong>${to}</strong>.
+        We received a request to reset the password for <strong>${escapeHtml(to)}</strong>.
       </p>
 
       <div style="background: #111; border: 1px solid #222; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">

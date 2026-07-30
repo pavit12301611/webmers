@@ -11,6 +11,7 @@
  * goes wrong, so the app never crashes because of a missing DB.
  */
 import { compare, hashSync } from 'bcryptjs';
+import { createHash, randomInt } from 'crypto';
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -27,6 +28,8 @@ export interface User {
   role: Role;
   image?: string | null;
   passwordHash?: string | null;
+  upiId?: string | null;
+  paypalEmail?: string | null;
   createdAt: Date;
 }
 
@@ -59,6 +62,9 @@ export interface Order {
   status: OrderStatus;
   layoutChoice: string;
   codeUnlocked: boolean;
+  paymentProvider?: string | null;
+  paymentReference?: string | null;
+  paymentId?: string | null;
   createdAt: Date;
 }
 
@@ -78,8 +84,19 @@ export interface Category {
   count: number;
 }
 
-/** Price of the "unlock full source code" add-on, in USD. */
+/** Marketplace commission is added to a seller's base listing price. */
+export const PLATFORM_MARKUP_RATE = 0.2;
+/** Price of the "unlock full source code" add-on, in INR. */
 export const CODE_UNLOCK_PRICE = 49;
+
+/** What a customer pays for a listing; the seller's `price` remains their base price. */
+export function customerPrice(sellerPrice: number): number {
+  return Math.round(sellerPrice * (1 + PLATFORM_MARKUP_RATE) * 100) / 100;
+}
+
+export function platformFee(sellerPrice: number): number {
+  return Math.round((customerPrice(sellerPrice) - sellerPrice) * 100) / 100;
+}
 
 interface WishlistItem {
   id: string;
@@ -95,7 +112,7 @@ interface Store {
   reviews: Review[];
   wishlist: WishlistItem[];
   newsletter: string[];
-  passwordResets: Array<{ email: string; otp: string; expiresAt: number }>;
+  passwordResets: Array<{ email: string; otpHash: string; expiresAt: number; attempts: number }>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -145,7 +162,7 @@ function seed(): Store {
 
   const users: User[] = [
     { id: 'u_admin', email: 'admin@webmers.io', name: 'Admin User', role: 'ADMIN', passwordHash: hashSync('Admin@123', 10), createdAt: days(400) },
-    { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', passwordHash: hashSync('Seller@123', 10), createdAt: days(320) },
+    { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', upiId: 'sarahk@upi', passwordHash: hashSync('Seller@123', 10), createdAt: days(320) },
     { id: 'u_buyer', email: 'buyer@webmers.io', name: 'David R.', role: 'BUYER', passwordHash: hashSync('Buyer@123', 10), createdAt: days(210) },
     { id: 'u_maria', email: 'maria@example.com', name: 'Maria L.', role: 'BUYER', passwordHash: hashSync('Maria@123', 10), createdAt: days(90) },
   ];
@@ -325,8 +342,12 @@ export async function createUser(input: {
   name: string;
   password: string;
   role?: Role;
+  upiId?: string;
+  paypalEmail?: string;
 }): Promise<User> {
   const email = input.email.trim().toLowerCase();
+  const upiId = input.upiId?.trim().toLowerCase() || null;
+  const paypalEmail = input.paypalEmail?.trim().toLowerCase() || null;
   const role: Role = input.role === 'SELLER' ? 'SELLER' : 'BUYER';
 
   const prisma = await getPrismaClient();
@@ -337,6 +358,8 @@ export async function createUser(input: {
           email,
           name: input.name,
           role,
+          upiId,
+          paypalEmail,
           passwordHash: hashSync(input.password, 10),
         },
       });
@@ -351,6 +374,8 @@ export async function createUser(input: {
     email,
     name: input.name,
     role,
+    upiId,
+    paypalEmail,
     passwordHash: hashSync(input.password, 10),
     createdAt: new Date(),
   };
@@ -366,6 +391,8 @@ function normalizeUser(u: any): User {
     role: (u.role as Role) ?? 'BUYER',
     image: u.image ?? null,
     passwordHash: u.passwordHash ?? null,
+    upiId: u.upiId ?? null,
+    paypalEmail: u.paypalEmail ?? null,
     createdAt: u.createdAt ?? new Date(),
   };
 }
@@ -533,8 +560,74 @@ export async function createOrder(input: {
   return order;
 }
 
+export async function createPendingOrder(input: {
+  buyerId: string;
+  listingId: string;
+  amount: number;
+  layoutChoice: string;
+  codeUnlocked: boolean;
+  paymentProvider: string;
+  paymentReference: string;
+}): Promise<Order> {
+  const listing = await getListing(input.listingId);
+  const draft: Order = {
+    id: id('o'), buyerId: input.buyerId, listingId: input.listingId,
+    listingTitle: listing?.title ?? 'Website', amount: Math.round(input.amount * 100) / 100,
+    status: 'PENDING', layoutChoice: input.layoutChoice, codeUnlocked: input.codeUnlocked,
+    paymentProvider: input.paymentProvider, paymentReference: input.paymentReference, createdAt: new Date(),
+  };
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const created = await prisma.order.create({ data: {
+        buyerId: draft.buyerId, listingId: draft.listingId, amount: draft.amount, status: 'PENDING',
+        layoutChoice: draft.layoutChoice, codeUnlocked: draft.codeUnlocked,
+        paymentProvider: draft.paymentProvider, paymentReference: draft.paymentReference,
+      } });
+      draft.id = created.id;
+    } catch {
+      /* Local store preserves the development/demo experience. */
+    }
+  }
+  store().orders.push(draft);
+  return draft;
+}
+
 export async function getOrder(orderId: string): Promise<Order | null> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const row = await prisma.order.findUnique({ where: { id: orderId }, include: { listing: true } });
+      if (row) return { id: row.id, buyerId: row.buyerId, listingId: row.listingId, listingTitle: row.listing?.title ?? 'Website', amount: row.amount, status: row.status, layoutChoice: row.layoutChoice ?? 'Hero-Centered', codeUnlocked: row.codeUnlocked, paymentProvider: row.paymentProvider, paymentReference: row.paymentReference, paymentId: row.paymentId, createdAt: row.createdAt };
+    } catch { /* fall through */ }
+  }
   return store().orders.find((o) => o.id === orderId) ?? null;
+}
+
+export async function getOrderByPaymentReference(paymentReference: string): Promise<Order | null> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const row = await prisma.order.findUnique({ where: { paymentReference }, include: { listing: true } });
+      if (row) return { id: row.id, buyerId: row.buyerId, listingId: row.listingId, listingTitle: row.listing?.title ?? 'Website', amount: row.amount, status: row.status, layoutChoice: row.layoutChoice ?? 'Hero-Centered', codeUnlocked: row.codeUnlocked, paymentProvider: row.paymentProvider, paymentReference: row.paymentReference, paymentId: row.paymentId, createdAt: row.createdAt };
+    } catch { /* fall through */ }
+  }
+  return store().orders.find((order) => order.paymentReference === paymentReference) ?? null;
+}
+
+export async function markOrderPaid(orderId: string, paymentId: string): Promise<Order | null> {
+  const order = await getOrder(orderId);
+  if (!order || order.status === 'PAID') return order;
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try { await prisma.order.update({ where: { id: orderId }, data: { status: 'PAID', paymentId } }); } catch { /* local copy remains useful during development */ }
+  }
+  order.status = 'PAID'; order.paymentId = paymentId;
+  const local = store().orders.find((item) => item.id === orderId);
+  if (local) { local.status = 'PAID'; local.paymentId = paymentId; }
+  const listing = store().listings.find((item) => item.id === order.listingId);
+  if (listing) listing.sales += 1;
+  return order;
 }
 
 export async function getBuyerOrders(buyerId: string): Promise<Order[]> {
@@ -586,9 +679,11 @@ export async function getSellerListings(sellerId: string): Promise<Listing[]> {
 export async function getSellerStats(sellerId: string) {
   const listings = await getSellerListings(sellerId);
   const active = listings.filter((l) => l.status === 'ACTIVE').length;
+  // Seller proceeds are always the seller-set base price. The 20% marketplace
+  // markup is retained by the platform and is never included in seller earnings.
   const revenue = store()
-    .orders.filter((o) => listings.some((l) => l.id === o.listingId) && o.status !== 'REFUNDED')
-    .reduce((sum, o) => sum + o.amount, 0);
+    .orders.filter((o) => listings.some((l) => l.id === o.listingId) && ['PAID', 'COMPLETED'].includes(o.status))
+    .reduce((sum, o) => sum + (listings.find((l) => l.id === o.listingId)?.price ?? 0), 0);
   // Estimate views from sales with a realistic conversion rate (~3-5%)
   // Each listing's views = sales / conversion_rate (seeded data uses ~3%)
   const views = listings.reduce((sum, l) => {
@@ -606,6 +701,18 @@ function hash(str: string): number {
 
 export async function getRecentOrders(limit = 5): Promise<Order[]> {
   return [...store().orders].sort((a, b) => +b.createdAt - +a.createdAt).slice(0, limit);
+}
+
+/** Orders awaiting an administrator's payment/manual-delivery review. */
+export async function getApprovalRequests(limit = 50): Promise<Order[]> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const rows = await prisma.order.findMany({ where: { status: 'PENDING' }, include: { listing: true }, orderBy: { createdAt: 'asc' }, take: limit });
+      return rows.map((row: any) => ({ id: row.id, buyerId: row.buyerId, listingId: row.listingId, listingTitle: row.listing?.title ?? 'Website', amount: row.amount, status: row.status, layoutChoice: row.layoutChoice ?? 'Hero-Centered', codeUnlocked: row.codeUnlocked, paymentProvider: row.paymentProvider, paymentReference: row.paymentReference, paymentId: row.paymentId, createdAt: row.createdAt }));
+    } catch { /* fall through */ }
+  }
+  return store().orders.filter((order) => order.status === 'PENDING').sort((a, b) => +a.createdAt - +b.createdAt).slice(0, limit);
 }
 
 export async function getAdminStats() {
@@ -631,6 +738,11 @@ export function isValidEmail(email: string): boolean {
   return EMAIL_RE.test(email.trim());
 }
 
+/** Basic VPA shape validation. The PSP validates whether the UPI ID exists at payout time. */
+export function isValidUpiId(upiId: string): boolean {
+  return /^[a-z0-9][a-z0-9._-]{1,63}@[a-z][a-z0-9.-]{1,63}$/i.test(upiId.trim());
+}
+
 export async function subscribeNewsletter(email: string): Promise<{ ok: boolean; error?: string }> {
   const value = email.trim().toLowerCase();
   if (!isValidEmail(value)) return { ok: false, error: 'Please enter a valid email address.' };
@@ -644,6 +756,13 @@ export async function subscribeNewsletter(email: string): Promise<{ ok: boolean;
 /* Password reset (OTP)                                                */
 /* ------------------------------------------------------------------ */
 
+function hashResetCode(email: string, otp: string): string {
+  // NEXTAUTH_SECRET is mandatory in production and also serves as a pepper here.
+  return createHash('sha256').update(`${AUTH_RESET_PEPPER}:${email}:${otp}`).digest('hex');
+}
+
+const AUTH_RESET_PEPPER = process.env.NEXTAUTH_SECRET || 'development-reset-pepper';
+
 export async function requestPasswordReset(email: string): Promise<{ ok: boolean; otp?: string; error?: string }> {
   const normalized = email.trim().toLowerCase();
   const user = await getUserByEmail(normalized);
@@ -653,12 +772,13 @@ export async function requestPasswordReset(email: string): Promise<{ ok: boolean
   }
 
   const s = store();
-  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+  const otp = randomInt(100_000, 1_000_000).toString(); // cryptographically secure 6-digit code
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-  // Remove previous for this email
+  // Store only a keyed digest; a memory/database leak must not reveal usable codes.
+  const otpHash = hashResetCode(normalized, otp);
   s.passwordResets = s.passwordResets.filter(r => r.email !== normalized);
-  s.passwordResets.push({ email: normalized, otp, expiresAt });
+  s.passwordResets.push({ email: normalized, otpHash, expiresAt, attempts: 0 });
 
   return { ok: true, otp };
 }
@@ -671,11 +791,12 @@ export async function verifyAndResetPassword(
   const normalized = email.trim().toLowerCase();
   const s = store();
 
-  const reset = s.passwordResets.find(
-    (r) => r.email === normalized && r.otp === otp && r.expiresAt > Date.now()
-  );
-
-  if (!reset) {
+  const reset = s.passwordResets.find((r) => r.email === normalized);
+  if (!reset || reset.expiresAt <= Date.now() || reset.attempts >= 5) {
+    return { ok: false, error: 'Invalid or expired code.' };
+  }
+  if (reset.otpHash !== hashResetCode(normalized, otp)) {
+    reset.attempts += 1;
     return { ok: false, error: 'Invalid or expired code.' };
   }
 
@@ -703,7 +824,7 @@ export async function verifyAndResetPassword(
   if (memUser) memUser.passwordHash = newHash;
 
   // Consume the reset token
-  s.passwordResets = s.passwordResets.filter((r) => !(r.email === normalized && r.otp === otp));
+  s.passwordResets = s.passwordResets.filter((r) => r !== reset);
 
   return { ok: true };
 }

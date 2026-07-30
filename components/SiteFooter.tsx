@@ -61,9 +61,10 @@ export default function SiteFooter() {
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 text-[11px] uppercase tracking-[0.16em] text-white/25 md:flex-row">
           <span>© {new Date().getFullYear()} Webmers — Measured Edition</span>
           <div className="flex gap-6">
-            <Link href="#pricing" className="transition hover:text-white/60">Privacy</Link>
-            <Link href="#pricing" className="transition hover:text-white/60">Terms</Link>
-            <Link href="#pricing" className="transition hover:text-white/60">Cookies</Link>
+            <Link href="/privacy" className="transition hover:text-white/60">Privacy</Link>
+            <Link href="/terms" className="transition hover:text-white/60">Terms</Link>
+            <Link href="/cookies" className="transition hover:text-white/60">Cookies</Link>
+            <Link href="/support" className="transition hover:text-white/60">Support</Link>
           </div>
         </div>
       </div>

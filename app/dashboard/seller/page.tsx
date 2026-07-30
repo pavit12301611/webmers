@@ -486,12 +486,12 @@ export default async function SellerDashboard({
               </div>
             </div>
             <div className="leaf-card rounded-2xl p-6">
-              <h3 className="font-display font-bold mb-2">Payout Settings</h3>
+              <h3 className="font-display font-bold mb-2">Payout &amp; commission</h3>
               <p className="text-sm text-emerald-50/45 mb-4">
-                Configure how you receive payouts from your sales.
+                You set the base price. Customers see a 20% marketplace markup, while your earnings remain your base price after a verified sale.
               </p>
-              <div className="px-4 py-3 rounded-xl bg-emerald-50/[0.04] border border-emerald-50/10 text-sm text-emerald-50/50">
-                Stripe Connect — Not connected
+              <div className="rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-4 py-3 text-sm text-amber-100/70">
+                Payouts are currently reviewed manually using your registered UPI ID or PayPal email. Never share a UPI PIN, password, or OTP.
               </div>
             </div>
           </div>
