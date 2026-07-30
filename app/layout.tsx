@@ -3,6 +3,10 @@ import Providers from '@/components/Providers';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  applicationName: 'Webmers',
+  authors: [{ name: 'Webmers' }],
+  robots: { index: true, follow: true },
   title: {
     default: 'Webmers — Buy. Edit. Own.',
     template: '%s · Webmers',

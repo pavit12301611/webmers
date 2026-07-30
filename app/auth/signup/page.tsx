@@ -90,7 +90,7 @@ function SignUpForm() {
           </div>
           <div>
             <label htmlFor="password" className="mb-1 block text-[11px] uppercase tracking-widest text-white/40">Password</label>
-            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" autoComplete="new-password" minLength={8} className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" required />
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 12 characters" autoComplete="new-password" minLength={12} className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" required />
           </div>
 
           <div>

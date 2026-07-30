@@ -14,7 +14,6 @@ function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,9 +34,6 @@ function ForgotPasswordForm() {
         setError(data.error || 'Failed to send reset code.');
       } else {
         setSuccess(data.message || 'Check your email for a reset code.');
-        if (data.previewUrl) {
-          setPreviewUrl(data.previewUrl);
-        }
         setStep('verify');
       }
     } catch {
@@ -55,8 +51,8 @@ function ForgotPasswordForm() {
       setError('Passwords do not match.');
       return;
     }
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters.');
+    if (newPassword.length < 12) {
+      setError('Password must be at least 12 characters.');
       return;
     }
 
@@ -130,24 +126,6 @@ function ForgotPasswordForm() {
         {success && (
           <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
             {success}
-            {previewUrl && (
-              <div className="mt-3 rounded-lg border border-emerald-400/20 bg-black/30 p-3">
-                <div className="mb-1.5 flex items-center gap-2 text-xs font-medium text-emerald-400">
-                  <span>📧 FREE TEST MODE</span>
-                </div>
-                <a
-                  href={previewUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/10 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-500/20"
-                >
-                  Open email in Ethereal test inbox →
-                </a>
-                <p className="mt-2 text-center text-[10px] text-emerald-300/50">
-                  No API key needed. This is a real temporary inbox.
-                </p>
-              </div>
-            )}
           </div>
         )}
 
@@ -212,7 +190,7 @@ function ForgotPasswordForm() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete="new-password"
-                minLength={8}
+                minLength={12}
                 className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
                 required
               />
@@ -229,7 +207,7 @@ function ForgotPasswordForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete="new-password"
-                minLength={8}
+                minLength={12}
                 className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
                 required
               />

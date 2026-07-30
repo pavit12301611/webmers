@@ -11,6 +11,7 @@
  * goes wrong, so the app never crashes because of a missing DB.
  */
 import { compare, hashSync } from 'bcryptjs';
+import { createHash, randomInt } from 'crypto';
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -95,7 +96,7 @@ interface Store {
   reviews: Review[];
   wishlist: WishlistItem[];
   newsletter: string[];
-  passwordResets: Array<{ email: string; otp: string; expiresAt: number }>;
+  passwordResets: Array<{ email: string; otpHash: string; expiresAt: number; attempts: number }>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -644,6 +645,13 @@ export async function subscribeNewsletter(email: string): Promise<{ ok: boolean;
 /* Password reset (OTP)                                                */
 /* ------------------------------------------------------------------ */
 
+function hashResetCode(email: string, otp: string): string {
+  // NEXTAUTH_SECRET is mandatory in production and also serves as a pepper here.
+  return createHash('sha256').update(`${AUTH_RESET_PEPPER}:${email}:${otp}`).digest('hex');
+}
+
+const AUTH_RESET_PEPPER = process.env.NEXTAUTH_SECRET || 'development-reset-pepper';
+
 export async function requestPasswordReset(email: string): Promise<{ ok: boolean; otp?: string; error?: string }> {
   const normalized = email.trim().toLowerCase();
   const user = await getUserByEmail(normalized);
@@ -653,12 +661,13 @@ export async function requestPasswordReset(email: string): Promise<{ ok: boolean
   }
 
   const s = store();
-  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+  const otp = randomInt(100_000, 1_000_000).toString(); // cryptographically secure 6-digit code
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-  // Remove previous for this email
+  // Store only a keyed digest; a memory/database leak must not reveal usable codes.
+  const otpHash = hashResetCode(normalized, otp);
   s.passwordResets = s.passwordResets.filter(r => r.email !== normalized);
-  s.passwordResets.push({ email: normalized, otp, expiresAt });
+  s.passwordResets.push({ email: normalized, otpHash, expiresAt, attempts: 0 });
 
   return { ok: true, otp };
 }
@@ -671,11 +680,12 @@ export async function verifyAndResetPassword(
   const normalized = email.trim().toLowerCase();
   const s = store();
 
-  const reset = s.passwordResets.find(
-    (r) => r.email === normalized && r.otp === otp && r.expiresAt > Date.now()
-  );
-
-  if (!reset) {
+  const reset = s.passwordResets.find((r) => r.email === normalized);
+  if (!reset || reset.expiresAt <= Date.now() || reset.attempts >= 5) {
+    return { ok: false, error: 'Invalid or expired code.' };
+  }
+  if (reset.otpHash !== hashResetCode(normalized, otp)) {
+    reset.attempts += 1;
     return { ok: false, error: 'Invalid or expired code.' };
   }
 
@@ -703,7 +713,7 @@ export async function verifyAndResetPassword(
   if (memUser) memUser.passwordHash = newHash;
 
   // Consume the reset token
-  s.passwordResets = s.passwordResets.filter((r) => !(r.email === normalized && r.otp === otp));
+  s.passwordResets = s.passwordResets.filter((r) => r !== reset);
 
   return { ok: true };
 }
