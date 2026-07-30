@@ -2,7 +2,7 @@
 
 A premium, production-grade **website marketplace** — *Buy. Edit. Own.* Browse fully-built websites, purchase with escrow-protected checkout, edit them in a no-code visual editor, and optionally unlock the full source code.
 
-> **Runs with zero setup.** The app ships with a self-contained, seeded in-memory data layer, so every feature works out of the box — no database, no API keys, no external services required. When you're ready for production, point it at PostgreSQL via Prisma (see below).
+> **Runs with zero setup.** The app ships with a self-contained in-memory data layer for quick previews. For production, point it at PostgreSQL via Prisma (see below).
 
 ---
 
@@ -36,16 +36,6 @@ npm run dev
 
 Visit **http://localhost:3000**. That's it — no `.env` needed.
 
-### Demo accounts
-
-| Role   | Email               | Password     |
-|--------|---------------------|--------------|
-| Buyer  | `buyer@webmers.io`  | `Buyer@123`  |
-| Seller | `seller@webmers.io` | `Seller@123` |
-| Admin  | `admin@webmers.io`  | `Admin@123`  |
-
-These are also one click away on the sign-in page.
-
 ---
 
 ## 🗄️ Using a real database (optional)
@@ -53,12 +43,12 @@ These are also one click away on the sign-in page.
 The app defaults to an in-memory store. To use PostgreSQL:
 
 1. Set `DATABASE_URL` in `.env` (see `.env.example`).
-2. Generate the client, push the schema, and seed demo data:
+2. Generate the client, push the schema, and seed production data:
 
    ```bash
    npm run db:generate   # generate the Prisma client
    npm run db:push       # create tables in your database
-   npm run db:seed       # seed demo users & listings
+   npm run db:seed       # seed initial users & listings
    ```
 
 3. Restart the dev server. The data layer automatically uses Prisma and
@@ -109,7 +99,7 @@ middleware.ts                 # Auth + role-based route protection
 
 ## 🚢 Production deployment checklist
 
-The seeded store is intentional for local previews, but it is not durable storage. Before accepting real customers:
+The in-memory store is only for local previews. Before accepting real customers:
 
 1. Set `NODE_ENV=production`, `NEXTAUTH_URL`, `NEXT_PUBLIC_APP_URL`, and a unique `NEXTAUTH_SECRET` (for example `openssl rand -base64 32`). Never use the development fallback secret.
 2. Configure PostgreSQL, run `npm run db:generate && npm run db:push && npm run db:seed`, and verify the database has backups and connection pooling. Do not rely on the in-memory fallback for production data.

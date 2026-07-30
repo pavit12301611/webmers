@@ -508,9 +508,69 @@ export async function getLandingStats() {
 /* ------------------------------------------------------------------ */
 
 export async function getReviews(listingId: string): Promise<Review[]> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const rows = await prisma.review.findMany({
+        where: { listingId },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (rows?.length) return rows.map(normalizeReview);
+    } catch {}
+  }
   return store()
     .reviews.filter((r) => r.listingId === listingId)
     .sort((a, b) => +b.createdAt - +a.createdAt);
+}
+
+export async function createReview(input: {
+  buyerId: string;
+  listingId: string;
+  rating: number;
+  comment: string;
+}): Promise<Review> {
+  const user = await getUserById(input.buyerId);
+  const review: Review = {
+    id: id('r'),
+    listingId: input.listingId,
+    buyerId: input.buyerId,
+    buyerName: user?.name || 'Anonymous',
+    rating: Math.max(1, Math.min(5, input.rating)),
+    comment: input.comment.trim(),
+    verified: true,
+    createdAt: new Date(),
+  };
+
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      await prisma.review.create({
+        data: {
+          listingId: review.listingId,
+          buyerId: review.buyerId,
+          rating: review.rating,
+          comment: review.comment,
+          verified: review.verified,
+        },
+      });
+    } catch {}
+  }
+
+  store().reviews.push(review);
+  return review;
+}
+
+function normalizeReview(r: any): Review {
+  return {
+    id: r.id,
+    listingId: r.listingId,
+    buyerId: r.buyerId,
+    buyerName: r.buyer?.name || 'Anonymous',
+    rating: r.rating,
+    comment: r.comment,
+    verified: r.verified ?? true,
+    createdAt: r.createdAt,
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -673,7 +733,115 @@ export async function getWishlistCount(userId: string): Promise<number> {
 /* ------------------------------------------------------------------ */
 
 export async function getSellerListings(sellerId: string): Promise<Listing[]> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const rows = await prisma.listing.findMany({ where: { sellerId } });
+      return rows.map(normalizeListing);
+    } catch {}
+  }
   return store().listings.filter((l) => l.sellerId === sellerId);
+}
+
+export async function updateListingStatus(listingId: string, sellerId: string, status: ListingStatus): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      await prisma.listing.updateMany({
+        where: { id: listingId, sellerId },
+        data: { status },
+      });
+      return true;
+    } catch {}
+  }
+  const listing = store().listings.find(l => l.id === listingId && l.sellerId === sellerId);
+  if (listing) {
+    listing.status = status;
+    return true;
+  }
+  return false;
+}
+
+export async function updateListing(listingId: string, sellerId: string, data: Partial<Listing>): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      await prisma.listing.updateMany({
+        where: { id: listingId, sellerId },
+        data,
+      });
+      return true;
+    } catch {}
+  }
+  const listing = store().listings.find(l => l.id === listingId && l.sellerId === sellerId);
+  if (listing) {
+    Object.assign(listing, data);
+    return true;
+  }
+  return false;
+}
+
+export async function deleteListing(listingId: string, sellerId: string): Promise<boolean> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      await prisma.listing.deleteMany({ where: { id: listingId, sellerId } });
+      return true;
+    } catch {}
+  }
+  const idx = store().listings.findIndex(l => l.id === listingId && l.sellerId === sellerId);
+  if (idx !== -1) {
+    store().listings.splice(idx, 1);
+    return true;
+  }
+  return false;
+}
+
+export async function createListing(input: {
+  sellerId: string;
+  title: string;
+  price: number;
+  category: string;
+  description?: string;
+  techStack?: string[];
+}): Promise<Listing> {
+  const listing: Listing = {
+    id: id('l'),
+    title: input.title,
+    tagline: input.description?.slice(0, 60) || '',
+    description: input.description || '',
+    price: input.price,
+    category: input.category,
+    techStack: input.techStack || [],
+    palette: paletteFor(input.title),
+    status: 'DRAFT',
+    sellerId: input.sellerId,
+    sellerName: 'You',
+    rating: 0,
+    sales: 0,
+    featured: false,
+    createdAt: new Date(),
+  };
+
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      await prisma.listing.create({
+        data: {
+          title: listing.title,
+          description: listing.description,
+          price: listing.price,
+          category: listing.category,
+          techStack: listing.techStack,
+          status: 'DRAFT',
+          sellerId: listing.sellerId,
+        },
+      });
+    } catch {}
+  }
+
+  store().listings.push(listing);
+  return listing;
 }
 
 export async function getSellerStats(sellerId: string) {
