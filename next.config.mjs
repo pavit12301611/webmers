@@ -20,8 +20,8 @@ const nextConfig = {
   },
   async headers() {
     const scriptPolicy = process.env.NODE_ENV === 'development'
-      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com"
-      : "script-src 'self' 'unsafe-inline' https://accounts.google.com";
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://checkout.razorpay.com"
+      : "script-src 'self' 'unsafe-inline' https://accounts.google.com https://checkout.razorpay.com";
     const CSP = [
       "default-src 'self'",
       scriptPolicy,
@@ -29,7 +29,8 @@ const nextConfig = {
       "img-src 'self' data: https: blob:",
       "media-src 'self' https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://accounts.google.com https://fonts.googleapis.com https://fonts.gstatic.com",
+      "connect-src 'self' https://accounts.google.com https://fonts.googleapis.com https://fonts.gstatic.com https://api.razorpay.com",
+      "frame-src https://api.razorpay.com https://checkout.razorpay.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self' https://accounts.google.com",

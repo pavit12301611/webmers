@@ -60,6 +60,9 @@ export interface Order {
   status: OrderStatus;
   layoutChoice: string;
   codeUnlocked: boolean;
+  paymentProvider?: string | null;
+  paymentReference?: string | null;
+  paymentId?: string | null;
   createdAt: Date;
 }
 
@@ -534,8 +537,74 @@ export async function createOrder(input: {
   return order;
 }
 
+export async function createPendingOrder(input: {
+  buyerId: string;
+  listingId: string;
+  amount: number;
+  layoutChoice: string;
+  codeUnlocked: boolean;
+  paymentProvider: string;
+  paymentReference: string;
+}): Promise<Order> {
+  const listing = await getListing(input.listingId);
+  const draft: Order = {
+    id: id('o'), buyerId: input.buyerId, listingId: input.listingId,
+    listingTitle: listing?.title ?? 'Website', amount: Math.round(input.amount * 100) / 100,
+    status: 'PENDING', layoutChoice: input.layoutChoice, codeUnlocked: input.codeUnlocked,
+    paymentProvider: input.paymentProvider, paymentReference: input.paymentReference, createdAt: new Date(),
+  };
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const created = await prisma.order.create({ data: {
+        buyerId: draft.buyerId, listingId: draft.listingId, amount: draft.amount, status: 'PENDING',
+        layoutChoice: draft.layoutChoice, codeUnlocked: draft.codeUnlocked,
+        paymentProvider: draft.paymentProvider, paymentReference: draft.paymentReference,
+      } });
+      draft.id = created.id;
+    } catch {
+      /* Local store preserves the development/demo experience. */
+    }
+  }
+  store().orders.push(draft);
+  return draft;
+}
+
 export async function getOrder(orderId: string): Promise<Order | null> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const row = await prisma.order.findUnique({ where: { id: orderId }, include: { listing: true } });
+      if (row) return { id: row.id, buyerId: row.buyerId, listingId: row.listingId, listingTitle: row.listing?.title ?? 'Website', amount: row.amount, status: row.status, layoutChoice: row.layoutChoice ?? 'Hero-Centered', codeUnlocked: row.codeUnlocked, paymentProvider: row.paymentProvider, paymentReference: row.paymentReference, paymentId: row.paymentId, createdAt: row.createdAt };
+    } catch { /* fall through */ }
+  }
   return store().orders.find((o) => o.id === orderId) ?? null;
+}
+
+export async function getOrderByPaymentReference(paymentReference: string): Promise<Order | null> {
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try {
+      const row = await prisma.order.findUnique({ where: { paymentReference }, include: { listing: true } });
+      if (row) return { id: row.id, buyerId: row.buyerId, listingId: row.listingId, listingTitle: row.listing?.title ?? 'Website', amount: row.amount, status: row.status, layoutChoice: row.layoutChoice ?? 'Hero-Centered', codeUnlocked: row.codeUnlocked, paymentProvider: row.paymentProvider, paymentReference: row.paymentReference, paymentId: row.paymentId, createdAt: row.createdAt };
+    } catch { /* fall through */ }
+  }
+  return store().orders.find((order) => order.paymentReference === paymentReference) ?? null;
+}
+
+export async function markOrderPaid(orderId: string, paymentId: string): Promise<Order | null> {
+  const order = await getOrder(orderId);
+  if (!order || order.status === 'PAID') return order;
+  const prisma = await getPrismaClient();
+  if (prisma) {
+    try { await prisma.order.update({ where: { id: orderId }, data: { status: 'PAID', paymentId } }); } catch { /* local copy remains useful during development */ }
+  }
+  order.status = 'PAID'; order.paymentId = paymentId;
+  const local = store().orders.find((item) => item.id === orderId);
+  if (local) { local.status = 'PAID'; local.paymentId = paymentId; }
+  const listing = store().listings.find((item) => item.id === order.listingId);
+  if (listing) listing.sales += 1;
+  return order;
 }
 
 export async function getBuyerOrders(buyerId: string): Promise<Order[]> {

@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   applicationName: 'Webmers',
   authors: [{ name: 'Webmers' }],
   robots: { index: true, follow: true },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
   title: {
     default: 'Webmers — Buy. Edit. Own.',
     template: '%s · Webmers',
@@ -43,6 +44,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-white text-[#0a0a0a] antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Webmers', url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', potentialAction: { '@type': 'SearchAction', target: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/marketplace?q={search_term_string}`, 'query-input': 'required name=search_term_string' } }) }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>
