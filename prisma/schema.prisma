@@ -52,6 +52,7 @@ model User {
   avatarUrl     String?
   passwordHash  String?
   upiId         String?   @unique
+  paypalEmail    String?   @unique
   twoFAEnabled  Boolean   @default(false)
   twoFASecret   String?
   createdAt     DateTime  @default(now())

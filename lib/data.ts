@@ -29,6 +29,7 @@ export interface User {
   image?: string | null;
   passwordHash?: string | null;
   upiId?: string | null;
+  paypalEmail?: string | null;
   createdAt: Date;
 }
 
@@ -342,9 +343,11 @@ export async function createUser(input: {
   password: string;
   role?: Role;
   upiId?: string;
+  paypalEmail?: string;
 }): Promise<User> {
   const email = input.email.trim().toLowerCase();
   const upiId = input.upiId?.trim().toLowerCase() || null;
+  const paypalEmail = input.paypalEmail?.trim().toLowerCase() || null;
   const role: Role = input.role === 'SELLER' ? 'SELLER' : 'BUYER';
 
   const prisma = await getPrismaClient();
@@ -356,6 +359,7 @@ export async function createUser(input: {
           name: input.name,
           role,
           upiId,
+          paypalEmail,
           passwordHash: hashSync(input.password, 10),
         },
       });
@@ -371,6 +375,7 @@ export async function createUser(input: {
     name: input.name,
     role,
     upiId,
+    paypalEmail,
     passwordHash: hashSync(input.password, 10),
     createdAt: new Date(),
   };
@@ -387,6 +392,7 @@ function normalizeUser(u: any): User {
     image: u.image ?? null,
     passwordHash: u.passwordHash ?? null,
     upiId: u.upiId ?? null,
+    paypalEmail: u.paypalEmail ?? null,
     createdAt: u.createdAt ?? new Date(),
   };
 }

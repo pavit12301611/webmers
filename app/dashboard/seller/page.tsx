@@ -491,7 +491,7 @@ export default async function SellerDashboard({
                 You set the base price. Customers see a 20% marketplace markup, while your earnings remain your base price after a verified sale.
               </p>
               <div className="rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-4 py-3 text-sm text-amber-100/70">
-                Payouts are currently reviewed manually. Add your UPI ID once the payout setup is enabled; never share a UPI PIN or OTP.
+                Payouts are currently reviewed manually using your registered UPI ID or PayPal email. Never share a UPI PIN, password, or OTP.
               </div>
             </div>
           </div>

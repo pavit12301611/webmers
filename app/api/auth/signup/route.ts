@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     const name = typeof body?.name === 'string' ? body.name.trim().replace(/\s+/g, ' ') : '';
     const role: Role = body?.role === 'SELLER' ? 'SELLER' : 'BUYER';
     const upiId = typeof body?.upiId === 'string' ? body.upiId.trim().toLowerCase() : '';
+    const paypalEmail = typeof body?.paypalEmail === 'string' ? body.paypalEmail.trim().toLowerCase() : '';
 
     if (!email || !password || !name) {
       return noStore(NextResponse.json({ error: 'Name, email and password are required.' }, { status: 400 }));
@@ -24,8 +25,14 @@ export async function POST(req: Request) {
     if (name.length > MAX_NAME_LENGTH || email.length > MAX_EMAIL_LENGTH || !isValidEmail(email)) {
       return noStore(NextResponse.json({ error: 'Please enter a valid name and email address.' }, { status: 400 }));
     }
-    if (role === 'SELLER' && !isValidUpiId(upiId)) {
-      return noStore(NextResponse.json({ error: 'A valid UPI ID is required to register as a seller.' }, { status: 400 }));
+    if (role === 'SELLER' && !upiId && !paypalEmail) {
+      return noStore(NextResponse.json({ error: 'Add either a UPI ID or a PayPal email to register as a seller.' }, { status: 400 }));
+    }
+    if (upiId && !isValidUpiId(upiId)) {
+      return noStore(NextResponse.json({ error: 'Please enter a valid UPI ID.' }, { status: 400 }));
+    }
+    if (paypalEmail && !isValidEmail(paypalEmail)) {
+      return noStore(NextResponse.json({ error: 'Please enter a valid PayPal email address.' }, { status: 400 }));
     }
     // Require a reasonable baseline without imposing arbitrary special-character rules.
     if (password.length < 12 || password.length > 128) {
@@ -37,7 +44,7 @@ export async function POST(req: Request) {
       return noStore(NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 }));
     }
 
-    const user = await createUser({ email, name, password, role, upiId: role === 'SELLER' ? upiId : undefined });
+    const user = await createUser({ email, name, password, role, upiId: role === 'SELLER' ? upiId : undefined, paypalEmail: role === 'SELLER' ? paypalEmail : undefined });
     return noStore(NextResponse.json(
       { user: { id: user.id, email: user.email, name: user.name, role: user.role } },
       { status: 201 },
