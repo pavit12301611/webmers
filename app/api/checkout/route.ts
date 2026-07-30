@@ -15,7 +15,6 @@ export async function POST(req: Request) {
     if (!limit.allowed) return rateLimitResponse(limit.resetAt);
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return noStore(NextResponse.json({ error: 'You must be signed in to check out.' }, { status: 401 }));
-    if (session.user.role === 'ADMIN') return noStore(NextResponse.json({ error: 'Admin accounts cannot make purchases.' }, { status: 403 }));
     if (!razorpayConfigured() || !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
       return noStore(NextResponse.json({ error: 'UPI payments are not configured yet. Please contact support.' }, { status: 503 }));
     }

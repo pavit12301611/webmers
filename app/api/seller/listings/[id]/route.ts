@@ -5,7 +5,7 @@ import { updateListingStatus, updateListing, deleteListing, ListingStatus } from
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== 'SELLER') {
+  if (!session?.user || !(session.user.role === 'SELLER' || session.user.role === 'ADMIN')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

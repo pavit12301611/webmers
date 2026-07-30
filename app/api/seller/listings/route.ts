@@ -5,7 +5,7 @@ import { getSellerListings, createListing } from '@/lib/data';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== 'SELLER') {
+  if (!session?.user || !(session.user.role === 'SELLER' || session.user.role === 'ADMIN')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const listings = await getSellerListings(session.user.id);
@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== 'SELLER') {
+  if (!session?.user || !(session.user.role === 'SELLER' || session.user.role === 'ADMIN')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

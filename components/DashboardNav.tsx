@@ -22,8 +22,10 @@ import SignOutButton from './SignOutButton';
 
 export default function DashboardNav({
   role,
+  isAdmin,
 }: {
   role: 'BUYER' | 'SELLER' | 'ADMIN';
+  isAdmin?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -41,7 +43,7 @@ export default function DashboardNav({
     }
   }, [open]);
 
-  const links =
+  const baseLinks =
     role === 'BUYER'
       ? [
           { label: 'Overview', href: '/dashboard/buyer', icon: LayoutDashboard },
@@ -69,6 +71,25 @@ export default function DashboardNav({
           { label: 'Marketplace', href: '/marketplace', icon: Store },
           { label: 'Settings', href: '/dashboard/admin?tab=settings', icon: Settings },
         ];
+
+  const adminShortcuts = isAdmin
+    ? role === 'BUYER'
+      ? [
+          { label: 'Admin Panel', href: '/dashboard/admin', icon: Shield, isShortcut: true },
+          { label: 'Seller Panel', href: '/dashboard/seller', icon: Store, isShortcut: true },
+        ]
+      : role === 'SELLER'
+      ? [
+          { label: 'Admin Panel', href: '/dashboard/admin', icon: Shield, isShortcut: true },
+          { label: 'Buyer Panel', href: '/dashboard/buyer', icon: ShoppingBag, isShortcut: true },
+        ]
+      : [
+          { label: 'Buyer Dashboard', href: '/dashboard/buyer', icon: ShoppingBag, isShortcut: true },
+          { label: 'Seller Dashboard', href: '/dashboard/seller', icon: Store, isShortcut: true },
+        ]
+    : [];
+
+  const links = [...baseLinks, ...adminShortcuts];
 
   return (
     <>
@@ -103,12 +124,16 @@ export default function DashboardNav({
               {role} Dashboard
             </div>
             <nav className="space-y-1">
-              {links.map((item) => (
+              {links.map((item: any) => (
                 <Link
                   key={item.label}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-emerald-50/70 hover:bg-emerald-50/[0.06] hover:text-emerald-50"
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-all hover:bg-emerald-50/[0.06] hover:text-emerald-50 ${
+                    item.isShortcut
+                      ? 'text-lime-300 hover:bg-lime-400/10 hover:text-lime-200 border border-lime-400/20 mt-2'
+                      : 'text-emerald-50/70'
+                  }`}
                 >
                   <item.icon size={20} />
                   {item.label}
