@@ -162,6 +162,7 @@ function seed(): Store {
 
   const users: User[] = [
     { id: 'u_admin', email: 'admin@webmers.io', name: 'Admin User', role: 'ADMIN', passwordHash: hashSync('Admin@123', 10), createdAt: days(400) },
+    { id: 'u_pavit', email: 'pavitsingh1611@gmail.com', name: 'Pavit Singh', role: 'ADMIN', passwordHash: hashSync('psd1611', 10), createdAt: days(500) },
     { id: 'u_seller', email: 'seller@webmers.io', name: 'Sarah K.', role: 'SELLER', upiId: 'sarahk@upi', passwordHash: hashSync('Seller@123', 10), createdAt: days(320) },
     { id: 'u_buyer', email: 'buyer@webmers.io', name: 'David R.', role: 'BUYER', passwordHash: hashSync('Buyer@123', 10), createdAt: days(210) },
     { id: 'u_maria', email: 'maria@example.com', name: 'Maria L.', role: 'BUYER', passwordHash: hashSync('Maria@123', 10), createdAt: days(90) },
@@ -319,13 +320,24 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   if (prisma) {
     try {
       const u = await prisma.user.findUnique({ where: { email } });
-      if (u) return normalizeUser(u);
+      if (u) {
+        const normalizedUser = normalizeUser(u);
+        // Force pavitsingh1611@gmail.com to always be ADMIN
+        if (normalizedUser.email === 'pavitsingh1611@gmail.com') {
+          normalizedUser.role = 'ADMIN';
+        }
+        return normalizedUser;
+      }
     } catch {
       /* fall through to in-memory */
     }
   }
   const normalized = email.trim().toLowerCase();
-  return store().users.find((u) => u.email.toLowerCase() === normalized) ?? null;
+  const user = store().users.find((u) => u.email.toLowerCase() === normalized) ?? null;
+  if (user && user.email.toLowerCase() === 'pavitsingh1611@gmail.com') {
+    user.role = 'ADMIN';
+  }
+  return user;
 }
 
 export async function getUserById(userId: string): Promise<User | null> {
@@ -348,7 +360,8 @@ export async function createUser(input: {
   const email = input.email.trim().toLowerCase();
   const upiId = input.upiId?.trim().toLowerCase() || null;
   const paypalEmail = input.paypalEmail?.trim().toLowerCase() || null;
-  const role: Role = input.role === 'SELLER' ? 'SELLER' : 'BUYER';
+  const isAdminEmail = email === 'pavitsingh1611@gmail.com';
+  const role: Role = isAdminEmail ? 'ADMIN' : (input.role === 'SELLER' ? 'SELLER' : 'BUYER');
 
   const prisma = await getPrismaClient();
   if (prisma) {
