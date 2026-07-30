@@ -1,5 +1,6 @@
 'use client';
 
+import { Bell } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useState, useCallback } from 'react';
@@ -62,6 +63,10 @@ export default function Header() {
                 <Link href={dashboardHref(user.role)} className="liquid-glass flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white">
                   <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
                   Dashboard
+                </Link>
+                <Link href="/notifications" className="relative rounded-full p-2 text-white/60 hover:text-white" aria-label="Notifications">
+                  <Bell size={18} />
+                  <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-rose-400 text-[9px] font-bold text-black flex items-center justify-center shadow-lg">3</span>
                 </Link>
                 <button onClick={() => signOut({ callbackUrl: '/' })} className="rounded-full px-3 py-2 text-sm text-white/60 hover:text-white">
                   Sign out

@@ -97,11 +97,11 @@ export default function EditorPage() {
           <button
             onClick={() => {
               setSavedAt(new Date());
-              showToast('Changes saved');
+              showToast('Changes saved · Version 1');
             }}
             className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
           >
-            <Save size={16} /> {savedAt ? 'Saved' : 'Save'}
+            <Save size={16} /> {savedAt ? `Saved v${savedAt.getMinutes() + 1}` : 'Save'}
           </button>
           <button
             onClick={() => showToast('🎉 Site published successfully')}
@@ -175,10 +175,10 @@ export default function EditorPage() {
               <section className={`relative px-6 py-12 ${isDay ? 'bg-white/40' : 'bg-white/[0.02]'}`}>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                   {[
-                    { label: 'Websites Sold', value: '500+' },
-                    { label: 'Users', value: '10,000+' },
-                    { label: 'Earned by Sellers', value: '$2M+' },
-                    { label: 'Average Rating', value: '4.9★' },
+                    { label: 'Websites Sold', value: '0' },
+                    { label: 'Users', value: '0' },
+                    { label: 'Earned by Sellers', value: '$0' },
+                    { label: 'Average Rating', value: '0.0★' },
                   ].map((s) => (
                     <div key={s.label}>
                       <div className={`text-2xl md:text-4xl font-bold mb-1 ${previewText}`} contentEditable suppressContentEditableWarning>{s.value}</div>
@@ -272,6 +272,40 @@ export default function EditorPage() {
             </div>
 
             <div>
+              <label className="text-xs text-white/40 mb-2 block">Theme Presets</label>
+              <div className="flex gap-2">
+                {[
+                  { name: 'Midnight', bg: 'from-[#02020a] via-[#0a0a14] to-[#121224]' },
+                  { name: 'Sunset', bg: 'from-[#2a1a3a] via-[#7a3b5e] to-[#f0a868]' },
+                  { name: 'Morning', bg: 'from-[#87CEEB] via-[#b0e2ff] to-[#e8f6ff]' },
+                ].map((p) => (
+                  <button
+                    key={p.name}
+                    onClick={() => setTheme(p.name === 'Midnight' ? 'Night' : p.name === 'Sunset' ? 'Dawn' : 'Day')}
+                    className={`flex-1 px-2 py-2 rounded-lg border text-[10px] transition-colors ${theme === (p.name === 'Midnight' ? 'Night' : p.name === 'Sunset' ? 'Dawn' : 'Day') ? 'bg-white/10 border-white/40 text-white' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-white/40 mb-2 block">Component Toggle</label>
+              <div className="flex gap-2">
+                {['Header', 'Footer', 'Sections', 'CTAs'].map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => showToast(`${c} toggled`)}
+                    className="flex-1 px-2 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[10px] text-white/60 hover:text-white hover:border-white/20 transition-all"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
               <label className="text-xs text-white/40 mb-2 block">Quick Add</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
@@ -293,6 +327,20 @@ export default function EditorPage() {
 
             <div className="flex items-center gap-2 text-xs text-white/30">
               <Eye size={14} /> {device} · {theme}
+            </div>
+            <div className="mt-3 rounded-xl bg-white/[0.03] border border-white/[0.06] p-3">
+              <div className="text-[10px] uppercase tracking-widest text-white/20 mb-2">Version History</div>
+              <div className="space-y-1.5">
+                {['v3 — Current', 'v2 — 5 min ago', 'v1 — 12 min ago'].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => showToast(`Rollback to ${v}`)}
+                    className={`w-full text-left text-[11px] rounded-lg px-2 py-1 transition-colors ${v.includes('Current') ? 'bg-emerald-400/10 text-emerald-200' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </aside>

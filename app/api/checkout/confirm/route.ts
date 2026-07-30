@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/authOptions';
-import { getOrder, markOrderPaid } from '@/lib/data';
+import { getOrder, markOrderPaid, completeOrder } from '@/lib/data';
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Order not found' }, { status: 404 });
   }
 
-  // Mark as completed (release escrow)
+  // Mark order as paid and completed (release escrow)
   const updated = await markOrderPaid(orderId, order.paymentId || 'manual');
   if (updated) {
-    // In real app we would also update status to COMPLETED
+    await completeOrder(orderId);
     return NextResponse.json({ success: true });
   }
 

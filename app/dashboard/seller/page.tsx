@@ -100,7 +100,7 @@ export default async function SellerDashboard({
                   <div className="text-xs text-emerald-50/40">This period</div>
                   <div className="flex items-center gap-1 text-sm text-emerald-300">
                     <TrendingUp size={14} />
-                    <span>+{Math.round((revenue / (revenue + 500)) * 100)}%</span>
+                    <span>—</span>
                   </div>
                 </div>
               </div>
