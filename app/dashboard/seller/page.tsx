@@ -1,5 +1,7 @@
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/authOptions';
 import { redirect } from 'next/navigation';
@@ -20,8 +22,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { getSellerStats, type ListingStatus } from '@/lib/data';
-
-export const metadata: Metadata = { title: 'Seller Dashboard' };
 
 const STATUS_STYLES: Record<ListingStatus, { bg: string; text: string }> = {
   ACTIVE: { bg: 'bg-emerald-400/10', text: 'text-emerald-300' },
@@ -60,6 +60,20 @@ export default async function SellerDashboard({
       : 0;
 
   const tab = searchParams.tab ?? 'overview';
+
+  const handleAction = async (listingId: string, action: string, data?: any) => {
+    const res = await fetch(`/api/seller/listings/${listingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, data }),
+    });
+    
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      alert('Action failed');
+    }
+  };
 
   return (
     <DashboardLayout role="SELLER">
@@ -209,9 +223,9 @@ export default async function SellerDashboard({
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-display font-bold">My Listings</h2>
-            <button className="btn-forest px-5 py-2.5 text-sm">
+            <Link href="/dashboard/seller?tab=create" className="btn-forest px-5 py-2.5 text-sm inline-flex items-center gap-1">
               <Plus size={14} /> New Listing
-            </button>
+            </Link>
           </div>
           {listings.length > 0 ? (
             <div className="space-y-3">
@@ -267,21 +281,33 @@ export default async function SellerDashboard({
 
                         <div className="mt-3 flex items-center gap-2 flex-wrap">
                           {l.status === 'DRAFT' && (
-                            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors">
+                            <button 
+                              onClick={() => handleAction(l.id, 'status', { status: 'ACTIVE' })}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors"
+                            >
                               <Play size={12} /> Publish
                             </button>
                           )}
                           {l.status === 'ACTIVE' && (
-                            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[11px] font-medium text-amber-300 hover:bg-amber-400/15 transition-colors">
+                            <button 
+                              onClick={() => handleAction(l.id, 'status', { status: 'PAUSED' })}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[11px] font-medium text-amber-300 hover:bg-amber-400/15 transition-colors"
+                            >
                               <Pause size={12} /> Pause
                             </button>
                           )}
                           {l.status === 'PAUSED' && (
-                            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors">
+                            <button 
+                              onClick={() => handleAction(l.id, 'status', { status: 'ACTIVE' })}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors"
+                            >
                               <Play size={12} /> Reactivate
                             </button>
                           )}
-                          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/5 border border-emerald-50/10 text-[11px] font-medium hover:bg-emerald-50/10 transition-colors">
+                          <button 
+                            onClick={() => alert('Edit feature coming soon')}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/5 border border-emerald-50/10 text-[11px] font-medium hover:bg-emerald-50/10 transition-colors"
+                          >
                             Edit
                           </button>
                           <Link
@@ -290,7 +316,10 @@ export default async function SellerDashboard({
                           >
                             <Eye size={12} /> Preview
                           </Link>
-                          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-400/5 border border-rose-400/10 text-[11px] font-medium text-rose-300 hover:bg-rose-400/10 transition-colors">
+                          <button 
+                            onClick={() => handleAction(l.id, 'delete')}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-400/5 border border-rose-400/10 text-[11px] font-medium text-rose-300 hover:bg-rose-400/10 transition-colors"
+                          >
                             <Trash2 size={12} /> Delete
                           </button>
                         </div>
@@ -464,6 +493,10 @@ export default async function SellerDashboard({
         </section>
       )}
 
+      {tab === 'create' && (
+        <CreateListingForm />
+      )}
+
       {tab === 'settings' && (
         <section>
           <h2 className="text-2xl font-display font-bold mb-6">Seller Settings</h2>
@@ -498,6 +531,85 @@ export default async function SellerDashboard({
         </section>
       )}
     </DashboardLayout>
+  );
+}
+
+function CreateListingForm() {
+  const [form, setForm] = React.useState({
+    title: '',
+    price: '',
+    category: 'SaaS',
+    description: '',
+    techStack: '',
+  });
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const res = await fetch('/api/seller/listings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...form,
+        price: Number(form.price),
+        techStack: form.techStack.split(',').map(t => t.trim()),
+      }),
+    });
+
+    if (res.ok) {
+      setSuccess(true);
+    } else {
+      alert('Failed to create listing');
+    }
+    setLoading(false);
+  };
+
+  if (success) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-emerald-400 text-2xl mb-2">✓ Listing created!</div>
+        <p className="text-white/50">It is currently in DRAFT status. You can publish it later.</p>
+        <Link href="/dashboard/seller?tab=listings" className="mt-4 inline-block btn-forest px-6 py-2">View My Listings</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-display font-bold mb-6">Create New Website Listing</h2>
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
+        <div>
+          <label className="text-xs text-white/40 block mb-1">Website Title</label>
+          <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full rounded-xl bg-black/40 border border-white/10 p-3" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs text-white/40 block mb-1">Price (₹)</label>
+            <input type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required className="w-full rounded-xl bg-black/40 border border-white/10 p-3" />
+          </div>
+          <div>
+            <label className="text-xs text-white/40 block mb-1">Category</label>
+            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full rounded-xl bg-black/40 border border-white/10 p-3">
+              {['SaaS', 'Portfolio', 'E-commerce', 'Blog', 'Dashboard', 'Agency'].map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-white/40 block mb-1">Description</label>
+          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full rounded-xl bg-black/40 border border-white/10 p-3 h-24" />
+        </div>
+        <div>
+          <label className="text-xs text-white/40 block mb-1">Tech Stack (comma separated)</label>
+          <input type="text" value={form.techStack} onChange={e => setForm({ ...form, techStack: e.target.value })} placeholder="Next.js, Tailwind, Stripe" className="w-full rounded-xl bg-black/40 border border-white/10 p-3" />
+        </div>
+        <button type="submit" disabled={loading} className="btn-forest px-8 py-3 text-sm font-medium disabled:opacity-50">
+          {loading ? 'Creating...' : 'Create Listing'}
+        </button>
+      </form>
+    </div>
   );
 }
 

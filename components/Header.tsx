@@ -12,10 +12,9 @@ function dashboardHref(role?: string) {
 
 const NAV_ITEMS = [
   { label: 'Marketplace', href: '/marketplace' },
-  { label: 'Real Stories', href: '#stories' },
+  { label: 'Messages', href: '/messages' },
   { label: 'Editor', href: '/editor' },
   { label: 'Plans', href: '#pricing' },
-  { label: 'Reach Us', href: '#footer' },
 ];
 
 export default function Header() {

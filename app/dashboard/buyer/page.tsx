@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
@@ -16,10 +18,10 @@ import {
   PenTool,
   ShieldCheck,
   ShoppingBag,
+  Star,
 } from 'lucide-react';
-import { getBuyerOrders, getListings, getWishlist, type OrderStatus } from '@/lib/data';
-
-export const metadata: Metadata = { title: 'Buyer Dashboard' };
+import { getBuyerOrders, getListings, getWishlist, getReviews, createReview, type OrderStatus } from '@/lib/data';
+import React from 'react';
 
 const STATUS_STYLES: Record<OrderStatus, { bg: string; text: string; label: string }> = {
   PENDING: { bg: 'bg-white/10', text: 'text-white/70', label: 'Pending' },
@@ -228,10 +230,16 @@ export default async function BuyerDashboard({
                 desc={`${wishlist.length} saved`}
               />
               <QuickAction
-                href="/dashboard/buyer?tab=messages"
+                href="/messages"
                 icon={MessageSquare}
                 label="Messages"
                 desc="Contact sellers"
+              />
+              <QuickAction
+                href="/dashboard/buyer?tab=reviews"
+                icon={Star}
+                label="Reviews"
+                desc="Rate your purchases"
               />
             </div>
           </section>
@@ -316,7 +324,18 @@ export default async function BuyerDashboard({
                             </Link>
                           )}
                           {order.status === 'PAID' && (
-                            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors">
+                            <button 
+                              onClick={async () => {
+                                const res = await fetch(`/api/checkout/confirm`, {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ orderId: order.id })
+                                });
+                                if (res.ok) window.location.reload();
+                                else alert('Failed to confirm');
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors"
+                            >
                               <ShieldCheck size={12} /> Confirm Satisfaction
                             </button>
                           )}
@@ -389,14 +408,21 @@ export default async function BuyerDashboard({
         </section>
       )}
 
-      {tab === 'messages' && (
+
+
+      {tab === 'reviews' && (
         <section>
-          <h2 className="text-2xl font-display font-bold mb-6">Messages</h2>
-          <EmptyState
-            title="No messages yet"
-            message="Contact a seller from any listing page to start a conversation."
-            cta={{ label: 'Browse listings', href: '/marketplace' }}
-          />
+          <h2 className="text-2xl font-display font-bold mb-6">Leave Reviews</h2>
+          <div className="space-y-6">
+            {orders
+              .filter((o) => o.status === 'COMPLETED')
+              .map((order) => (
+                <ReviewForm key={order.id} order={order} />
+              ))}
+            {orders.filter((o) => o.status === 'COMPLETED').length === 0 && (
+              <div className="text-center py-12 text-white/50">No completed purchases yet.</div>
+            )}
+          </div>
         </section>
       )}
 
@@ -516,5 +542,75 @@ function EmptyState({
         {cta.label}
       </Link>
     </div>
+  );
+}
+
+function ReviewForm({ order }: { order: any }) {
+  const [rating, setRating] = React.useState(5);
+  const [comment, setComment] = React.useState('');
+  const [submitted, setSubmitted] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+
+    const res = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        listingId: order.listingId,
+        rating,
+        comment,
+      }),
+    });
+
+    if (res.ok) {
+      setSubmitted(true);
+    } else {
+      alert('Failed to submit review');
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="leaf-card rounded-2xl p-6 text-emerald-300">
+        ✓ Thanks! Your review has been submitted.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="leaf-card rounded-2xl p-6">
+      <div className="font-medium mb-1">{order.listingTitle}</div>
+      <div className="text-xs text-white/40 mb-4">Order #{order.id}</div>
+
+      <div className="flex gap-1 mb-4">
+        {[1,2,3,4,5].map((n) => (
+          <button
+            type="button"
+            key={n}
+            onClick={() => setRating(n)}
+            className={n <= rating ? 'text-amber-400' : 'text-white/30'}
+          >
+            <Star size={22} fill={n <= rating ? 'currentColor' : 'none'} />
+          </button>
+        ))}
+      </div>
+
+      <textarea
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Share your experience with this website..."
+        className="w-full rounded-xl bg-black/40 border border-white/10 p-4 text-sm resize-y min-h-[90px]"
+        required
+      />
+
+      <button
+        type="submit"
+        className="mt-4 rounded-full bg-white px-6 py-2 text-sm font-medium text-black hover:bg-white/90"
+      >
+        Submit Review
+      </button>
+    </form>
   );
 }

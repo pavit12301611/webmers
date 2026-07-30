@@ -5,11 +5,7 @@ import { getProviders, signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-const DEMO_ACCOUNTS = [
-  { label: 'Buyer', email: 'buyer@webmers.io', password: 'Buyer@123' },
-  { label: 'Seller', email: 'seller@webmers.io', password: 'Seller@123' },
-  { label: 'Admin', email: 'admin@webmers.io', password: 'Admin@123' },
-];
+
 
 function SignInForm() {
   const router = useRouter();
@@ -125,25 +121,7 @@ function SignInForm() {
           </>
         )}
 
-        <div className="mb-6 mt-6">
-          <p className="mb-2 text-[11px] uppercase tracking-widest text-white/25">Demo accounts</p>
-          <div className="grid grid-cols-3 gap-2">
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.label}
-                type="button"
-                onClick={() => {
-                  setEmail(acc.email);
-                  setPassword(acc.password);
-                  setError('');
-                }}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-white/50 transition hover:border-white/20 hover:text-white"
-              >
-                {acc.label}
-              </button>
-            ))}
-          </div>
-        </div>
+
 
         <div className="mt-6 text-center text-sm text-white/30">
           Don&apos;t have an account?{' '}
