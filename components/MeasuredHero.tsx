@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * Optimized Measured hero
@@ -8,19 +8,38 @@ import { useEffect, useRef } from 'react';
  * - No canvas.toDataURL() → uses CSS radial-gradient mask (GPU accelerated)
  * - Grid parallax via direct DOM transform
  * - Passive listeners + single rAF
+ * - Scroll-activated hero video (hero section only): plays on first scroll while
+ *   the section is in view, pauses when you scroll past it or the tab is hidden.
+ *   Local /hero-video.mp4 wins; reliable stock CDNs are the fallback sources,
+ *   and a local Ken Burns image covers the rare case where every source fails.
  */
 
-const BG_IMAGE =
-  'https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260713_140344_79e1296a-86d7-43fd-9b5f-63ffe560f291.png&w=1280&q=85';
-const FRONT_VIDEO =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260713_162101_0d7498c5-29bb-47bf-a99f-2773c0a880a9.mp4';
-const OVERLAY_IMAGE =
-  'https://soft-zoom-63098134.figma.site/_assets/v11/3f10f1876e118f72a396e05a6c2d099569478272.png';
+// Self-contained media — no throwaway third-party asset hosts.
+const BG_IMAGE = '/hero-bg.jpg';
+const SPOTLIGHT_IMAGE = '/hero-spotlight.jpg';
+
+// Scroll-activated hero video (hero section only) — dark, nature themed.
+// Source order matters: the browser tries each <source> in order, so a local
+// file dropped at /public/hero-video.mp4 wins, otherwise reliable stock CDNs.
+const FRONT_VIDEO_SOURCES = [
+  '/hero-video.mp4',
+  // Milky Way night-sky timelapse (stars + trees, dark nature)
+  'https://videos.pexels.com/video-files/4911644/4911644-uhd_2560_1440_30fps.mp4',
+  // Dark misty forest at night (fallback)
+  'https://videos.pexels.com/video-files/3427514/3427514-uhd_2560_1440_24fps.mp4',
+];
+
+// Subtle analog grain, inlined as a tiny SVG (feTurbulence) instead of an
+// external overlay image so the hero stays fully self-contained.
+const GRAIN_OVERLAY =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 export default function MeasuredHero() {
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoFailed, setVideoFailed] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -107,6 +126,60 @@ export default function MeasuredHero() {
     };
   }, []);
 
+  // Scroll-activated hero video — plays only while the hero is on screen AND the
+  // page has been scrolled at least once (hero section only; pauses elsewhere).
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video) return;
+
+    let visible = false;
+    let activated = window.scrollY > 0;
+
+    const syncPlayback = () => {
+      if (videoFailed) return;
+      if (visible && activated) {
+        const p = video.play();
+        if (p) p.catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+
+    // First scroll movement "activates" the video (page starts from the hero).
+    const onScroll = () => {
+      if (!activated && window.scrollY > 0) {
+        activated = true;
+        syncPlayback();
+      }
+    };
+
+    // Pause when the tab is hidden (saves data, avoids background playback).
+    const onVisibility = () => {
+      if (document.hidden) video.pause();
+    };
+
+    // Play while the hero is in the viewport, pause once you scroll past it.
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0]?.isIntersecting ?? false;
+        syncPlayback();
+      },
+      { threshold: 0.15 }
+    );
+
+    io.observe(section);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('visibilitychange', onVisibility);
+      video.pause();
+    };
+  }, [videoFailed]);
+
   return (
     <section
       ref={sectionRef}
@@ -158,20 +231,19 @@ export default function MeasuredHero() {
         </p>
       </div>
 
-      {/* Layer 4 — Overlay Image */}
-      <img
-        src={OVERLAY_IMAGE}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className="pointer-events-none absolute inset-0 z-[25] h-full w-full object-cover opacity-70 mix-blend-soft-light"
+      {/* Layer 4 — Grain overlay (inline SVG, soft-light blend) */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[25] h-full w-full opacity-25 mix-blend-soft-light"
+        style={{ backgroundImage: GRAIN_OVERLAY, backgroundSize: '180px 180px' }}
         aria-hidden="true"
       />
 
-      {/* Layer 5 — Spotlight Reveal (GPU mask, clipped to bottom 60%) */}
+      {/* Layer 5 — Spotlight Reveal (GPU mask, clipped to bottom 60%).
+          Scroll-activated hero video on top of a local Ken Burns fallback:
+          if every video source fails, the local image is always there. */}
       <div
         ref={spotlightRef}
-        className="absolute inset-0 z-30 will-change-[mask-image]"
+        className="pointer-events-none absolute inset-0 z-30 overflow-hidden will-change-[mask-image]"
         style={{
           clipPath: 'inset(40% 0 0 0)',
           WebkitClipPath: 'inset(40% 0 0 0)',
@@ -181,16 +253,28 @@ export default function MeasuredHero() {
           maskSize: '100% 100%',
         }}
       >
+        {/* Local fallback — GPU-accelerated Ken Burns motion, zero network. */}
+        <img
+          src={SPOTLIGHT_IMAGE}
+          alt=""
+          decoding="async"
+          className="hero-kenburns h-full w-full object-cover"
+        />
         <video
-          src={FRONT_VIDEO}
-          autoPlay
+          ref={videoRef}
+          aria-hidden="true"
+          className={`h-full w-full object-cover ${videoFailed ? 'hidden' : ''}`}
           loop
           muted
           playsInline
           preload="metadata"
-          poster={BG_IMAGE}
-          className="h-full w-full object-cover"
-        />
+          poster={SPOTLIGHT_IMAGE}
+          onError={() => setVideoFailed(true)}
+        >
+          {FRONT_VIDEO_SOURCES.map((src) => (
+            <source key={src} src={src} type="video/mp4" />
+          ))}
+        </video>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
@@ -202,7 +286,7 @@ export default function MeasuredHero() {
           <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">Scroll to explore grove</span>
         </div>
         <div className="ml-auto flex items-center gap-2 rounded-full liquid-glass px-3 py-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">Move cursor to reveal</span>
+          <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">Scroll to play video</span>
           <span className="h-1 w-1 rounded-full bg-white/60" />
           <span className="h-2 w-2 rounded-full bg-green-400" />
         </div>

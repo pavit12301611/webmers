@@ -11,9 +11,6 @@ const nextConfig = {
   swcMinify: true,
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'images.higgs.ai' },
-      { protocol: 'https', hostname: 'd8j0ntlcm91z4.cloudfront.net' },
-      { protocol: 'https', hostname: 'soft-zoom-63098134.figma.site' },
       { protocol: 'https', hostname: 'fonts.gstatic.com' },
     ],
     formats: ['image/avif', 'image/webp'],

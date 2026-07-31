@@ -171,6 +171,17 @@
 .animate-rotate-in { animation: rotateIn 0.4s cubic-bezier(0.77,0,0.18,1) both; }
 .animate-fade-up { animation: fadeUp 0.5s ease-out both; }
 
+/* Slow Ken Burns motion for the hero spotlight layer — replaces the expired
+   third-party video URL with a self-hosted image that still feels alive. */
+@keyframes heroKenBurns {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); }
+}
+.hero-kenburns {
+  will-change: transform;
+  animation: heroKenBurns 24s ease-in-out infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
