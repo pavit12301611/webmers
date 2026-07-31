@@ -1,3 +1,5 @@
+'use client';
+
 import { Bell, Check, MessageCircle, ShoppingCart, Star, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
