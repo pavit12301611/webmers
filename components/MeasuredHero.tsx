@@ -8,29 +8,22 @@ import { useEffect, useRef, useState } from 'react';
  * - No canvas.toDataURL() → uses CSS radial-gradient mask (GPU accelerated)
  * - Grid parallax via direct DOM transform
  * - Passive listeners + single rAF
- * - Scroll-activated hero video (hero section only): plays on first scroll while
- *   the section is in view, pauses when you scroll past it or the tab is hidden.
- *   Local /hero-video.mp4 wins; reliable stock CDNs are the fallback sources,
- *   and a local Ken Burns image covers the rare case where every source fails.
+ * - Hero video background with instant autoplay when in view,
+ *   pauses when scrolled past or when the tab is hidden.
  */
 
-// Self-contained media — no throwaway third-party asset hosts.
 const BG_IMAGE = '/hero-bg.jpg';
 const SPOTLIGHT_IMAGE = '/hero-spotlight.jpg';
 
-// Scroll-activated hero video (hero section only) — dark, nature themed.
-// Source order matters: the browser tries each <source> in order, so a local
-// file dropped at /public/hero-video.mp4 wins, otherwise reliable stock CDNs.
+// Dark, nature & starry sky atmospheric videos (web-optimized 1080p & 720p MP4s)
 const FRONT_VIDEO_SOURCES = [
-  '/hero-video.mp4',
-  // Milky Way night-sky timelapse (stars + trees, dark nature)
-  'https://videos.pexels.com/video-files/4911644/4911644-uhd_2560_1440_30fps.mp4',
-  // Dark misty forest at night (fallback)
-  'https://videos.pexels.com/video-files/3427514/3427514-uhd_2560_1440_24fps.mp4',
+  'https://videos.pexels.com/video-files/4911644/4911644-hd_1920_1080_30fps.mp4',
+  'https://videos.pexels.com/video-files/3427514/3427514-hd_1920_1080_24fps.mp4',
+  'https://videos.pexels.com/video-files/4911644/4911644-hd_1280_720_30fps.mp4',
+  'https://videos.pexels.com/video-files/857195/857195-hd_1920_1080_25fps.mp4',
 ];
 
-// Subtle analog grain, inlined as a tiny SVG (feTurbulence) instead of an
-// external overlay image so the hero stays fully self-contained.
+// Subtle analog grain SVG
 const GRAIN_OVERLAY =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
@@ -66,12 +59,11 @@ export default function MeasuredHero() {
       gridSmooth.x += (gridTarget.x - gridSmooth.x) * 0.06;
       gridSmooth.y += (gridTarget.y - gridSmooth.y) * 0.06;
 
-      // Update grid via direct transform (no React state)
+      // Update grid via direct transform
       gridEl.style.transform = `translate3d(${gridSmooth.x}px, ${gridSmooth.y}px, 0)`;
 
-      // CSS mask gradient — identical visual to canvas spec but GPU only
-      // Stops: 0-40% white, 60% 0.75 alpha, 75% 0.4, 88% 0.12, 100% transparent
-      const mask = `radial-gradient(260px circle at ${smooth.x}px ${smooth.y}px, white 0%, white 40%, rgba(255,255,255,0.75) 60%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.12) 88%, transparent 100%)`;
+      // CSS mask gradient
+      const mask = `radial-gradient(280px circle at ${smooth.x}px ${smooth.y}px, white 0%, white 40%, rgba(255,255,255,0.75) 60%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.12) 88%, transparent 100%)`;
 
       spotEl.style.webkitMaskImage = mask;
       spotEl.style.maskImage = mask;
@@ -82,7 +74,6 @@ export default function MeasuredHero() {
     const schedule = () => {
       if (!isTicking) {
         isTicking = true;
-        // already looping via update, but keep for safety
       }
     };
 
@@ -111,7 +102,7 @@ export default function MeasuredHero() {
     };
 
     // Initialize centered mask
-    const initMask = `radial-gradient(260px circle at ${smooth.x}px ${smooth.y}px, white 0%, white 40%, rgba(255,255,255,0.75) 60%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.12) 88%, transparent 100%)`;
+    const initMask = `radial-gradient(280px circle at ${smooth.x}px ${smooth.y}px, white 0%, white 40%, rgba(255,255,255,0.75) 60%, rgba(255,255,255,0.4) 75%, rgba(255,255,255,0.12) 88%, transparent 100%)`;
     spotEl.style.webkitMaskImage = initMask;
     spotEl.style.maskImage = initMask;
 
@@ -126,55 +117,49 @@ export default function MeasuredHero() {
     };
   }, []);
 
-  // Scroll-activated hero video — plays only while the hero is on screen AND the
-  // page has been scrolled at least once (hero section only; pauses elsewhere).
+  // Hero video playback control — autoplays when visible in viewport,
+  // pauses when scrolled out of view or when tab is hidden.
   useEffect(() => {
     const section = sectionRef.current;
     const video = videoRef.current;
     if (!section || !video) return;
 
     let visible = false;
-    let activated = window.scrollY > 0;
 
     const syncPlayback = () => {
       if (videoFailed) return;
-      if (visible && activated) {
+      if (visible && !document.hidden) {
         const p = video.play();
-        if (p) p.catch(() => {});
+        if (p) {
+          p.catch(() => {
+            // Autoplay blocked or load failed
+          });
+        }
       } else {
         video.pause();
       }
     };
 
-    // First scroll movement "activates" the video (page starts from the hero).
-    const onScroll = () => {
-      if (!activated && window.scrollY > 0) {
-        activated = true;
-        syncPlayback();
-      }
-    };
-
-    // Pause when the tab is hidden (saves data, avoids background playback).
     const onVisibility = () => {
-      if (document.hidden) video.pause();
+      syncPlayback();
     };
 
-    // Play while the hero is in the viewport, pause once you scroll past it.
     const io = new IntersectionObserver(
       (entries) => {
         visible = entries[0]?.isIntersecting ?? false;
         syncPlayback();
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
 
     io.observe(section);
-    window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
+
+    // Initial check to start play immediately if already loaded
+    syncPlayback();
 
     return () => {
       io.disconnect();
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVisibility);
       video.pause();
     };
@@ -238,22 +223,19 @@ export default function MeasuredHero() {
         aria-hidden="true"
       />
 
-      {/* Layer 5 — Spotlight Reveal (GPU mask, clipped to bottom 60%).
-          Scroll-activated hero video on top of a local Ken Burns fallback:
-          if every video source fails, the local image is always there. */}
+      {/* Layer 5 — Spotlight Reveal (GPU mask).
+          Autoplay hero video on top of a local Ken Burns fallback image. */}
       <div
         ref={spotlightRef}
         className="pointer-events-none absolute inset-0 z-30 overflow-hidden will-change-[mask-image]"
         style={{
-          clipPath: 'inset(40% 0 0 0)',
-          WebkitClipPath: 'inset(40% 0 0 0)',
           WebkitMaskRepeat: 'no-repeat',
           maskRepeat: 'no-repeat',
           WebkitMaskSize: '100% 100%',
           maskSize: '100% 100%',
         }}
       >
-        {/* Local fallback — GPU-accelerated Ken Burns motion, zero network. */}
+        {/* Local fallback image with GPU-accelerated Ken Burns motion */}
         <img
           src={SPOTLIGHT_IMAGE}
           alt=""
@@ -263,16 +245,25 @@ export default function MeasuredHero() {
         <video
           ref={videoRef}
           aria-hidden="true"
-          className={`h-full w-full object-cover ${videoFailed ? 'hidden' : ''}`}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${videoFailed ? 'hidden opacity-0' : 'opacity-100'}`}
           loop
           muted
           playsInline
-          preload="metadata"
+          autoPlay
+          preload="auto"
           poster={SPOTLIGHT_IMAGE}
-          onError={() => setVideoFailed(true)}
         >
-          {FRONT_VIDEO_SOURCES.map((src) => (
-            <source key={src} src={src} type="video/mp4" />
+          {FRONT_VIDEO_SOURCES.map((src, idx) => (
+            <source
+              key={src}
+              src={src}
+              type="video/mp4"
+              onError={
+                idx === FRONT_VIDEO_SOURCES.length - 1
+                  ? () => setVideoFailed(true)
+                  : undefined
+              }
+            />
           ))}
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -286,9 +277,11 @@ export default function MeasuredHero() {
           <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">Scroll to explore grove</span>
         </div>
         <div className="ml-auto flex items-center gap-2 rounded-full liquid-glass px-3 py-1">
-          <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">Scroll to play video</span>
+          <span className="text-[10px] uppercase tracking-[0.18em] text-white/60">
+            {videoFailed ? 'Spotlight Active' : 'Live Ambient Hero'}
+          </span>
           <span className="h-1 w-1 rounded-full bg-white/60" />
-          <span className="h-2 w-2 rounded-full bg-green-400" />
+          <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
         </div>
       </div>
     </section>
