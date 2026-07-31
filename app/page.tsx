@@ -144,7 +144,7 @@ export default async function Home() {
           <div className="relative overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#121212] p-2">
             <div className="aspect-[4/3] overflow-hidden rounded-[1.2rem]">
               <img
-                src="https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260713_140344_79e1296a-86d7-43fd-9b5f-63ffe560f291.png&w=1280&q=85"
+                src="/editor-preview.jpg"
                 alt="Editor preview"
                 loading="lazy"
                 decoding="async"
@@ -229,7 +229,7 @@ export default async function Home() {
             {['Hero-Centered', 'Split-Screen', 'Video-Hero'].map((layout) => (
               <div key={layout} className="group relative aspect-[3/4] overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#121212]">
                 <img
-                  src="https://soft-zoom-63098134.figma.site/_assets/v11/3f10f1876e118f72a396e05a6c2d099569478272.png"
+                  src="/layout-preview.jpg"
                   alt=""
                   loading="lazy"
                   decoding="async"
