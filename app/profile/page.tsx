@@ -1,10 +1,6 @@
-import type { Metadata } from 'next';
-import { ShieldCheck, Bell, Key, Globe, Mail, Lock } from 'lucide-react';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Account Settings',
-  description: 'Manage your profile, security, and notification preferences.',
-};
+import { ShieldCheck, Bell, Key } from 'lucide-react';
 
 export default function ProfilePage() {
   return (
