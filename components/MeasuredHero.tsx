@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
-
-const HERO_VIDEO_URL =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4';
+import HeroVideo from '@/components/HeroVideo';
 
 export default function MeasuredHero() {
   return (
@@ -10,17 +8,12 @@ export default function MeasuredHero() {
       className="relative isolate flex h-screen min-h-screen w-full flex-col overflow-hidden bg-background"
       aria-label="Webmers hero"
     >
-      <video
-        className="absolute inset-0 z-0 h-full w-full object-cover"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        poster="/hero-bg.jpg"
-        src={HERO_VIDEO_URL}
+      {/* Branded gradient — final fallback if both video and poster fail to load. */}
+      <div
+        className="absolute inset-0 z-0 bg-gradient-to-b from-[#001a2e] via-[#002b42] to-[#001019]"
         aria-hidden="true"
       />
+      <HeroVideo />
 
       <Header hero />
 

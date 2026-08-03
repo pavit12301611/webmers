@@ -417,6 +417,9 @@ function normalizeUser(u: any): User {
 export interface ListingFilters {
   category?: string;
   search?: string;
+  sort?: 'sales' | 'rating' | 'newest' | 'price_asc' | 'price_desc';
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export async function getListings(filters: ListingFilters = {}): Promise<Listing[]> {
@@ -455,7 +458,36 @@ function applyFilters(listings: Listing[], filters: ListingFilters): Listing[] {
         l.techStack.some((t) => t.toLowerCase().includes(q)),
     );
   }
-  return [...result].sort((a, b) => b.sales - a.sales);
+
+  const min = filters.minPrice;
+  const max = filters.maxPrice;
+  if (typeof min === 'number' && !Number.isNaN(min)) {
+    result = result.filter((l) => customerPrice(l.price) >= min);
+  }
+  if (typeof max === 'number' && !Number.isNaN(max)) {
+    result = result.filter((l) => customerPrice(l.price) <= max);
+  }
+
+  switch (filters.sort) {
+    case 'rating':
+      result = [...result].sort((a, b) => b.rating - a.rating);
+      break;
+    case 'newest':
+      result = [...result].sort(
+        (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime(),
+      );
+      break;
+    case 'price_asc':
+      result = [...result].sort((a, b) => customerPrice(a.price) - customerPrice(b.price));
+      break;
+    case 'price_desc':
+      result = [...result].sort((a, b) => customerPrice(b.price) - customerPrice(a.price));
+      break;
+    case 'sales':
+    default:
+      result = [...result].sort((a, b) => b.sales - a.sales);
+  }
+  return result;
 }
 
 export async function getFeaturedListings(limit = 3): Promise<Listing[]> {

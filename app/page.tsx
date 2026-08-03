@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
+  Upload,
   Wand2,
 } from 'lucide-react';
 import MeasuredHero from '@/components/MeasuredHero';
@@ -53,6 +54,12 @@ const testimonials = [
 
 const visualPlanFeatures = ['In-browser editor', 'Text, images, layout', 'Theme presets', 'Auto-save & rollback', 'Publish to live site'];
 const codePlanFeatures = ['Complete source code ZIP', 'Private GitHub repo access', 'Delivered to your inbox', 'Single-use time-limited download', 'Full customization freedom'];
+
+const sellSteps = [
+  { n: '01', title: 'List your site', desc: 'Upload screenshots, stack and description. We review every submission for quality.' },
+  { n: '02', title: 'Get reviewed', desc: 'We verify the build and publish it once it meets our measured standard.' },
+  { n: '03', title: 'Get paid', desc: 'Buy through protected checkout; funds release after the satisfaction window.' },
+];
 
 // Ensure all data functions are actually used and correctly awaited
 export default async function Home() {
@@ -253,6 +260,40 @@ export default async function Home() {
                 </Reveal>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Sell on Webmers */}
+      <section className="relative bg-background px-6 py-24 md:px-10" style={{ contentVisibility: 'auto' }}>
+        <div className="relative mx-auto max-w-7xl">
+          <Reveal>
+            <div className="mb-12 max-w-3xl">
+              <Eyebrow icon={<Upload size={12} />}>Sell on Webmers</Eyebrow>
+              <h2 className="mt-4 text-balance font-instrument text-4xl leading-[0.95] tracking-tight text-foreground md:text-6xl">
+                Turn your builds <span className="text-muted-foreground">into steady income.</span>
+              </h2>
+              <p className="mt-5 max-w-xl text-[15px] leading-7 text-white/45">
+                Already building websites? List them on Webmers and reach buyers who want to launch today. Reviewed, protected, and paid — measured end to end.
+              </p>
+              <Link
+                href="/sell"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90"
+              >
+                Start selling <ArrowRight size={14} />
+              </Link>
+            </div>
+          </Reveal>
+          <div className="grid gap-4 md:grid-cols-3">
+            {sellSteps.map((item, i) => (
+              <Reveal key={item.n} delay={i * 90}>
+                <div className="h-full rounded-[1.5rem] border border-white/[0.07] bg-white/[0.02] p-7 backdrop-blur-xl">
+                  <div className="mb-8 font-instrument text-5xl text-white/[0.08]">{item.n}</div>
+                  <h3 className="mb-3 text-xl font-medium tracking-tight text-foreground md:text-2xl">{item.title}</h3>
+                  <p className="text-[14px] leading-6 text-white/45">{item.desc}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>

@@ -33,6 +33,7 @@ export default function SiteFooter() {
               <ul className="space-y-2.5 text-white/60">
                 <li><Link href="/marketplace" className="transition hover:text-white">Marketplace</Link></li>
                 <li><Link href="/editor" className="transition hover:text-white">Visual Editor</Link></li>
+                <li><Link href="/sell" className="transition hover:text-white">Sell your website</Link></li>
                 <li><Link href="/faq" className="transition hover:text-white">FAQ</Link></li>
                 <li><Link href="/blog" className="transition hover:text-white">Resources</Link></li>
                 <li><Link href="#pricing" className="transition hover:text-white">Code Unlock</Link></li>

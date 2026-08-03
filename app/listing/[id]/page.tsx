@@ -74,7 +74,12 @@ export default async function ListingPage({ params }: { params: { id: string } }
                 <span className="h-3 w-px bg-white/10" />
                 <span>{listing.sales} sales</span>
                 <span className="h-3 w-px bg-white/10" />
-                <span>by <span className="text-white/80">{listing.sellerName}</span></span>
+                <span>
+                  by{' '}
+                  <Link href={`/seller/${listing.sellerId}`} className="text-white/80 transition hover:text-white">
+                    {listing.sellerName}
+                  </Link>
+                </span>
               </div>
 
               <p className="mb-8 leading-relaxed text-white/50">{listing.description}</p>
