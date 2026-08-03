@@ -420,3 +420,15 @@
 @media (max-width: 768px) {
   .liquid-glass { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 }
+
+/* ── Scroll-hint bounce arrow ───────────────────────────────────────────── */
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0);    opacity: 0.3; }
+  50%       { transform: translateY(6px); opacity: 0.7; }
+}
+.scroll-hint-arrow {
+  animation: scroll-bounce 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint-arrow { animation: none; }
+}
