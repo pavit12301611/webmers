@@ -1,7 +1,6 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
-import AdminShortcut from './AdminShortcut';
 
 /**
  * Client providers for the app. Wraps children in the NextAuth SessionProvider
@@ -11,7 +10,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       {children}
-      <AdminShortcut />
     </SessionProvider>
   );
 }
