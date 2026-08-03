@@ -41,7 +41,7 @@ export default function MeasuredHero() {
       {/* 3. Background Video */}
       <video
         ref={videoRef}
-        src="https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/travel_hike_bg_video_1.mp4"
+        src="/hero-scroll.mp4"
         autoPlay
         loop
         muted
