@@ -3,8 +3,11 @@ import GridPattern from './GridPattern';
 
 export default function SiteFooter() {
   return (
-    <footer id="footer" className="relative z-10 overflow-hidden bg-background pb-12 pt-28">
+    <footer id="footer" className="relative z-10 overflow-hidden pb-12 pt-28" style={{ background: 'linear-gradient(180deg, hsl(240, 15%, 6%) 0%, hsl(270, 20%, 4%) 100%)' }}>
       <GridPattern id="footer-grid" opacity={0.06} />
+      {/* Colorful glow accents */}
+      <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-purple-600/5 blur-3xl" />
+      <div className="absolute bottom-20 right-1/4 h-48 w-48 rounded-full bg-cyan-600/5 blur-3xl" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
 
       <div className="relative mx-auto max-w-[120rem] px-6 md:px-10">
@@ -61,7 +64,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 md:flex-row">
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-purple-500/10 pt-8 md:flex-row">
           <div className="flex gap-6 text-[11px] uppercase tracking-[0.16em] text-white/25">
             <span>© {new Date().getFullYear()} Webmers</span>
           </div>
