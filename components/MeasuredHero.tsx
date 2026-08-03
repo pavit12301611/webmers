@@ -58,7 +58,7 @@ export default function MeasuredHero() {
 
           <Link
             href="/marketplace"
-            className="animate-fade-rise-delay-2 mt-12 inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 px-14 py-5 text-base font-medium text-white shadow-[0_0_30px_rgba(139,92,246,0.35)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_50px_rgba(139,92,246,0.5)]"
+            className="animate-fade-rise-delay-2 mt-12 inline-flex cursor-pointer items-center gap-2 rounded-full bg-foreground px-14 py-5 text-base font-medium text-background transition-all duration-300 hover:scale-[1.03] hover:opacity-90"
           >
             Begin Journey
           </Link>

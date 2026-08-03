@@ -15,7 +15,7 @@ export default function MessagesPage() {
 
   if (!session) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-white">
+      <div className="flex min-h-screen items-center justify-center bg-background text-white">
         <div>Please <Link href="/auth/signin" className="underline">sign in</Link> to view messages.</div>
       </div>
     );
@@ -28,7 +28,7 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-background text-white">
       <div className="mx-auto max-w-5xl px-6 py-12">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-4xl tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>Messages</h1>

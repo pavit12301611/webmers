@@ -22,18 +22,18 @@ import { getCategories, getFeaturedListings, getLandingStats, getWishlist } from
 import { getCurrentUser } from '@/lib/auth';
 
 const steps = [
-  { step: '01', title: 'Explore', desc: 'Walk through curated, launch-ready websites organized by niche, stack and growth stage.', gradient: 'card-glow-purple' },
-  { step: '02', title: 'Secure', desc: 'Buy with confidence through protected checkout and a clear satisfaction window.', gradient: 'card-glow-cyan' },
-  { step: '03', title: 'Cultivate', desc: 'Open the visual editor, tune the brand, connect a domain and let your site grow.', gradient: 'card-glow-emerald' },
+  { step: '01', title: 'Explore', desc: 'Walk through curated, launch-ready websites organized by niche, stack and growth stage.', gradient: 'card' },
+  { step: '02', title: 'Secure', desc: 'Buy with confidence through protected checkout and a clear satisfaction window.', gradient: 'card' },
+  { step: '03', title: 'Cultivate', desc: 'Open the visual editor, tune the brand, connect a domain and let your site grow.', gradient: 'card' },
 ];
 
 const benefits = [
-  { icon: Wand2, title: 'No-Code Editor', desc: 'Change copy, images, colors and sections in a calm visual workspace.', glow: 'card-glow-purple' },
-  { icon: ShieldCheck, title: 'Secure Payments', desc: 'Stripe-ready checkout with escrow-style protection and buyer confidence.', glow: 'card-glow-cyan' },
-  { icon: Code2, title: 'Code Ownership', desc: 'Unlock the complete source when you need full customization freedom.', glow: 'card-glow-pink' },
-  { icon: Globe2, title: 'Custom Domains', desc: 'Launch on your own domain with SSL-ready publishing flows.', glow: 'card-glow-emerald' },
-  { icon: MessageCircle, title: 'Human Support', desc: 'Talk with sellers and get admin mediation if anything needs attention.', glow: 'card-glow-orange' },
-  { icon: ShieldCheck, title: 'Fair Guarantee', desc: 'Refund protection when a purchase does not match the listing description.', glow: 'card-glow-purple' },
+  { icon: Wand2, title: 'No-Code Editor', desc: 'Change copy, images, colors and sections in a calm visual workspace.', glow: 'card' },
+  { icon: ShieldCheck, title: 'Secure Payments', desc: 'Stripe-ready checkout with escrow-style protection and buyer confidence.', glow: 'card' },
+  { icon: Code2, title: 'Code Ownership', desc: 'Unlock the complete source when you need full customization freedom.', glow: 'card' },
+  { icon: Globe2, title: 'Custom Domains', desc: 'Launch on your own domain with SSL-ready publishing flows.', glow: 'card' },
+  { icon: MessageCircle, title: 'Human Support', desc: 'Talk with sellers and get admin mediation if anything needs attention.', glow: 'card' },
+  { icon: ShieldCheck, title: 'Fair Guarantee', desc: 'Refund protection when a purchase does not match the listing description.', glow: 'card' },
 ];
 
 const editorFeatures = [
@@ -56,9 +56,9 @@ const visualPlanFeatures = ['In-browser editor', 'Text, images, layout', 'Theme 
 const codePlanFeatures = ['Complete source code ZIP', 'Private GitHub repo access', 'Delivered to your inbox', 'Single-use time-limited download', 'Full customization freedom'];
 
 const sellSteps = [
-  { n: '01', title: 'List your site', desc: 'Upload screenshots, stack and description. We review every submission for quality.', glow: 'card-glow-purple' },
-  { n: '02', title: 'Get reviewed', desc: 'We verify the build and publish it once it meets our measured standard.', glow: 'card-glow-pink' },
-  { n: '03', title: 'Get paid', desc: 'Buy through protected checkout; funds release after the satisfaction window.', glow: 'card-glow-emerald' },
+  { n: '01', title: 'List your site', desc: 'Upload screenshots, stack and description. We review every submission for quality.', glow: 'card' },
+  { n: '02', title: 'Get reviewed', desc: 'We verify the build and publish it once it meets our measured standard.', glow: 'card' },
+  { n: '03', title: 'Get paid', desc: 'Buy through protected checkout; funds release after the satisfaction window.', glow: 'card' },
 ];
 
 // Ensure all data functions are actually used and correctly awaited
@@ -78,13 +78,13 @@ export default async function Home() {
   }
 
   return (
-    <main className="overflow-hidden" style={{ background: 'hsl(240, 15%, 6%)' }}>
+    <main className="overflow-hidden bg-background">
       <MeasuredHero />
 
       {/* Stats - overlapping */}
       <section className="relative z-20 -mt-20 px-4 md:px-10">
         <Reveal>
-          <div className="mx-auto max-w-7xl rounded-[1.6rem] border border-purple-500/15 bg-white/[0.04] px-6 py-6 backdrop-blur-2xl md:px-10 md:py-8 shadow-[0_0_60px_rgba(139,92,246,0.06)]">
+          <div className="mx-auto max-w-7xl rounded-[1.6rem] border border-border bg-white/[0.03] px-6 py-6 backdrop-blur-2xl md:px-10 md:py-8">
             <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
               {stats.map((s) => (
                 <div key={s.label} className="text-center md:text-left">
@@ -98,7 +98,7 @@ export default async function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="section-gradient-aurora relative px-6 pb-24 pt-28 md:px-10" style={{ background: 'hsl(240, 15%, 6%)' }}>
+      <section id="how" className="relative px-6 pb-24 pt-28 md:px-10">
         <GridPattern id="g1" />
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
@@ -118,7 +118,7 @@ export default async function Home() {
                 <div className={`group relative h-full rounded-[1.6rem] p-7 backdrop-blur-xl transition md:p-8 ${item.gradient}`}>
                   <div className="mb-10 flex items-center justify-between">
                     <span className="font-instrument text-5xl text-white/[0.08] transition group-hover:text-white/[0.15]">{item.step}</span>
-                    <span className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 ring-1 ring-purple-500/20" />
+                    <span className="h-10 w-10 rounded-full border border-border" />
                   </div>
                   <h3 className="mb-3 text-xl font-medium tracking-tight text-foreground md:text-2xl">{item.title}</h3>
                   <p className="text-[14px] leading-6 text-white/45">{item.desc}</p>
@@ -130,7 +130,7 @@ export default async function Home() {
       </section>
 
       {/* Featured */}
-      <section id="marketplace" className="section-gradient-sunset relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section id="marketplace" className="relative px-6 py-24 md:px-10">
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-10 flex items-end justify-between gap-6">
@@ -144,7 +144,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/marketplace"
-                className="hidden items-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm text-white/60 transition hover:border-purple-500/30 hover:text-foreground md:inline-flex"
+                className="hidden items-center gap-2 rounded-full border border-border px-5 py-3 text-sm text-white/60 transition hover:border-foreground/30 hover:text-foreground md:inline-flex"
               >
                 View all <ArrowRight size={14} />
               </Link>
@@ -161,7 +161,7 @@ export default async function Home() {
       </section>
 
       {/* Editor showcase */}
-      <section className="section-gradient-ocean relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section className="relative px-6 py-24 md:px-10">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2 lg:gap-20">
           <Reveal>
             <div>
@@ -175,20 +175,20 @@ export default async function Home() {
               <ul className="mt-8 grid gap-3 text-sm text-white/50 sm:grid-cols-2">
                 {editorFeatures.map((f) => (
                   <li key={f} className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.03] px-4 py-3">
-                    <Sparkles size={14} className="shrink-0 text-purple-400/60" /> {f}
+                    <Sparkles size={14} className="shrink-0 text-foreground/50" /> {f}
                   </li>
                 ))}
               </ul>
               <Link
                 href="/editor"
-                className="mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 text-sm font-medium text-white transition hover:opacity-90 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+                className="mt-9 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:opacity-90"
               >
                 Try the editor <ArrowRight size={14} />
               </Link>
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <div className="relative overflow-hidden rounded-[1.8rem] border border-cyan-500/15 bg-[#0c0c14] p-2 shadow-[0_0_60px_rgba(6,182,212,0.08)]">
+            <div className="relative overflow-hidden rounded-[1.8rem] border border-border bg-background p-2">
               <div className="relative aspect-[4/3] overflow-hidden rounded-[1.2rem]">
                 <Image
                   src="/editor-preview.jpg"
@@ -200,8 +200,8 @@ export default async function Home() {
                   className="object-cover"
                 />
               </div>
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              <div className="absolute bottom-6 left-6 rounded-full liquid-glass px-4 py-2 text-[11px] uppercase tracking-widest text-white/60">
+              <div className="pointer-events-none absolute inset-0 bg-black/50" />
+              <div className="absolute bottom-6 left-6 rounded-full panel px-4 py-2 text-[11px] uppercase tracking-widest text-white/60">
                 Live preview • Measured
               </div>
             </div>
@@ -210,7 +210,7 @@ export default async function Home() {
       </section>
 
       {/* Categories */}
-      <section className="section-gradient-forest relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section className="relative px-6 py-24 md:px-10">
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-10 flex flex-col gap-3">
@@ -221,26 +221,23 @@ export default async function Home() {
             </div>
           </Reveal>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {categories.map((cat, i) => {
-              const gradients = ['card-glow-purple', 'card-glow-pink', 'card-glow-cyan', 'card-glow-emerald', 'card-glow-orange', 'card-glow-purple', 'card-glow-cyan', 'card-glow-pink'];
-              return (
-                <Reveal key={cat.name} delay={i * 70}>
-                  <Link
-                    href={`/marketplace?cat=${encodeURIComponent(cat.name)}`}
-                    className={`group block h-full rounded-[1.4rem] p-6 backdrop-blur-xl transition hover:-translate-y-0.5 ${gradients[i % gradients.length]}`}
-                  >
-                    <h3 className="mb-1 font-instrument text-xl tracking-tight text-foreground md:text-2xl">{cat.name}</h3>
-                    <span className="text-[13px] text-muted-foreground">{cat.count} listings</span>
-                  </Link>
-                </Reveal>
-              );
-            })}
+            {categories.map((cat, i) => (
+              <Reveal key={cat.name} delay={i * 70}>
+                <Link
+                  href={`/marketplace?cat=${encodeURIComponent(cat.name)}`}
+                  className="group block h-full rounded-[1.4rem] p-6 backdrop-blur-xl transition hover:-translate-y-0.5 card"
+                >
+                  <h3 className="mb-1 font-instrument text-xl tracking-tight text-foreground md:text-2xl">{cat.name}</h3>
+                  <span className="text-[13px] text-muted-foreground">{cat.count} listings</span>
+                </Link>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Why Webmers */}
-      <section className="section-gradient-aurora relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section className="relative px-6 py-24 md:px-10">
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-12 max-w-3xl">
@@ -256,7 +253,7 @@ export default async function Home() {
               return (
                 <Reveal key={item.title} delay={i * 70}>
                   <div className={`h-full rounded-[1.5rem] p-7 backdrop-blur-xl transition ${item.glow}`}>
-                    <Icon className="mb-5 text-purple-400/60" size={22} />
+                    <Icon className="mb-5 text-foreground/60" size={22} />
                     <h3 className="mb-2 text-[18px] font-medium text-foreground">{item.title}</h3>
                     <p className="text-[14px] leading-6 text-white/45">{item.desc}</p>
                   </div>
@@ -268,7 +265,7 @@ export default async function Home() {
       </section>
 
       {/* Sell on Webmers */}
-      <section className="section-gradient-sunset relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section className="relative px-6 py-24 md:px-10">
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-12 max-w-3xl">
@@ -281,7 +278,7 @@ export default async function Home() {
               </p>
               <Link
                 href="/sell"
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 px-6 py-3 text-sm font-medium text-white transition hover:opacity-90 shadow-[0_0_20px_rgba(251,146,60,0.3)]"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:opacity-90"
               >
                 Start selling <ArrowRight size={14} />
               </Link>
@@ -302,7 +299,7 @@ export default async function Home() {
       </section>
 
       {/* Layout options */}
-      <section className="section-gradient-ocean relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section className="relative px-6 py-24 md:px-10">
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <div className="mx-auto mb-12 max-w-3xl text-center">
@@ -318,40 +315,32 @@ export default async function Home() {
             </div>
           </Reveal>
           <div className="grid gap-6 md:grid-cols-3">
-            {layoutVariants.map((layout, i) => {
-              const overlays = [
-                'from-purple-900/60 via-purple-900/20 to-transparent',
-                'from-cyan-900/60 via-cyan-900/20 to-transparent',
-                'from-emerald-900/60 via-emerald-900/20 to-transparent',
-              ];
-              const borders = ['border-purple-500/20', 'border-cyan-500/20', 'border-emerald-500/20'];
-              return (
-                <Reveal key={layout} delay={i * 90}>
-                  <div className={`group relative aspect-[3/4] h-full overflow-hidden rounded-[1.8rem] border bg-[#0c0c14] ${borders[i]}`}>
-                    <Image
-                      src="/layout-preview.jpg"
-                      alt=""
-                      fill
-                      loading="lazy"
-                      decoding="async"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover opacity-40 mix-blend-overlay"
-                    />
-                    <div className={`absolute inset-0 bg-gradient-to-t ${overlays[i]}`} />
-                    <div className="absolute bottom-0 left-0 right-0 p-7">
-                      <h3 className="font-instrument text-2xl tracking-tight text-foreground">{layout}</h3>
-                      <p className="mt-2 text-[12px] uppercase tracking-widest text-white/40">Variant {layout.replace('-', ' ')}</p>
-                    </div>
+            {layoutVariants.map((layout, i) => (
+              <Reveal key={layout} delay={i * 90}>
+                <div className="group relative aspect-[3/4] h-full overflow-hidden rounded-[1.8rem] border border-border bg-background">
+                  <Image
+                    src="/layout-preview.jpg"
+                    alt=""
+                    fill
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover opacity-40 mix-blend-overlay"
+                  />
+                  <div className="absolute inset-0 bg-black/60" />
+                  <div className="absolute bottom-0 left-0 right-0 p-7">
+                    <h3 className="font-instrument text-2xl tracking-tight text-foreground">{layout}</h3>
+                    <p className="mt-2 text-[12px] uppercase tracking-widest text-white/40">Variant {layout.replace('-', ' ')}</p>
                   </div>
-                </Reveal>
-              );
-            })}
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section id="stories" className="section-gradient-aurora relative px-6 py-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section id="stories" className="relative px-6 py-24 md:px-10">
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <div className="mb-10">
@@ -364,17 +353,17 @@ export default async function Home() {
           <div className="grid gap-6 md:grid-cols-2">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={i * 90}>
-                <div className={`h-full rounded-[1.8rem] p-8 backdrop-blur-xl md:p-10 ${i === 0 ? 'card-glow-purple' : 'card-glow-pink'}`}>
+                <div className={`h-full rounded-[1.8rem] p-8 backdrop-blur-xl md:p-10 card`}>
                   <div className="mb-5 flex gap-1">
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} size={14} fill="currentColor" className="text-amber-400/80" />
+                      <Star key={i} size={14} fill="currentColor" className="text-foreground/80" />
                     ))}
                   </div>
                   <blockquote className="mb-7 text-balance font-instrument text-xl font-[400] leading-snug md:text-2xl text-foreground">
                     "{t.quote}"
                   </blockquote>
                   <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-full ring-1 ring-white/15 ${i === 0 ? 'bg-gradient-to-br from-purple-400/40 to-pink-400/40' : 'bg-gradient-to-br from-cyan-400/40 to-emerald-400/40'}`} />
+                    <div className={`h-10 w-10 rounded-full ring-1 ring-white/15 bg-foreground/15`} />
                     <div>
                       <div className="text-[14px] font-medium text-foreground">{t.name}</div>
                       <div className="text-[12px] text-white/40">{t.role} · Purchased {t.site}</div>
@@ -388,7 +377,7 @@ export default async function Home() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="section-gradient-sunset relative px-6 py-24 text-center md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section id="pricing" className="relative px-6 py-24 text-center md:px-10">
         <GridPattern id="g2" />
         <div className="relative mx-auto max-w-5xl">
           <Reveal>
@@ -404,31 +393,31 @@ export default async function Home() {
           </Reveal>
           <div className="mx-auto grid max-w-4xl gap-5 text-left md:grid-cols-2">
             <Reveal>
-              <div className="h-full rounded-[1.6rem] border border-white/[0.08] bg-white/[0.03] p-8 backdrop-blur-xl card-glow-cyan">
+              <div className="h-full rounded-[1.6rem] border border-border bg-white/[0.03] p-8 backdrop-blur-xl card">
                 <h3 className="mb-2 text-[18px] font-medium text-foreground">Visual Edit</h3>
                 <div className="mb-6 font-instrument text-4xl text-foreground">Included</div>
                 <ul className="space-y-3 text-[13px] text-white/50">
                   {visualPlanFeatures.map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/60" /> {f}
+                      <span className="h-1.5 w-1.5 rounded-full bg-foreground/60" /> {f}
                     </li>
                   ))}
                 </ul>
               </div>
             </Reveal>
             <Reveal delay={100}>
-              <div className="relative h-full overflow-hidden rounded-[1.6rem] border border-purple-500/30 bg-white p-8 text-black shadow-[0_0_40px_rgba(139,92,246,0.15)]">
-                <div className="absolute right-0 top-0 rounded-bl-xl bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+              <div className="relative h-full overflow-hidden rounded-[1.6rem] border border-border bg-foreground p-8 text-background">
+                <div className="absolute right-0 top-0 rounded-bl-xl bg-foreground px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-background">
                   Premium
                 </div>
                 <h3 className="mb-2 text-[18px] font-medium">Full Code Access</h3>
                 <div className="mb-6 font-instrument text-4xl">
-                  $49 <span className="text-[14px] font-sans text-black/40">/ add-on</span>
+                  $49 <span className="text-[14px] font-sans text-background/40">/ add-on</span>
                 </div>
-                <ul className="space-y-3 text-[13px] text-black/60">
+                <ul className="space-y-3 text-[13px] text-background/60">
                   {codePlanFeatures.map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-purple-600" /> {f}
+                      <span className="h-1.5 w-1.5 rounded-full bg-background" /> {f}
                     </li>
                   ))}
                 </ul>
@@ -439,9 +428,9 @@ export default async function Home() {
       </section>
 
       {/* Newsletter */}
-      <section className="section-gradient-ocean relative px-6 pb-24 md:px-10" style={{ background: 'hsl(240, 15%, 6%)', contentVisibility: 'auto' }}>
+      <section className="relative px-6 pb-24 md:px-10">
         <Reveal>
-          <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-purple-500/15 p-8 text-center backdrop-blur-xl md:p-14 card-glow-purple">
+          <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-border p-8 text-center backdrop-blur-xl md:p-14 card">
             <div className="flex justify-center">
               <Eyebrow>Weekly harvest</Eyebrow>
             </div>

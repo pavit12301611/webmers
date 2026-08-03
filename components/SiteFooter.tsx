@@ -3,12 +3,8 @@ import GridPattern from './GridPattern';
 
 export default function SiteFooter() {
   return (
-    <footer id="footer" className="relative z-10 overflow-hidden pb-12 pt-28" style={{ background: 'linear-gradient(180deg, hsl(240, 15%, 6%) 0%, hsl(270, 20%, 4%) 100%)' }}>
+    <footer id="footer" className="relative z-10 overflow-hidden pb-12 pt-28 bg-background">
       <GridPattern id="footer-grid" opacity={0.06} />
-      {/* Colorful glow accents */}
-      <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-purple-600/5 blur-3xl" />
-      <div className="absolute bottom-20 right-1/4 h-48 w-48 rounded-full bg-cyan-600/5 blur-3xl" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
 
       <div className="relative mx-auto max-w-[120rem] px-6 md:px-10">
         <div className="flex flex-col items-start justify-between gap-12 rounded-[2rem] p-8 liquid-glass md:flex-row md:p-12">
@@ -25,7 +21,7 @@ export default function SiteFooter() {
               Measured marketplace for launch-ready websites. Buy a polished site, edit it visually, and own a measured digital home.
             </p>
             <div className="mt-8 flex gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.7)]" />
+              <span className="h-2 w-2 rounded-full bg-foreground" />
               <span className="text-[11px] uppercase tracking-[0.2em] text-white/40">All systems measured</span>
             </div>
           </div>

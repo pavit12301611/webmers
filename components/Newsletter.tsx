@@ -63,7 +63,7 @@ export default function Newsletter() {
           {state === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
-      {state === 'error' && <p className="mt-3 text-sm text-rose-300">{message}</p>}
+      {state === 'error' && <p className="mt-3 text-sm text-foreground">{message}</p>}
     </form>
   );
 }

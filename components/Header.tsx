@@ -146,7 +146,7 @@ export default function Header({ hero = false }: HeaderProps) {
                   href={dashboardHref(user.role)}
                   className="liquid-glass flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white"
                 >
-                  <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+                  <span className="h-2 w-2 rounded-full bg-foreground" />
                   Dashboard
                 </Link>
                 <Link
@@ -155,7 +155,7 @@ export default function Header({ hero = false }: HeaderProps) {
                   aria-label="Notifications"
                 >
                   <Bell size={18} />
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-400 text-[9px] font-bold text-black shadow-lg">
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[9px] font-bold text-background shadow-lg">
                     3
                   </span>
                 </Link>
@@ -178,7 +178,7 @@ export default function Header({ hero = false }: HeaderProps) {
                   href="/marketplace"
                   className="liquid-glass flex items-center gap-2.5 rounded-full px-5 py-2.5 text-sm font-medium text-white"
                 >
-                  <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+                  <span className="h-2 w-2 rounded-full bg-foreground" />
                   Reserve Yours
                 </Link>
               </>
@@ -200,7 +200,7 @@ export default function Header({ hero = false }: HeaderProps) {
 
       <div
         className={`fixed inset-0 z-[55] transition-transform duration-500 ease-[cubic-bezier(0.77,0,0.18,1)] ${
-          hero ? 'bg-background' : 'bg-[#0a0a0a]'
+          hero ? 'bg-background' : 'bg-background'
         } ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}
         aria-hidden={!isOpen}
       >
@@ -249,7 +249,7 @@ export default function Header({ hero = false }: HeaderProps) {
                 }}
                 className="liquid-glass flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-medium text-white"
               >
-                <span className="h-2 w-2 rounded-full bg-green-400" /> Sign out
+                <span className="h-2 w-2 rounded-full bg-foreground" /> Sign out
               </button>
             ) : (
               <Link

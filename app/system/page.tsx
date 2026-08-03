@@ -2,7 +2,7 @@ import { Shield, Activity } from 'lucide-react';
 
 export default function SystemHealthPage() {
   return (
-    <main className="bg-[#0a0a0a] text-white px-6 md:px-10 py-20 md:py-28">
+    <main className="bg-background text-white px-6 md:px-10 py-20 md:py-28">
       <div className="mx-auto max-w-4xl">
         <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/50">
           <Shield size={12} /> System

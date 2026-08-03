@@ -27,7 +27,7 @@ const perks = [
 
 export default function SellPage() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen overflow-hidden bg-background">
       <Header />
 
       <section className="relative px-6 pb-20 pt-36 md:px-10">
@@ -112,7 +112,7 @@ export default function SellPage() {
 
       <section className="relative px-6 pb-28 md:px-10">
         <Reveal>
-          <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-10 text-center backdrop-blur-xl md:p-14">
+          <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-10 text-center backdrop-blur-xl md:p-14">
             <h2 className="text-3xl tracking-tight text-white md:text-5xl" style={{ fontFamily: 'var(--font-instrument)' }}>
               Ready to list your first site?
             </h2>

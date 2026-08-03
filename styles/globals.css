@@ -8,16 +8,18 @@
 
 @layer base {
   :root {
-    --background: 240 15% 6%;
-    --foreground: 0 0% 100%;
-    --muted-foreground: 240 4% 66%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 4%;
-    --secondary: 0 0% 10%;
+    /* ── Two-color system: ink + paper only ── */
+    --background: 0 0% 4%;          /* ink  ≈ #0a0a0a */
+    --foreground: 0 0% 98%;         /* paper ≈ #fafafa */
     --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 64%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --primary: 0 0% 98%;            /* paper */
+    --primary-foreground: 0 0% 4%;  /* ink */
+    --secondary: 0 0% 10%;
     --accent: 0 0% 10%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
+
     --font-display: 'Instrument Serif', serif;
     --font-body: 'Inter', sans-serif;
 
@@ -52,8 +54,8 @@
   }
 
   ::selection {
-    background: rgba(168, 85, 247, 0.3);
-    color: white;
+    background: hsl(var(--foreground) / 0.18);
+    color: hsl(var(--foreground));
   }
 
   ::-webkit-scrollbar {
@@ -61,10 +63,10 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0a0a0a;
+    background: hsl(var(--background));
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #a855f7, #ec4899);
+    background: hsl(var(--foreground) / 0.35);
     border-radius: 9999px;
   }
 }
@@ -80,16 +82,48 @@
     font-family: var(--font-display);
   }
 
-  /* Dashboard nature theme */
+  /* ── Reusable two-color surface ───────────────────────────────────────── */
+  .card {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--foreground) / 0.02);
+  }
+  .card:hover {
+    border-color: hsl(var(--foreground) / 0.22);
+  }
+
+  /* Frosted panel — two-color only (no gradient). */
+  .panel {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Section eyebrow pill. */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--foreground) / 0.04);
+    padding: 0.25rem 0.75rem;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* ── Legacy theme classes, redefined as two-color (kept for parity) ────── */
   .nature-page {
-    background: linear-gradient(180deg, #040d09 0%, #07130e 30%, #060f0b 70%, #030a07 100%);
-    color: #ecfdf5;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   .leaf-card {
-    background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, rgba(16, 185, 129, 0.01) 100%);
-    border: 1px solid rgba(16, 185, 129, 0.1);
-    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--foreground) / 0.02);
+    border-radius: 1.5rem;
   }
 
   .btn-forest {
@@ -98,15 +132,14 @@
     justify-content: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    background: linear-gradient(135deg, #a3e635, #10b981);
-    color: #07130e;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
     font-weight: 600;
     font-size: 0.875rem;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
   }
   .btn-forest:hover {
-    transform: scale(1.01);
-    opacity: 0.92;
+    opacity: 0.9;
   }
 
   .section-eyebrow {
@@ -114,231 +147,73 @@
     align-items: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    border: 1px solid rgba(16, 185, 129, 0.15);
-    background: rgba(16, 185, 129, 0.04);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--foreground) / 0.04);
     padding: 0.25rem 0.75rem;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(167, 243, 208, 0.5);
-    margin-bottom: 0.75rem;
+    color: hsl(var(--muted-foreground));
   }
 
   .stat-card {
-    position: relative;
-    overflow: hidden;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--foreground) / 0.02);
     border-radius: 1.5rem;
-    border: 1px solid rgba(16, 185, 129, 0.08);
-    background: linear-gradient(180deg, rgba(16, 185, 129, 0.03) 0%, transparent 100%);
     padding: 1.5rem;
   }
-  .stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 120px;
-    height: 120px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
-    pointer-events: none;
+
+  /* All "card-glow-*" share one two-color treatment. */
+  .card-glow-purple,
+  .card-glow-pink,
+  .card-glow-cyan,
+  .card-glow-emerald,
+  .card-glow-orange {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--foreground) / 0.02);
+  }
+  .card-glow-purple:hover,
+  .card-glow-pink:hover,
+  .card-glow-cyan:hover,
+  .card-glow-emerald:hover,
+  .card-glow-orange:hover {
+    border-color: hsl(var(--foreground) / 0.22);
   }
 
-  /* Animated colorful hero gradient */
-  .hero-gradient-animated {
-    background: linear-gradient(
-      135deg,
-      #1a0533 0%,
-      #0f1b3d 15%,
-      #0c2235 30%,
-      #1a0533 45%,
-      #2d1054 60%,
-      #0f1b3d 75%,
-      #0c2235 100%
-    );
-    background-size: 400% 400%;
-    animation: hero-gradient-shift 15s ease infinite;
+  /* All "text-gradient-*" become solid paper (no gradient). */
+  .text-gradient-purple,
+  .text-gradient-sunset,
+  .text-gradient-ocean,
+  .text-gradient-aurora,
+  .text-gradient-emerald {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: hsl(var(--foreground));
+    color: hsl(var(--foreground));
   }
 
-  @keyframes hero-gradient-shift {
-    0% { background-position: 0% 50%; }
-    25% { background-position: 50% 0%; }
-    50% { background-position: 100% 50%; }
-    75% { background-position: 50% 100%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* Colorful section backgrounds */
-  .section-gradient-aurora {
-    position: relative;
-  }
-  .section-gradient-aurora::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 80% 50% at 20% 40%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 50% at 50% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .section-gradient-sunset {
-    position: relative;
-  }
-  .section-gradient-sunset::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 80% 50% at 80% 40%, rgba(251, 146, 60, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 20% 60%, rgba(239, 68, 68, 0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 50% at 50% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .section-gradient-ocean {
-    position: relative;
-  }
-  .section-gradient-ocean::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 80% 50% at 20% 60%, rgba(6, 182, 212, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 50% at 50% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
+  /* Section backdrop hook (used for absolutely-positioned grid patterns). */
+  .section-gradient-aurora,
+  .section-gradient-sunset,
+  .section-gradient-ocean,
   .section-gradient-forest {
     position: relative;
   }
-  .section-gradient-forest::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 80% 50% at 30% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 70% 30%, rgba(163, 230, 53, 0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 70% 50% at 50% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+
+  /* Hero base — solid ink, no animated color wash. */
+  .hero-gradient-animated {
+    background: hsl(var(--background));
   }
 
-  /* Colorful card styles */
-  .card-glow-purple {
-    border: 1px solid rgba(139, 92, 246, 0.12);
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(15, 23, 42, 0.8) 100%);
-  }
-  .card-glow-purple:hover {
-    border-color: rgba(139, 92, 246, 0.25);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.08);
-  }
-
-  .card-glow-pink {
-    border: 1px solid rgba(236, 72, 153, 0.12);
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.03) 0%, rgba(15, 23, 42, 0.8) 100%);
-  }
-  .card-glow-pink:hover {
-    border-color: rgba(236, 72, 153, 0.25);
-    box-shadow: 0 0 30px rgba(236, 72, 153, 0.08);
-  }
-
-  .card-glow-cyan {
-    border: 1px solid rgba(6, 182, 212, 0.12);
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(15, 23, 42, 0.8) 100%);
-  }
-  .card-glow-cyan:hover {
-    border-color: rgba(6, 182, 212, 0.25);
-    box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
-  }
-
-  .card-glow-emerald {
-    border: 1px solid rgba(16, 185, 129, 0.12);
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(15, 23, 42, 0.8) 100%);
-  }
-  .card-glow-emerald:hover {
-    border-color: rgba(16, 185, 129, 0.25);
-    box-shadow: 0 0 30px rgba(16, 185, 129, 0.08);
-  }
-
-  .card-glow-orange {
-    border: 1px solid rgba(251, 146, 60, 0.12);
-    background: linear-gradient(135deg, rgba(251, 146, 60, 0.03) 0%, rgba(15, 23, 42, 0.8) 100%);
-  }
-  .card-glow-orange:hover {
-    border-color: rgba(251, 146, 60, 0.25);
-    box-shadow: 0 0 30px rgba(251, 146, 60, 0.08);
-  }
-
-  /* Colorful text utilities */
-  .text-gradient-purple {
-    background: linear-gradient(135deg, #a855f7, #6366f1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-sunset {
-    background: linear-gradient(135deg, #f97316, #ef4444, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-ocean {
-    background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-aurora {
-    background: linear-gradient(135deg, #a855f7, #ec4899, #06b6d4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-emerald {
-    background: linear-gradient(135deg, #10b981, #06b6d4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
+  /* Frosted glass — two-color only. */
   .liquid-glass {
-    background: rgba(255, 255, 255, 0.01);
-    background-blend-mode: luminosity;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: none;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
-  }
-  .liquid-glass::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.4px;
-    background: linear-gradient(
-      180deg,
-      rgba(168, 85, 247, 0.3) 0%,
-      rgba(236, 72, 153, 0.15) 20%,
-      rgba(255, 255, 255, 0) 40%,
-      rgba(255, 255, 255, 0) 60%,
-      rgba(6, 182, 212, 0.15) 80%,
-      rgba(16, 185, 129, 0.3) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 
   .text-balance {
@@ -416,9 +291,6 @@
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-}
-@media (max-width: 768px) {
-  .liquid-glass { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 }
 
 /* ── Scroll-hint bounce arrow ───────────────────────────────────────────── */

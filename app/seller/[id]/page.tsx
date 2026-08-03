@@ -33,7 +33,7 @@ export default async function SellerPage({ params }: { params: { id: string } })
   ];
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen overflow-hidden bg-background">
       <Header />
 
       <section className="relative px-6 pb-12 pt-36 md:px-10">

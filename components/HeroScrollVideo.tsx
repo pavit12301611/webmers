@@ -80,7 +80,7 @@ export default function HeroScrollVideo() {
       {/* ── Sticky panel — stays in viewport during the scrub zone ── */}
       <div className="sticky top-0 h-screen w-full overflow-hidden">
 
-        {/* Layer 0 — animated gradient base (always present) */}
+        {/* Layer 0 — solid ink base (always present) */}
         <div
           className="absolute inset-0 z-0 hero-gradient-animated"
           aria-hidden="true"
@@ -115,24 +115,20 @@ export default function HeroScrollVideo() {
           aria-hidden="true"
         />
 
-        {/* Layer 2 — colour tint overlay (gets slightly lighter as user scrolls) */}
+        {/* Layer 2 — neutral legibility wash (slightly lighter as user scrolls) */}
         <div
           className="absolute inset-0 z-[2] pointer-events-none"
           style={{
-            background: `linear-gradient(135deg,
-              rgba(139,92,246,${0.35 - progress * 0.1}) 0%,
-              rgba(236,72,153,${0.20 - progress * 0.05}) 30%,
-              rgba(6,182,212,${0.20 - progress * 0.05}) 60%,
-              rgba(16,185,129,${0.25 - progress * 0.08}) 100%)`,
+            background: `rgba(10,10,10,${0.35 - progress * 0.1})`,
           }}
           aria-hidden="true"
         />
 
-        {/* Layer 3 — subtle vignette at bottom so content blends */}
+        {/* Layer 3 — solid ink wash at bottom so content stays legible over video */}
         <div
           className="absolute inset-x-0 bottom-0 z-[3] h-40 pointer-events-none"
           style={{
-            background: 'linear-gradient(to top, hsl(240,15%,6%) 0%, transparent 100%)',
+            background: 'hsl(var(--background) / 0.85)',
           }}
           aria-hidden="true"
         />

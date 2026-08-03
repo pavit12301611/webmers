@@ -1,4 +1,22 @@
 /** @type {import('tailwindcss').Config} */
+// ── Two-color system ───────────────────────────────────────────────────────
+// Every hue maps to the SAME ink↔paper monochrome scale. This keeps the whole
+// site on exactly two colors (ink + paper) with no per-file edits required for
+// legacy `emerald-*` / `lime-*` / `purple-*` / etc. utilities.
+const mono = {
+  50: '#fafafa',
+  100: '#f0f0f0',
+  200: '#e5e5e5',
+  300: '#d4d4d4',
+  400: '#a3a3a3',
+  500: '#737373',
+  600: '#525252',
+  700: '#404040',
+  800: '#262626',
+  900: '#171717',
+  950: '#0a0a0a',
+};
+
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -31,6 +49,24 @@ module.exports = {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--foreground))',
         },
+        // Monochrome overrides — see note above.
+        emerald: mono,
+        lime: mono,
+        green: mono,
+        teal: mono,
+        cyan: mono,
+        sky: mono,
+        blue: mono,
+        indigo: mono,
+        violet: mono,
+        purple: mono,
+        fuchsia: mono,
+        pink: mono,
+        rose: mono,
+        red: mono,
+        orange: mono,
+        amber: mono,
+        yellow: mono,
         webmers: {
           black: '#0a0a0a',
           white: '#fafafa',

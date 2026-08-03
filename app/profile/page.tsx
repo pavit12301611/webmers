@@ -4,7 +4,7 @@ import { ShieldCheck, Bell, Key } from 'lucide-react';
 
 export default function ProfilePage() {
   return (
-    <main className="bg-[#0a0a0a] text-white px-6 md:px-10 py-20 md:py-28">
+    <main className="bg-background text-white px-6 md:px-10 py-20 md:py-28">
       <div className="mx-auto max-w-4xl">
         <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/50">
           <ShieldCheck size={12} /> Account
@@ -19,7 +19,7 @@ export default function ProfilePage() {
         <div className="grid gap-6 md:grid-cols-2">
           <section className="rounded-[1.6rem] border border-white/[0.08] bg-white/[0.03] p-7 backdrop-blur-xl">
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-amber-300/20 to-fuchsia-300/20 flex items-center justify-center text-amber-200 text-xs font-bold">YOU</div>
+              <div className="h-10 w-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground/80 text-xs font-bold">YOU</div>
               <div>
                 <h2 className="text-lg font-display font-bold">Profile</h2>
                 <p className="text-[12px] text-white/30">Your public identity</p>
@@ -40,7 +40,7 @@ export default function ProfilePage() {
 
           <section className="rounded-[1.6rem] border border-white/[0.08] bg-white/[0.03] p-7 backdrop-blur-xl">
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-emerald-300/20 to-cyan-300/20 flex items-center justify-center text-emerald-200 text-xs font-bold"><Key size={18} /></div>
+              <div className="h-10 w-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground/80 text-xs font-bold"><Key size={18} /></div>
               <div>
                 <h2 className="text-lg font-display font-bold">Security</h2>
                 <p className="text-[12px] text-white/30">Passwords and authentication</p>
@@ -61,7 +61,7 @@ export default function ProfilePage() {
 
           <section className="rounded-[1.6rem] border border-white/[0.08] bg-white/[0.03] p-7 backdrop-blur-xl md:col-span-2">
             <div className="flex items-center gap-3 mb-5">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-violet-300/20 to-rose-300/20 flex items-center justify-center text-violet-200 text-xs font-bold"><Bell size={18} /></div>
+              <div className="h-10 w-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground/80 text-xs font-bold"><Bell size={18} /></div>
               <div>
                 <h2 className="text-lg font-display font-bold">Notifications</h2>
                 <p className="text-[12px] text-white/30">In-app and email preferences</p>

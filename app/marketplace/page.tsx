@@ -70,7 +70,7 @@ export default async function MarketplacePage({
   };
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen overflow-hidden bg-background">
       <Header />
 
       <section className="relative px-6 pb-12 pt-36 md:px-10">
@@ -112,7 +112,7 @@ export default async function MarketplacePage({
                   className="bg-transparent text-sm text-white/80 outline-none"
                 >
                   {SORTS.map((s) => (
-                    <option key={s.value} value={s.value} className="bg-[#0a0a0a]">
+                    <option key={s.value} value={s.value} className="bg-background">
                       {s.label}
                     </option>
                   ))}

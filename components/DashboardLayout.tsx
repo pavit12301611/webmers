@@ -48,10 +48,10 @@ export default async function DashboardLayout({
   return (
     <div className="nature-page flex min-h-screen text-emerald-50">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed z-30 h-full w-72 flex-col border-r border-emerald-50/10 bg-[#07130e]/80 backdrop-blur-2xl">
+      <aside className="hidden lg:flex fixed z-30 h-full w-72 flex-col border-r border-emerald-50/10 bg-background/80 backdrop-blur-2xl">
         <div className="border-b border-emerald-50/8 p-6">
           <Link href="/" className="inline-flex items-center gap-2 font-display text-2xl font-bold">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-lime-200 to-emerald-500 text-[#07130e]">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-foreground text-background">
               <Leaf size={18} fill="currentColor" />
             </span>
             Webmers
@@ -67,7 +67,7 @@ export default async function DashboardLayout({
         {/* User card */}
         <div className="border-t border-emerald-50/8 p-4">
           <div className="flex items-center gap-3 rounded-xl bg-emerald-50/[0.04] p-3 mb-3">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-emerald-400 to-lime-300 text-sm font-bold text-[#07130e]">
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-foreground text-background text-sm font-bold">
               {userInitial}
             </div>
             <div className="min-w-0 flex-1">
@@ -80,9 +80,9 @@ export default async function DashboardLayout({
       </aside>
 
       {/* Mobile top bar */}
-      <div className="lg:hidden fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-50/10 bg-[#07130e]/90 px-4 backdrop-blur-2xl">
+      <div className="lg:hidden fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-50/10 bg-background/90 px-4 backdrop-blur-2xl">
         <Link href="/" className="inline-flex items-center gap-2 font-display text-xl font-bold">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-lime-200 to-emerald-500 text-[#07130e]">
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
             <Leaf size={14} fill="currentColor" />
           </span>
           Webmers
