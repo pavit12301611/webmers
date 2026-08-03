@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
   title: {
-    default: 'WANDER · Webmers — Premium Gear & Website Marketplace',
+    default: 'WEBMERS — Premium Gear & Website Marketplace',
     template: '%s · Webmers',
   },
   description: 'The premium marketplace for fully-built websites and digital gear. Precision-built for every journey.',
   openGraph: {
-    title: 'WANDER · Webmers',
+    title: 'WEBMERS — Premium Gear & Website Marketplace',
     description: 'Explore launch-ready websites and gear for every journey.',
     siteName: 'Webmers',
     type: 'website',

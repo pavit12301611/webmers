@@ -10,7 +10,7 @@ export default function SiteFooter() {
             <div className="mb-6 flex items-center gap-3">
               <Mountain size={30} className="text-wander-orange" />
               <span className="font-heading text-3xl font-bold uppercase tracking-[0.2em] text-white">
-                WANDER
+                WEBMERS
               </span>
             </div>
             <p className="text-[15px] leading-7 text-white/70 font-body">
@@ -67,7 +67,7 @@ export default function SiteFooter() {
 
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-wander-dark/10 pt-6 md:flex-row text-wander-dark/70 font-body">
           <div className="text-xs font-medium uppercase tracking-[0.16em]">
-            © {new Date().getFullYear()} WANDER · Webmers Platform
+            © {new Date().getFullYear()} WEBMERS Platform
           </div>
           <div className="flex gap-6 text-xs font-medium uppercase tracking-[0.16em]">
             <Link href="/privacy" className="transition hover:text-wander-orange">Privacy</Link>

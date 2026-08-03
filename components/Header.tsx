@@ -15,7 +15,7 @@ function dashboardHref(role?: string) {
   return '/dashboard/buyer';
 }
 
-const WANDER_NAV_ITEMS = [
+const WEBMERS_NAV_ITEMS = [
   { label: 'Camping', href: '/marketplace?cat=Camping' },
   { label: 'Hiking', href: '/marketplace?cat=Hiking' },
   { label: 'Backpacks', href: '/marketplace?cat=Backpacks' },
@@ -62,13 +62,13 @@ export default function Header({ hero = false }: HeaderProps) {
             <Link href="/" className="flex items-center gap-3 text-wander-dark group">
               <Mountain size={28} className="text-wander-dark transition-transform group-hover:scale-105" />
               <span className="font-bold text-xl uppercase tracking-[0.25em] text-wander-dark font-heading">
-                WANDER
+                WEBMERS
               </span>
             </Link>
 
             {/* Links (Center) - Hidden on mobile, flex on large screens */}
             <nav className="hidden lg:flex items-center gap-8" aria-label="Primary navigation">
-              {WANDER_NAV_ITEMS.map((item) => (
+              {WEBMERS_NAV_ITEMS.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
@@ -175,7 +175,7 @@ export default function Header({ hero = false }: HeaderProps) {
             <Link href="/" onClick={close} className="flex items-center gap-3 text-wander-dark">
               <Mountain size={28} className="text-wander-dark" />
               <span className="font-bold text-xl uppercase tracking-[0.25em] text-wander-dark font-heading">
-                WANDER
+                WEBMERS
               </span>
             </Link>
             <button
@@ -189,7 +189,7 @@ export default function Header({ hero = false }: HeaderProps) {
 
           <div className="flex flex-col items-center justify-center gap-6 px-6 pt-12">
             <nav className="flex flex-col items-center gap-6" aria-label="Mobile navigation">
-              {WANDER_NAV_ITEMS.map((item) => (
+              {WEBMERS_NAV_ITEMS.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
@@ -247,7 +247,7 @@ export default function Header({ hero = false }: HeaderProps) {
           <Link href="/" className="flex items-center gap-3 text-wander-dark group">
             <Mountain size={26} className="text-wander-dark transition-transform group-hover:scale-105" />
             <span className="font-bold text-lg uppercase tracking-[0.2em] text-wander-dark font-heading">
-              WANDER
+              WEBMERS
             </span>
           </Link>
 
@@ -318,7 +318,7 @@ export default function Header({ hero = false }: HeaderProps) {
           <Link href="/" onClick={close} className="flex items-center gap-3 text-wander-dark">
             <Mountain size={26} />
             <span className="font-bold text-lg uppercase tracking-[0.2em] font-heading">
-              WANDER
+              WEBMERS
             </span>
           </Link>
           <button
