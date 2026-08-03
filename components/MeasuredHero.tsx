@@ -47,7 +47,7 @@ export default function MeasuredHero() {
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             Buy. Edit. Own.{' '}
-            <em className="not-italic text-gradient-aurora">Measured to perfection.</em>
+            <em className="italic font-[400]">Measured to perfection.</em>
           </h1>
 
           <p className="animate-fade-rise-delay mt-8 max-w-2xl text-base leading-relaxed text-white/60 sm:text-lg">

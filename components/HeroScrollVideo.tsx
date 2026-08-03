@@ -90,7 +90,7 @@ export default function HeroScrollVideo() {
         {!failed && (
           <video
             ref={videoRef}
-            className={`absolute inset-0 z-[1] h-full w-full object-cover transition-opacity duration-700 ${
+            className={`absolute inset-0 z-[1] h-full w-full object-cover grayscale contrast-[1.05] transition-opacity duration-700 ${
               ready ? 'opacity-100' : 'opacity-0'
             }`}
             muted
@@ -108,7 +108,7 @@ export default function HeroScrollVideo() {
 
         {/* Poster shown before video is ready or on error */}
         <div
-          className={`absolute inset-0 z-[1] bg-cover bg-center transition-opacity duration-700 ${
+          className={`absolute inset-0 z-[1] bg-cover bg-center grayscale transition-opacity duration-700 ${
             !ready || failed ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
           style={{ backgroundImage: "url('/hero-bg.jpg')" }}
