@@ -82,7 +82,7 @@ export default async function Home() {
       <MeasuredHero />
 
       {/* Stats - overlapping */}
-      <section className="relative z-20 -mt-16 px-4 md:px-10">
+      <section className="relative z-20 -mt-20 px-4 md:px-10">
         <Reveal>
           <div className="mx-auto max-w-7xl rounded-[1.6rem] border border-purple-500/15 bg-white/[0.04] px-6 py-6 backdrop-blur-2xl md:px-10 md:py-8 shadow-[0_0_60px_rgba(139,92,246,0.06)]">
             <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
