@@ -3,7 +3,7 @@ import GridPattern from './GridPattern';
 
 export default function SiteFooter() {
   return (
-    <footer id="footer" className="relative z-10 overflow-hidden bg-[#0a0a0a] pb-12 pt-28">
+    <footer id="footer" className="relative z-10 overflow-hidden bg-background pb-12 pt-28">
       <GridPattern id="footer-grid" opacity={0.06} />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
 
