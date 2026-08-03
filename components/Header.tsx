@@ -23,11 +23,10 @@ const NAV_ITEMS = [
 ];
 
 const HERO_NAV_ITEMS = [
-  { label: 'Home', href: '/' },
-  { label: 'Studio', href: '/editor' },
-  { label: 'About', href: '#how' },
-  { label: 'Journal', href: '/blog' },
-  { label: 'Reach Us', href: '/support' },
+  { label: 'Marketplace', href: '/marketplace' },
+  { label: 'Editor', href: '/editor' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Support', href: '/support' },
 ];
 
 export default function Header({ hero = false }: HeaderProps) {
@@ -62,14 +61,11 @@ export default function Header({ hero = false }: HeaderProps) {
           <Link
             href="/"
             className="pointer-events-auto flex items-center gap-3"
-            aria-label={hero ? 'Velorah home' : 'Webmers home'}
+            aria-label="Webmers home"
           >
             {hero ? (
-              <span
-                className="text-3xl tracking-tight text-foreground"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
-              >
-                Velorah<sup className="text-xs">®</sup>
+              <span className="font-instrument text-2xl tracking-tight text-foreground">
+                Webmers
               </span>
             ) : (
               <>

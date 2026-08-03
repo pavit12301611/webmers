@@ -13,16 +13,35 @@ export const metadata: Metadata = {
   description: 'Browse fully-built websites ready to buy, edit and own.',
 };
 
+const SORTS = [
+  { value: 'sales', label: 'Most Sold' },
+  { value: 'rating', label: 'Highest Rated' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'price_asc', label: 'Price: Low to High' },
+  { value: 'price_desc', label: 'Price: High to Low' },
+];
+
 export default async function MarketplacePage({
   searchParams,
 }: {
-  searchParams: { q?: string; cat?: string };
+  searchParams: { q?: string; cat?: string; sort?: string; min?: string; max?: string };
 }) {
   const q = searchParams.q?.trim() ?? '';
   const cat = searchParams.cat ?? 'All';
+  const sort = (searchParams.sort as
+    | 'sales'
+    | 'rating'
+    | 'newest'
+    | 'price_asc'
+    | 'price_desc'
+    | undefined) ?? 'sales';
+  const minRaw = searchParams.min?.trim();
+  const maxRaw = searchParams.max?.trim();
+  const minPrice = minRaw && !Number.isNaN(Number(minRaw)) ? Number(minRaw) : undefined;
+  const maxPrice = maxRaw && !Number.isNaN(Number(maxRaw)) ? Number(maxRaw) : undefined;
 
   const [listings, categories, user] = await Promise.all([
-    getListings({ category: cat, search: q }),
+    getListings({ category: cat, search: q, sort, minPrice, maxPrice }),
     getCategories(),
     getCurrentUser(),
   ]);
@@ -33,6 +52,22 @@ export default async function MarketplacePage({
     const wishlist = await getWishlist(user.id);
     wishlistIds = new Set(wishlist.map((l) => l.id));
   }
+
+  // Preserve the active query/filter state when switching categories.
+  const buildHref = (over: Record<string, string | undefined>) => {
+    const p = new URLSearchParams();
+    if (q) p.set('q', q);
+    if (cat !== 'All') p.set('cat', cat);
+    if (sort && sort !== 'sales') p.set('sort', sort);
+    if (minPrice !== undefined) p.set('min', String(minPrice));
+    if (maxPrice !== undefined) p.set('max', String(maxPrice));
+    Object.entries(over).forEach(([k, v]) => {
+      if (v) p.set(k, v);
+      else p.delete(k);
+    });
+    const s = p.toString();
+    return s ? `/marketplace?${s}` : '/marketplace';
+  };
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
@@ -49,10 +84,11 @@ export default async function MarketplacePage({
             Browse launch-ready websites.
           </h1>
           <p className="max-w-2xl text-[15px] leading-7 text-white/45">
-            Fully-built websites, ready to launch. Filter by category or search for a stack with a measured, precise experience.
+            Fully-built websites, ready to launch. Filter by category, sort by what matters, or search for a stack with a measured, precise experience.
           </p>
 
-          <form action="/marketplace" method="get" className="mt-8 flex max-w-3xl flex-col gap-3 rounded-full border border-white/10 bg-white/[0.03] p-2 backdrop-blur-xl sm:flex-row">
+          <form action="/marketplace" method="get" className="mt-8 flex max-w-3xl flex-col gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
+            {cat !== 'All' && <input type="hidden" name="cat" value={cat} />}
             <div className="relative flex-1">
               <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" />
               <input
@@ -63,20 +99,59 @@ export default async function MarketplacePage({
                 className="w-full rounded-full bg-transparent py-3.5 pl-12 pr-4 text-white placeholder-white/25 outline-none"
               />
             </div>
-            {cat !== 'All' && <input type="hidden" name="cat" value={cat} />}
             <button type="submit" className="rounded-full bg-white px-8 py-3.5 text-sm font-medium text-black transition hover:bg-white/90">
               Search
             </button>
+
+            <div className="mt-1 flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-3">
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
+                <span className="text-[11px] uppercase tracking-[0.14em] text-white/40">Sort</span>
+                <select
+                  name="sort"
+                  defaultValue={sort}
+                  className="bg-transparent text-sm text-white/80 outline-none"
+                >
+                  {SORTS.map((s) => (
+                    <option key={s.value} value={s.value} className="bg-[#0a0a0a]">
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
+                <span className="text-[11px] uppercase tracking-[0.14em] text-white/40">Price ₹</span>
+                <input
+                  type="number"
+                  name="min"
+                  min={0}
+                  placeholder="Min"
+                  defaultValue={minRaw ?? ''}
+                  className="w-16 bg-transparent text-sm text-white/80 outline-none placeholder-white/25"
+                />
+                <span className="text-white/30">–</span>
+                <input
+                  type="number"
+                  name="max"
+                  min={0}
+                  placeholder="Max"
+                  defaultValue={maxRaw ?? ''}
+                  className="w-16 bg-transparent text-sm text-white/80 outline-none placeholder-white/25"
+                />
+              </div>
+              <button type="submit" className="rounded-full border border-white/10 px-5 py-2 text-sm text-white/60 transition hover:border-white/20 hover:text-white">
+                Apply
+              </button>
+            </div>
           </form>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            <CategoryPill label="All" active={cat === 'All'} href="/marketplace" />
+            <CategoryPill label="All" active={cat === 'All'} href={buildHref({ cat: undefined })} />
             {categories.map((c) => (
               <CategoryPill
                 key={c.name}
                 label={`${c.name} (${c.count})`}
                 active={cat === c.name}
-                href={`/marketplace?cat=${encodeURIComponent(c.name)}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+                href={buildHref({ cat: c.name })}
               />
             ))}
           </div>
@@ -99,7 +174,7 @@ export default async function MarketplacePage({
         ) : (
           <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.03] py-24 text-center backdrop-blur-xl">
             <p className="mb-2 text-2xl tracking-tight text-white" style={{ fontFamily: 'var(--font-instrument)' }}>No websites found</p>
-            <p className="mb-6 text-white/40">Try a different search or category.</p>
+            <p className="mb-6 text-white/40">Try a different search, category or price range.</p>
             <Link href="/marketplace" className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-medium text-black">
               Clear filters
             </Link>

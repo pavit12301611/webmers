@@ -37,6 +37,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
         <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" />
+        {/* No-JS fallback: reveal animations must never hide content permanently. */}
+        <noscript>
+          <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
       </head>
       <body className="bg-background text-foreground antialiased">
         <script
@@ -59,15 +63,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {/* Analytics setup for production monitoring */}
         <script dangerouslySetInnerHTML={{ __html: `window.gtag = window.gtag || function() { (window.gtag.q = window.gtag.q || []).push(arguments); }; window.gtag('js', new Date()); window.gtag('config', 'GA_MEASUREMENT_ID');` }} />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-              }
-            `,
-          }}
-        />
       </body>
     </html>
   );
