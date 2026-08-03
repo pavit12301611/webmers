@@ -15,7 +15,7 @@ export default function Eyebrow({
 }) {
   return (
     <span
-      className={`inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground ${className}`}
+      className={`inline-flex w-fit items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/[0.05] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-purple-300/70 ${className}`}
     >
       {icon ? <span className="grid place-items-center">{icon}</span> : null}
       {children}

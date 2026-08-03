@@ -19,16 +19,16 @@ export default function ListingCard({
   return (
     <Link
       href={`/listing/${listing.id}`}
-      className="group relative block overflow-hidden rounded-[1.8rem] bg-[#121212] ring-1 ring-white/[0.06] transition-all duration-300 hover:-translate-y-1 hover:ring-white/15"
+      className="group relative block overflow-hidden rounded-[1.8rem] bg-[#0c0c14] ring-1 ring-purple-500/10 transition-all duration-300 hover:-translate-y-1 hover:ring-purple-500/25 hover:shadow-[0_0_40px_rgba(139,92,246,0.1)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04] will-change-transform">
           <ListingThumbnail listing={listing} showChrome={false} />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c14]/90 via-[#0c0c14]/10 to-transparent" />
 
         <div className="absolute left-4 top-4 flex items-center gap-2">
-          <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-white/80 backdrop-blur-md ring-1 ring-white/10">
+          <span className="rounded-full bg-purple-500/15 px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-purple-300/90 backdrop-blur-md ring-1 ring-purple-500/20">
             {listing.category}
           </span>
         </div>
@@ -50,7 +50,7 @@ export default function ListingCard({
               </h3>
               <p className="mt-1 line-clamp-1 text-[13px] text-white/45">{listing.tagline}</p>
             </div>
-            <span className="shrink-0 rounded-full bg-white px-3 py-1 text-[12px] font-semibold text-black">
+            <span className="shrink-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-[12px] font-semibold text-white">
               ₹{customerPrice(listing.price)}
             </span>
           </div>
@@ -59,7 +59,7 @@ export default function ListingCard({
 
       <div className="flex items-center justify-between px-5 py-3.5 text-[12px]">
         <span className="flex items-center gap-1.5 text-white/50">
-          <Star size={12} fill="currentColor" className="text-white/70" /> {listing.rating.toFixed(1)}
+          <Star size={12} fill="currentColor" className="text-amber-400/80" /> {listing.rating.toFixed(1)}
           <span className="ml-2 h-3 w-px bg-white/10" />
           <span>{listing.sales} sales</span>
         </span>
