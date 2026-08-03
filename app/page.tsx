@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { ArrowRight, Code2, Globe2, MessageCircle, ShieldCheck, Sparkles, Star, Wand2 } from 'lucide-react';
-import Header from '@/components/Header';
 import MeasuredHero from '@/components/MeasuredHero';
 import ListingCard from '@/components/ListingCard';
 import GridPattern from '@/components/GridPattern';
@@ -42,7 +41,6 @@ export default async function Home() {
 
   return (
     <main className="overflow-hidden bg-white">
-      <Header />
       <MeasuredHero />
 
       {/* Stats - overlapping */}

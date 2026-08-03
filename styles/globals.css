@@ -2,16 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global default: Inter per spec */
 * {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
 }
 
 @layer base {
   :root {
+    --background: 201 100% 13%;
+    --foreground: 0 0% 100%;
+    --muted-foreground: 240 4% 66%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --muted: 0 0% 10%;
+    --accent: 0 0% 10%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --font-display: 'Instrument Serif', serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Legacy aliases used throughout the marketplace and dashboard. */
     --bg: #0a0a0a;
     --fg: #fafafa;
-    --font-instrument: 'Instrument Serif', serif;
+    --font-instrument: var(--font-display);
   }
 
   @font-face {
@@ -25,20 +38,21 @@
 
   html {
     scroll-behavior: smooth;
-    background: #0a0a0a;
+    background: hsl(var(--background));
     text-rendering: optimizeLegibility;
   }
 
   body {
-    background: white;
-    color: #0a0a0a;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
   ::selection {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: white;
   }
 
@@ -50,7 +64,7 @@
     background: #0a0a0a;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 9999px;
   }
 }
@@ -63,7 +77,7 @@
     font-family: var(--font-instrument);
   }
   .font-display {
-    font-family: var(--font-instrument);
+    font-family: var(--font-display);
   }
 
   /* Dashboard nature theme */
@@ -130,19 +144,30 @@
   }
 
   .liquid-glass {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
     position: relative;
+    overflow: hidden;
   }
   .liquid-glass::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.08) 75%, rgba(255,255,255,0.25) 100%);
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.15) 20%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.15) 80%,
+      rgba(255, 255, 255, 0.45) 100%
+    );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -152,6 +177,29 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-rise {
+  animation: fade-rise 0.8s ease-out both;
+}
+
+.animate-fade-rise-delay {
+  animation: fade-rise 0.8s ease-out 0.2s both;
+}
+
+.animate-fade-rise-delay-2 {
+  animation: fade-rise 0.8s ease-out 0.4s both;
 }
 
 @keyframes slideUpFade {
@@ -171,17 +219,6 @@
 .animate-rotate-in { animation: rotateIn 0.4s cubic-bezier(0.77,0,0.18,1) both; }
 .animate-fade-up { animation: fadeUp 0.5s ease-out both; }
 
-/* Slow Ken Burns motion for the hero spotlight layer — replaces the expired
-   third-party video URL with a self-hosted image that still feels alive. */
-@keyframes heroKenBurns {
-  from { transform: scale(1) translate3d(0, 0, 0); }
-  to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); }
-}
-.hero-kenburns {
-  will-change: transform;
-  animation: heroKenBurns 24s ease-in-out infinite alternate;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -189,5 +226,5 @@
   }
 }
 @media (max-width: 768px) {
-  .liquid-glass { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .liquid-glass { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 }

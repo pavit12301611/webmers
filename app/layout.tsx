@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0a',
+  themeColor: '#002b42',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -32,15 +32,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Inter 300-700 per spec */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap"
           rel="stylesheet"
         />
-        {/* Preload LCP hero image (self-hosted — no expired CDN links) */}
-        <link rel="preload" as="image" href="/hero-bg.jpg" />
+        <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" />
       </head>
-      <body className="bg-white text-[#0a0a0a] antialiased">
+      <body className="bg-background text-foreground antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Webmers', url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', potentialAction: { '@type': 'SearchAction', target: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/marketplace?q={search_term_string}`, 'query-input': 'required name=search_term_string' } }) }}

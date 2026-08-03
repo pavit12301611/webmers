@@ -8,9 +8,29 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        'xs': '480px',
+        xs: '480px',
       },
       colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--foreground))',
+        },
         webmers: {
           black: '#0a0a0a',
           white: '#fafafa',
@@ -19,9 +39,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-        display: ['Instrument Serif', 'serif'],
-        instrument: ['Instrument Serif', 'serif'],
+        sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui'],
+        display: ['var(--font-display)', 'serif'],
+        instrument: ['var(--font-display)', 'serif'],
         helvetica: ['Helvetica Neue Roman', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
       },
       animation: {
