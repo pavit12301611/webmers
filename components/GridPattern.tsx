@@ -4,7 +4,7 @@ const GridPattern = memo(function GridPattern({
   id = 'grid',
   className = '',
   opacity = 0.04,
-  stroke = '#64748b',
+  stroke = '#fafafa',
 }: {
   id?: string;
   className?: string;

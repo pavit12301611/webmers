@@ -52,7 +52,7 @@ const faqs = [
 
 export default function FAQPage() {
   return (
-    <main className="bg-[#0a0a0a] text-white px-6 md:px-10 py-20 md:py-28">
+    <main className="bg-background text-white px-6 md:px-10 py-20 md:py-28">
       <div className="mx-auto max-w-4xl">
         <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/50">
           <ShieldCheck size={12} /> Support
@@ -78,7 +78,7 @@ export default function FAQPage() {
           ))}
         </div>
 
-        <div className="mt-14 rounded-[1.6rem] border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-8 md:p-10 backdrop-blur-xl text-center">
+        <div className="mt-14 rounded-[1.6rem] border border-white/[0.08] bg-white/[0.04] p-8 md:p-10 backdrop-blur-xl text-center">
           <h3 className="text-xl font-display font-bold mb-3">Still have questions?</h3>
           <p className="text-sm text-white/45 mb-6 max-w-md mx-auto">
             Reach out through our messaging system or explore the marketplace to see how it all works.

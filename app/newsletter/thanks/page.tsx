@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 
 export default function NewsletterConfirmPage() {
   return (
-    <main className="bg-[#0a0a0a] text-white px-6 md:px-10 py-28 md:py-36 flex items-center justify-center min-h-screen">
+    <main className="bg-background text-white px-6 md:px-10 py-28 md:py-36 flex items-center justify-center min-h-screen">
       <div className="text-center max-w-lg">
         <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
           <Check size={28} />

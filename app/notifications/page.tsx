@@ -13,7 +13,7 @@ const notifications = [
 
 export default function NotificationsPage() {
   return (
-    <main className="bg-[#0a0a0a] text-white px-6 md:px-10 py-20 md:py-28">
+    <main className="bg-background text-white px-6 md:px-10 py-20 md:py-28">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-3xl md:text-4xl tracking-tight font-display font-bold">Notifications</h1>

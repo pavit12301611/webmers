@@ -88,7 +88,7 @@ function ForgotPasswordForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-6 py-16 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-16 text-white">
       <div className="absolute inset-0 opacity-[0.04]">
         <svg width="100%" height="100%">
           <defs>

@@ -6,9 +6,9 @@ export const metadata: Metadata = { title: 'Not Found' };
 export default function NotFound() {
   return (
     <main className="min-h-screen bg-webmers-black text-white flex flex-col items-center justify-center px-6 text-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#02020a] via-[#0a0a14] to-[#050505]" />
+      <div className="absolute inset-0 bg-background" />
       <div className="relative z-10">
-        <div className="text-7xl md:text-9xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/30 mb-4">
+        <div className="text-7xl md:text-9xl font-display font-bold text-foreground mb-4">
           404
         </div>
         <h1 className="text-2xl md:text-3xl font-display font-semibold mb-3">This page drifted off into the night</h1>

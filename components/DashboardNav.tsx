@@ -102,10 +102,10 @@ export default function DashboardNav({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-[#040d09]/95 backdrop-blur-2xl">
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-2xl">
           <div className="flex items-center justify-between border-b border-emerald-50/10 px-4 py-3">
             <div className="inline-flex items-center gap-2 font-display text-xl font-bold">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-lime-200 to-emerald-500 text-[#07130e]">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
                 <Leaf size={14} fill="currentColor" />
               </span>
               Webmers

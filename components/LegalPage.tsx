@@ -6,7 +6,7 @@ type Section = { title: string; body: React.ReactNode };
 
 export default function LegalPage({ eyebrow, title, updated, sections }: { eyebrow: string; title: string; updated: string; sections: Section[] }) {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen overflow-hidden bg-background">
       <Header />
       <article className="mx-auto max-w-3xl px-6 pb-24 pt-36 md:px-10">
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40">{eyebrow}</p>

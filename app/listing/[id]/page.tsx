@@ -27,7 +27,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
   const galleryTitles = [listing.title, `${listing.title} alt`, `${listing.title} preview`];
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0a0a0a]">
+    <main className="min-h-screen overflow-hidden bg-background">
       <Header />
 
       <section className="relative mx-auto max-w-7xl px-6 pb-20 pt-32 md:px-10">

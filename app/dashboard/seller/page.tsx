@@ -115,7 +115,7 @@ export default async function SellerDashboard({
                       <div className="w-28 text-xs text-emerald-50/60 truncate">{l.title}</div>
                       <div className="flex-1 h-6 rounded-full bg-emerald-50/[0.04] overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-emerald-500/40 to-lime-400/40 transition-all"
+                          className="h-full rounded-full bg-foreground/40 transition-all"
                           style={{ width: `${Math.max(pct, 2)}%` }}
                         />
                       </div>
@@ -442,7 +442,7 @@ export default async function SellerDashboard({
                       </div>
                       <div className="h-2 rounded-full bg-emerald-50/[0.04] overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-lime-400"
+                          className="h-full rounded-full bg-foreground"
                           style={{ width: `${Math.max(pct, 2)}%` }}
                         />
                       </div>

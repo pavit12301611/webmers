@@ -6,16 +6,15 @@ export default function CustomCursor() {
     const cursor = document.createElement('div');
     cursor.style.cssText = `
       position: fixed;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       pointer-events: none;
-      background: rgba(255,255,255,0.2);
-      box-shadow: 0 0 20px rgba(255,255,255,0.35);
+      border: 1.5px solid rgba(250,250,250,0.6);
+      background: transparent;
       z-index: 99999;
       transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease;
       transform: translate(-50%, -50%);
-      mix-blend-mode: screen;
     `;
     document.body.appendChild(cursor);
 
