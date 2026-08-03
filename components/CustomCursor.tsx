@@ -10,8 +10,8 @@ export default function CustomCursor() {
       height: 14px;
       border-radius: 50%;
       pointer-events: none;
-      border: 1.5px solid rgba(250,250,250,0.6);
-      background: transparent;
+      border: 2px solid #d9772b;
+      background: rgba(217, 119, 43, 0.15);
       z-index: 99999;
       transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease;
       transform: translate(-50%, -50%);
@@ -33,7 +33,9 @@ export default function CustomCursor() {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mousedown', onDown);
       window.removeEventListener('mouseup', onUp);
-      document.body.removeChild(cursor);
+      if (document.body.contains(cursor)) {
+        document.body.removeChild(cursor);
+      }
     };
   }, []);
 

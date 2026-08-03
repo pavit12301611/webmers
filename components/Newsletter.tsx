@@ -36,9 +36,9 @@ export default function Newsletter() {
 
   if (state === 'success') {
     return (
-      <div className="flex items-center justify-center gap-3 py-4 text-white">
-        <CheckCircle size={22} />
-        <span className="text-lg font-medium">{message}</span>
+      <div className="flex items-center justify-center gap-3 py-4 text-wander-dark">
+        <CheckCircle size={22} className="text-wander-orange" />
+        <span className="text-lg font-bold font-heading">{message}</span>
       </div>
     );
   }
@@ -52,18 +52,18 @@ export default function Newsletter() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
           aria-label="Email address"
-          className="flex-1 rounded-full border border-white/10 bg-white/[0.04] px-6 py-4 text-white placeholder-white/30 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
+          className="flex-1 rounded-full border border-wander-dark/20 bg-white/80 px-6 py-4 text-wander-dark placeholder-wander-dark/50 outline-none backdrop-blur-xl transition-colors focus:border-wander-orange"
           required
         />
         <button
           type="submit"
           disabled={state === 'loading'}
-          className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-sm font-medium text-black transition hover:bg-white/90 disabled:opacity-60"
+          className="inline-flex items-center justify-center rounded-full bg-wander-dark px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-orange-500 disabled:opacity-60"
         >
           {state === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
-      {state === 'error' && <p className="mt-3 text-sm text-foreground">{message}</p>}
+      {state === 'error' && <p className="mt-3 text-sm text-wander-orange font-medium">{message}</p>}
     </form>
   );
 }

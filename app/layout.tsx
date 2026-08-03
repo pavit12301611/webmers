@@ -10,20 +10,20 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
   title: {
-    default: 'Webmers — Buy. Edit. Own.',
+    default: 'WEBMERS — Premium Gear & Website Marketplace',
     template: '%s · Webmers',
   },
-  description: 'The premium marketplace for fully-built websites. Crafted with precision, measured to perfection.',
+  description: 'The premium marketplace for fully-built websites and digital gear. Precision-built for every journey.',
   openGraph: {
-    title: 'Webmers — Measured',
-    description: 'Buy. Edit. Own. The premium marketplace for fully-built websites.',
+    title: 'WEBMERS — Premium Gear & Website Marketplace',
+    description: 'Explore launch-ready websites and gear for every journey.',
     siteName: 'Webmers',
     type: 'website',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0a0a0a',
+  themeColor: '#f3efe8',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -33,36 +33,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" />
-        {/* No-JS fallback: reveal animations must never hide content permanently. */}
         <noscript>
           <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
         </noscript>
       </head>
-      <body className="bg-background text-foreground antialiased">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Webmers', url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', potentialAction: { '@type': 'SearchAction', target: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/marketplace?q={search_term_string}`, 'query-input': 'required name=search_term_string' } }) }}
-        />
+      <body className="bg-[#f3efe8] text-[#1f3d47] antialiased">
         <Providers>{children}</Providers>
         <CustomCursor />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-              }
-              setInterval(() => {
-                fetch('/api/messages').catch(() => {});
-              }, 30000);
-            `,
-          }}
-        />
-        {/* Analytics setup for production monitoring */}
-        <script dangerouslySetInnerHTML={{ __html: `window.gtag = window.gtag || function() { (window.gtag.q = window.gtag.q || []).push(arguments); }; window.gtag('js', new Date()); window.gtag('config', 'GA_MEASUREMENT_ID');` }} />
       </body>
     </html>
   );
