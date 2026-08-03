@@ -182,7 +182,7 @@ export default async function Home() {
           </Reveal>
           <Reveal delay={120}>
             <div className="relative overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#121212] p-2">
-              <div className="aspect-[4/3] overflow-hidden rounded-[1.2rem]">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[1.2rem]">
                 <Image
                   src="/editor-preview.jpg"
                   alt="Editor preview"

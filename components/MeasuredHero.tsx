@@ -8,7 +8,7 @@ export default function MeasuredHero() {
   return (
     <section
       className="relative isolate flex h-screen min-h-screen w-full flex-col overflow-hidden bg-background"
-      aria-label="Velorah hero"
+      aria-label="Webmers hero"
     >
       <video
         className="absolute inset-0 z-0 h-full w-full object-cover"
@@ -29,12 +29,12 @@ export default function MeasuredHero() {
           className="animate-fade-rise max-w-7xl text-5xl font-normal leading-[0.95] tracking-[-2.46px] text-foreground sm:text-7xl md:text-8xl"
           style={{ fontFamily: "'Instrument Serif', serif" }}
         >
-          Where <em className="not-italic text-muted-foreground">dreams</em> rise{' '}
-          <em className="not-italic text-muted-foreground">through the silence.</em>
+          Buy. Edit. Own.{' '}
+          <em className="not-italic text-muted-foreground">Measured to perfection.</em>
         </h1>
 
         <p className="animate-fade-rise-delay mt-8 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          We&apos;re designing tools for deep thinkers, bold creators, and quiet rebels. Amid the chaos, we build digital spaces for sharp focus and inspired work.
+          Webmers is the premium marketplace for fully-built websites — browse launch-ready sites, tune them in a visual editor, and take full ownership.
         </p>
 
         <Link
