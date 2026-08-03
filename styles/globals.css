@@ -2,218 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: var(--font-body);
-}
-
 @layer base {
   :root {
-    /* ── Two-color system: ink + paper only ── */
-    --background: 0 0% 4%;          /* ink  ≈ #0a0a0a */
-    --foreground: 0 0% 98%;         /* paper ≈ #fafafa */
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 64%;
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
-    --primary: 0 0% 98%;            /* paper */
-    --primary-foreground: 0 0% 4%;  /* ink */
-    --secondary: 0 0% 10%;
-    --accent: 0 0% 10%;
+    --background: #f3efe8;
+    --foreground: #1f3d47;
+    --wander-blue: #7bb5cc;
+    --wander-orange: #d9772b;
+    --wander-dark: #1f3d47;
+    --wander-text: #2a3b45;
+    --border: rgba(31, 61, 71, 0.15);
+    --input: rgba(31, 61, 71, 0.15);
+    --primary: #d9772b;
+    --primary-foreground: #ffffff;
+    --muted: #e6e0d5;
+    --muted-foreground: #2a3b45;
 
-    --font-display: 'Instrument Serif', serif;
-    --font-body: 'Inter', sans-serif;
-
-    /* Legacy aliases used throughout the marketplace and dashboard. */
-    --bg: #0a0a0a;
-    --fg: #fafafa;
-    --font-instrument: var(--font-display);
-  }
-
-  @font-face {
-    font-family: 'Helvetica Neue Roman';
-    src: url('/fonts/HelveticaNeue-Roman.woff2') format('woff2'),
-         url('/fonts/HelveticaNeue-Roman.woff') format('woff');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
+    --font-heading: 'Outfit', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
   html {
     scroll-behavior: smooth;
-    background: hsl(var(--background));
+    background-color: var(--background);
+    color: var(--foreground);
     text-rendering: optimizeLegibility;
   }
 
   body {
-    background: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    margin: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
   }
 
   ::selection {
-    background: hsl(var(--foreground) / 0.18);
-    color: hsl(var(--foreground));
+    background: rgba(217, 119, 43, 0.25);
+    color: #1f3d47;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
+    background: #f3efe8;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--foreground) / 0.35);
+    background: rgba(31, 61, 71, 0.25);
     border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(31, 61, 71, 0.45);
   }
 }
 
 @layer components {
-  .font-helvetica-neue {
-    font-family: 'Helvetica Neue Roman', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  .font-heading {
+    font-family: var(--font-heading);
   }
-  .font-instrument {
-    font-family: var(--font-instrument);
-  }
-  .font-display {
-    font-family: var(--font-display);
+  .font-body {
+    font-family: var(--font-body);
   }
 
-  /* ── Reusable two-color surface ───────────────────────────────────────── */
   .card {
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--foreground) / 0.02);
+    border: 1px solid rgba(31, 61, 71, 0.12);
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 1.5rem;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
   }
   .card:hover {
-    border-color: hsl(var(--foreground) / 0.22);
+    border-color: rgba(217, 119, 43, 0.35);
+    box-shadow: 0 10px 30px -10px rgba(31, 61, 71, 0.08);
   }
 
-  /* Frosted panel — two-color only (no gradient). */
   .panel {
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--background) / 0.6);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    border: 1px solid rgba(31, 61, 71, 0.12);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
   }
 
-  /* Section eyebrow pill. */
   .eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--foreground) / 0.04);
-    padding: 0.25rem 0.75rem;
-    font-size: 11px;
+    border: 1px solid rgba(31, 61, 71, 0.2);
+    background: rgba(31, 61, 71, 0.05);
+    padding: 0.3rem 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: hsl(var(--muted-foreground));
+    letter-spacing: 0.2em;
+    color: #1f3d47;
   }
 
-  /* ── Legacy theme classes, redefined as two-color (kept for parity) ────── */
-  .nature-page {
-    background: hsl(var(--background));
-    color: hsl(var(--foreground));
+  .text-gradient-aurora,
+  .text-gradient-sunset,
+  .text-gradient-ocean,
+  .text-gradient-emerald,
+  .text-gradient-purple {
+    color: #d9772b;
   }
 
-  .leaf-card {
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--foreground) / 0.02);
-    border-radius: 1.5rem;
-  }
-
-  .btn-forest {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border-radius: 9999px;
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-  }
-  .btn-forest:hover {
-    opacity: 0.9;
-  }
-
-  .section-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    border-radius: 9999px;
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--foreground) / 0.04);
-    padding: 0.25rem 0.75rem;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: hsl(var(--muted-foreground));
-  }
-
-  .stat-card {
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--foreground) / 0.02);
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-  }
-
-  /* All "card-glow-*" share one two-color treatment. */
   .card-glow-purple,
   .card-glow-pink,
   .card-glow-cyan,
   .card-glow-emerald,
   .card-glow-orange {
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--foreground) / 0.02);
-  }
-  .card-glow-purple:hover,
-  .card-glow-pink:hover,
-  .card-glow-cyan:hover,
-  .card-glow-emerald:hover,
-  .card-glow-orange:hover {
-    border-color: hsl(var(--foreground) / 0.22);
+    border: 1px solid rgba(31, 61, 71, 0.12);
+    background: rgba(255, 255, 255, 0.65);
   }
 
-  /* All "text-gradient-*" become solid paper (no gradient). */
-  .text-gradient-purple,
-  .text-gradient-sunset,
-  .text-gradient-ocean,
-  .text-gradient-aurora,
-  .text-gradient-emerald {
-    background: none;
-    -webkit-background-clip: border-box;
-    background-clip: border-box;
-    -webkit-text-fill-color: hsl(var(--foreground));
-    color: hsl(var(--foreground));
-  }
-
-  /* Section backdrop hook (used for absolutely-positioned grid patterns). */
-  .section-gradient-aurora,
-  .section-gradient-sunset,
-  .section-gradient-ocean,
-  .section-gradient-forest {
-    position: relative;
-  }
-
-  /* Hero base — solid ink, no animated color wash. */
-  .hero-gradient-animated {
-    background: hsl(var(--background));
-  }
-
-  /* Frosted glass — two-color only. */
   .liquid-glass {
     position: relative;
-    overflow: hidden;
-    border: 1px solid hsl(var(--border));
-    background: hsl(var(--background) / 0.6);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    border: 1px solid rgba(31, 61, 71, 0.15);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
   }
 
   .text-balance {
@@ -221,9 +133,6 @@
   }
 }
 
-/* Scroll-triggered reveal — GPU-friendly (transform/opacity only).
-   Base state is hidden; `.reveal--in` plays the entrance. A <noscript>
-   override in the layout guarantees content stays visible without JS. */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -236,14 +145,6 @@
   opacity: 1;
   transform: none;
   will-change: auto;
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    transition: none;
-    opacity: 1;
-    transform: none;
-    will-change: auto;
-  }
 }
 
 @keyframes fade-rise {
@@ -267,40 +168,4 @@
 
 .animate-fade-rise-delay-2 {
   animation: fade-rise 0.8s ease-out 0.4s both;
-}
-
-@keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes rotateIn {
-  from { opacity: 0; transform: rotate(-90deg) scale(0.8); }
-  to { opacity: 1; transform: rotate(0deg) scale(1); }
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-slide-up { animation: slideUpFade 0.5s cubic-bezier(0.77,0,0.18,1) both; }
-.animate-rotate-in { animation: rotateIn 0.4s cubic-bezier(0.77,0,0.18,1) both; }
-.animate-fade-up { animation: fadeUp 0.5s ease-out both; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ── Scroll-hint bounce arrow ───────────────────────────────────────────── */
-@keyframes scroll-bounce {
-  0%, 100% { transform: translateY(0);    opacity: 0.3; }
-  50%       { transform: translateY(6px); opacity: 0.7; }
-}
-.scroll-hint-arrow {
-  animation: scroll-bounce 1.8s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .scroll-hint-arrow { animation: none; }
 }

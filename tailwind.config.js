@@ -1,22 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-// ── Two-color system ───────────────────────────────────────────────────────
-// Every hue maps to the SAME ink↔paper monochrome scale. This keeps the whole
-// site on exactly two colors (ink + paper) with no per-file edits required for
-// legacy `emerald-*` / `lime-*` / `purple-*` / etc. utilities.
-const mono = {
-  50: '#fafafa',
-  100: '#f0f0f0',
-  200: '#e5e5e5',
-  300: '#d4d4d4',
-  400: '#a3a3a3',
-  500: '#737373',
-  600: '#525252',
-  700: '#404040',
-  800: '#262626',
-  900: '#171717',
-  950: '#0a0a0a',
-};
-
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -29,56 +11,44 @@ module.exports = {
         xs: '480px',
       },
       colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
+        background: '#f3efe8',
+        foreground: '#1f3d47',
+        border: 'rgba(31, 61, 71, 0.15)',
+        input: 'rgba(31, 61, 71, 0.15)',
+        'wander-blue': '#7bb5cc',
+        'wander-orange': '#d9772b',
+        'wander-dark': '#1f3d47',
+        'wander-text': '#2a3b45',
+        'wander-bg': '#f3efe8',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: '#d9772b',
+          foreground: '#ffffff',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--foreground))',
+          DEFAULT: '#7bb5cc',
+          foreground: '#1f3d47',
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: '#e6e0d5',
+          foreground: '#2a3b45',
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--foreground))',
+          DEFAULT: '#d9772b',
+          foreground: '#ffffff',
         },
-        // Monochrome overrides — see note above.
-        emerald: mono,
-        lime: mono,
-        green: mono,
-        teal: mono,
-        cyan: mono,
-        sky: mono,
-        blue: mono,
-        indigo: mono,
-        violet: mono,
-        purple: mono,
-        fuchsia: mono,
-        pink: mono,
-        rose: mono,
-        red: mono,
-        orange: mono,
-        amber: mono,
-        yellow: mono,
-        webmers: {
-          black: '#0a0a0a',
-          white: '#fafafa',
-          gray: '#888888',
-          lightGray: '#e5e5e5',
-        },
+        orange: {
+          500: '#f97316',
+          600: '#ea580c',
+          DEFAULT: '#d9772b',
+        }
       },
       fontFamily: {
-        sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui'],
-        display: ['var(--font-display)', 'serif'],
-        instrument: ['var(--font-display)', 'serif'],
-        helvetica: ['Helvetica Neue Roman', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        body: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Outfit', 'ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+        outfit: ['Outfit', 'ui-serif', 'Georgia', 'serif'],
+        display: ['Outfit', 'ui-serif', 'Georgia', 'serif'],
+        instrument: ['Outfit', 'ui-serif', 'Georgia', 'serif'],
       },
       animation: {
         'fade-up': 'fade-up 0.6s ease-out both',

@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell } from 'lucide-react';
+import { Bell, Mountain, Search, ShoppingCart, User, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useState, useCallback } from 'react';
@@ -15,16 +15,20 @@ function dashboardHref(role?: string) {
   return '/dashboard/buyer';
 }
 
-const NAV_ITEMS = [
-  { label: 'Marketplace', href: '/marketplace' },
-  { label: 'Messages', href: '/messages' },
-  { label: 'Editor', href: '/editor' },
-  { label: 'Plans', href: '#pricing' },
+const WANDER_NAV_ITEMS = [
+  { label: 'Camping', href: '/marketplace?cat=Camping' },
+  { label: 'Hiking', href: '/marketplace?cat=Hiking' },
+  { label: 'Backpacks', href: '/marketplace?cat=Backpacks' },
+  { label: 'Gear', href: '/marketplace?cat=Gear' },
+  { label: 'Footwear', href: '/marketplace?cat=Footwear' },
+  { label: 'Accessories', href: '/marketplace?cat=Accessories' },
+  { label: 'Sale', href: '/marketplace?filter=sale', isSale: true },
 ];
 
-const HERO_NAV_ITEMS = [
+const STANDARD_NAV_ITEMS = [
   { label: 'Marketplace', href: '/marketplace' },
   { label: 'Editor', href: '/editor' },
+  { label: 'Sell', href: '/sell' },
   { label: 'Blog', href: '/blog' },
   { label: 'Support', href: '/support' },
 ];
@@ -33,7 +37,8 @@ export default function Header({ hero = false }: HeaderProps) {
   const { data: session, status } = useSession();
   const user = session?.user;
   const [isOpen, setIsOpen] = useState(false);
-  const navItems = hero ? HERO_NAV_ITEMS : NAV_ITEMS;
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const close = useCallback(() => setIsOpen(false), []);
   const open = useCallback(() => setIsOpen(true), []);
@@ -48,120 +53,228 @@ export default function Header({ hero = false }: HeaderProps) {
     }
   }, [isOpen]);
 
-  return (
-    <>
-      <header
-        className={`${hero ? 'relative z-10' : 'fixed inset-x-0 top-0 z-50'} pointer-events-none`}
-      >
-        <div
-          className={`relative mx-auto flex items-center justify-between ${
-            hero ? 'max-w-7xl px-8 py-6' : 'px-5 pt-5 md:px-8'
-          }`}
-        >
-          <Link
-            href="/"
-            className="pointer-events-auto flex items-center gap-3"
-            aria-label="Webmers home"
-          >
-            {hero ? (
-              <span className="font-instrument text-2xl tracking-tight text-foreground">
-                Webmers
+  if (hero) {
+    return (
+      <>
+        <header className="absolute top-0 left-0 right-0 z-50 px-8 py-8 lg:px-16 pointer-events-auto">
+          <div className="flex items-center justify-between">
+            {/* Logo (Left) */}
+            <Link href="/" className="flex items-center gap-3 text-wander-dark group">
+              <Mountain size={28} className="text-wander-dark transition-transform group-hover:scale-105" />
+              <span className="font-bold text-xl uppercase tracking-[0.25em] text-wander-dark font-heading">
+                WANDER
               </span>
-            ) : (
-              <>
-                <svg
-                  viewBox="0 0 256 256"
-                  width="28"
-                  height="28"
-                  fill="white"
-                  className="drop-shadow-[0_1px_8px_rgba(255,255,255,0.2)]"
-                  aria-hidden="true"
+            </Link>
+
+            {/* Links (Center) - Hidden on mobile, flex on large screens */}
+            <nav className="hidden lg:flex items-center gap-8" aria-label="Primary navigation">
+              {WANDER_NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`text-sm font-medium transition-colors hover:text-orange-500 ${
+                    item.isSale ? 'text-wander-orange' : 'text-wander-dark/90'
+                  }`}
                 >
-                  <path d="M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 96 95 L 63.5 128 L 64 128 L 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 64 L 64 0 L 192 0 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z" />
-                </svg>
-                <span className="hidden text-[13px] font-medium uppercase tracking-tight text-white md:inline">
-                  Webmers
-                </span>
-              </>
-            )}
-          </Link>
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
 
-          <nav
-            className={`pointer-events-auto hidden items-center md:flex ${
-              hero
-                ? 'gap-7'
-                : 'fixed left-1/2 top-5 -translate-x-1/2 gap-1 rounded-full px-2 py-1.5 liquid-glass'
-            }`}
-            aria-label="Primary navigation"
-          >
-            {navItems.map((item, index) => (
+            {/* Icons (Right) */}
+            <div className="flex items-center gap-6">
+              {searchOpen ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (searchQuery.trim()) {
+                      window.location.href = `/marketplace?q=${encodeURIComponent(searchQuery)}`;
+                    }
+                  }}
+                  className="relative flex items-center"
+                >
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search gear & sites..."
+                    autoFocus
+                    className="w-40 sm:w-56 rounded-full border border-wander-dark/20 bg-white/80 px-4 py-1.5 text-xs text-wander-dark placeholder-wander-dark/50 outline-none focus:border-wander-orange"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(false)}
+                    className="ml-2 text-wander-dark hover:text-orange-500 text-xs font-semibold"
+                  >
+                    ✕
+                  </button>
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Search"
+                  className="text-wander-dark hover:text-orange-500 transition-colors"
+                >
+                  <Search size={22} />
+                </button>
+              )}
+
+              {user ? (
+                <Link
+                  href={dashboardHref(user.role)}
+                  title={user.name || user.email || 'Dashboard'}
+                  className="text-wander-dark hover:text-orange-500 transition-colors flex items-center gap-1.5"
+                >
+                  <User size={22} />
+                  <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wider">
+                    Dashboard
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  aria-label="Account"
+                  className="text-wander-dark hover:text-orange-500 transition-colors"
+                >
+                  <User size={22} />
+                </Link>
+              )}
+
               <Link
-                key={item.label}
-                href={item.href}
-                className={
-                  hero
-                    ? `text-sm transition-colors ${
-                        index === 0
-                          ? 'text-foreground'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`
-                    : 'rounded-full px-4 py-1.5 text-sm font-medium text-white/70 transition hover:text-white'
-                }
+                href="/marketplace"
+                aria-label="Cart"
+                className="relative flex items-center text-wander-dark hover:text-orange-500 transition-colors"
               >
-                {item.label}
+                <ShoppingCart size={22} />
+                <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-wander-orange text-[10px] font-bold text-white shadow-sm">
+                  2
+                </span>
               </Link>
-            ))}
-          </nav>
 
-          <div className="pointer-events-auto hidden items-center gap-3 md:flex">
-            {status === 'loading' ? (
-              <div className="h-9 w-24 animate-pulse rounded-full bg-white/10" />
-            ) : hero ? (
-              user ? (
+              {/* Mobile menu button */}
+              <button
+                onClick={open}
+                className="lg:hidden text-wander-dark hover:text-orange-500 transition-colors p-1"
+                aria-label="Open menu"
+              >
+                <Menu size={24} />
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Nav Drawer */}
+        <div
+          className={`fixed inset-0 z-[100] bg-wander-bg transition-transform duration-500 ease-in-out ${
+            isOpen ? 'translate-y-0' : '-translate-y-full'
+          }`}
+          aria-hidden={!isOpen}
+        >
+          <div className="flex justify-between items-center px-8 py-8">
+            <Link href="/" onClick={close} className="flex items-center gap-3 text-wander-dark">
+              <Mountain size={28} className="text-wander-dark" />
+              <span className="font-bold text-xl uppercase tracking-[0.25em] text-wander-dark font-heading">
+                WANDER
+              </span>
+            </Link>
+            <button
+              onClick={close}
+              className="p-2 text-wander-dark hover:text-orange-500 transition-colors rounded-full border border-wander-dark/20"
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          <div className="flex flex-col items-center justify-center gap-6 px-6 pt-12">
+            <nav className="flex flex-col items-center gap-6" aria-label="Mobile navigation">
+              {WANDER_NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={close}
+                  className={`text-2xl font-semibold tracking-wider transition-colors hover:text-orange-500 ${
+                    item.isSale ? 'text-wander-orange' : 'text-wander-dark'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="mt-8 flex flex-col items-center gap-4">
+              {user ? (
                 <>
                   <Link
                     href={dashboardHref(user.role)}
-                    className="liquid-glass flex items-center gap-2 rounded-full px-6 py-2.5 text-sm text-foreground transition-transform hover:scale-[1.03]"
+                    onClick={close}
+                    className="rounded-full bg-wander-dark px-8 py-3 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-orange-500"
                   >
                     Dashboard
                   </Link>
                   <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    onClick={() => {
+                      close();
+                      signOut({ callbackUrl: '/' });
+                    }}
+                    className="text-xs uppercase tracking-wider text-wander-dark/70 hover:text-wander-dark"
                   >
                     Sign out
                   </button>
                 </>
               ) : (
                 <Link
-                  href="/marketplace"
-                  className="liquid-glass rounded-full px-6 py-2.5 text-sm text-foreground transition-transform hover:scale-[1.03]"
+                  href="/auth/signin"
+                  onClick={close}
+                  className="rounded-full bg-wander-dark px-8 py-3 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-orange-500"
                 >
-                  Begin Journey
+                  Sign In
                 </Link>
-              )
-            ) : user ? (
+              )}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Non-hero (standard sticky header across other pages)
+  return (
+    <>
+      <header className="sticky top-0 z-50 bg-wander-bg/90 backdrop-blur-md border-b border-wander-dark/10 px-6 py-4 md:px-10">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 text-wander-dark group">
+            <Mountain size={26} className="text-wander-dark transition-transform group-hover:scale-105" />
+            <span className="font-bold text-lg uppercase tracking-[0.2em] text-wander-dark font-heading">
+              WANDER
+            </span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-8" aria-label="Primary navigation">
+            {STANDARD_NAV_ITEMS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-sm font-medium text-wander-dark/80 hover:text-orange-500 transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-5">
+            {user ? (
               <>
                 <Link
                   href={dashboardHref(user.role)}
-                  className="liquid-glass flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white"
+                  className="rounded-full bg-wander-dark px-5 py-2 text-xs font-semibold uppercase tracking-wider text-white hover:bg-orange-500 transition-colors"
                 >
-                  <span className="h-2 w-2 rounded-full bg-foreground" />
                   Dashboard
-                </Link>
-                <Link
-                  href="/notifications"
-                  className="relative rounded-full p-2 text-white/60 hover:text-white"
-                  aria-label="Notifications"
-                >
-                  <Bell size={18} />
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[9px] font-bold text-background shadow-lg">
-                    3
-                  </span>
                 </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="rounded-full px-3 py-2 text-sm text-white/60 hover:text-white"
+                  className="text-xs font-medium text-wander-dark/70 hover:text-orange-500 transition-colors"
                 >
                   Sign out
                 </button>
@@ -170,97 +283,66 @@ export default function Header({ hero = false }: HeaderProps) {
               <>
                 <Link
                   href="/auth/signin"
-                  className="rounded-full px-4 py-2 text-sm font-medium text-white/70 hover:text-white"
+                  className="text-xs font-semibold uppercase tracking-wider text-wander-dark hover:text-orange-500 transition-colors"
                 >
-                  Sign in
+                  Sign In
                 </Link>
                 <Link
                   href="/marketplace"
-                  className="liquid-glass flex items-center gap-2.5 rounded-full px-5 py-2.5 text-sm font-medium text-white"
+                  className="rounded-full bg-wander-orange px-5 py-2 text-xs font-semibold uppercase tracking-wider text-white hover:bg-orange-500 transition-colors"
                 >
-                  <span className="h-2 w-2 rounded-full bg-foreground" />
-                  Reserve Yours
+                  Marketplace
                 </Link>
               </>
             )}
-          </div>
 
-          <button
-            onClick={open}
-            className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full liquid-glass md:hidden"
-            aria-label="Open menu"
-          >
-            <div className="flex flex-col items-end gap-1.5">
-              <span className="block h-[1.5px] w-5 bg-white" />
-              <span className="block h-[1.5px] w-3.5 bg-white" />
-            </div>
-          </button>
+            <button
+              onClick={open}
+              className="md:hidden text-wander-dark hover:text-orange-500 p-1"
+              aria-label="Open menu"
+            >
+              <Menu size={24} />
+            </button>
+          </div>
         </div>
       </header>
 
+      {/* Mobile Nav Drawer */}
       <div
-        className={`fixed inset-0 z-[55] transition-transform duration-500 ease-[cubic-bezier(0.77,0,0.18,1)] ${
-          hero ? 'bg-background' : 'bg-background'
-        } ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}
+        className={`fixed inset-0 z-[100] bg-wander-bg transition-transform duration-500 ease-in-out ${
+          isOpen ? 'translate-y-0' : '-translate-y-full'
+        }`}
         aria-hidden={!isOpen}
       >
-        <div className="flex justify-end p-5 md:p-8">
+        <div className="flex justify-between items-center px-6 py-6">
+          <Link href="/" onClick={close} className="flex items-center gap-3 text-wander-dark">
+            <Mountain size={26} />
+            <span className="font-bold text-lg uppercase tracking-[0.2em] font-heading">
+              WANDER
+            </span>
+          </Link>
           <button
             onClick={close}
-            className={`liquid-glass grid h-11 w-11 place-items-center rounded-full ${
-              isOpen ? 'animate-rotate-in' : ''
-            }`}
-            style={{ animationDelay: isOpen ? '80ms' : '0ms' }}
+            className="p-2 text-wander-dark hover:text-orange-500 rounded-full border border-wander-dark/20"
             aria-label="Close menu"
           >
-            <div className="relative h-4 w-4">
-              <span className="absolute left-1/2 top-1/2 block h-[1.5px] w-5 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-white" />
-              <span className="absolute left-1/2 top-1/2 block h-[1.5px] w-5 -translate-x-1/2 -translate-y-1/2 -rotate-45 bg-white" />
-            </div>
+            <X size={22} />
           </button>
         </div>
 
-        <div className="flex h-[calc(100vh-80px)] flex-col items-center justify-center gap-6 px-6 pb-20">
-          <nav className="flex flex-col items-center gap-5" aria-label="Mobile navigation">
-            {navItems.map((item, idx) => (
+        <div className="flex flex-col items-center justify-center gap-6 px-6 pt-12">
+          <nav className="flex flex-col items-center gap-6" aria-label="Mobile navigation">
+            {STANDARD_NAV_ITEMS.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
                 onClick={close}
-                className={`text-3xl font-medium text-white/90 transition hover:text-white sm:text-4xl ${
-                  isOpen ? 'animate-slide-up' : 'opacity-0'
-                }`}
-                style={{ animationDelay: isOpen ? `${100 + idx * 60}ms` : '0ms' }}
+                className="text-2xl font-medium tracking-wide text-wander-dark hover:text-orange-500 transition-colors"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
-
-          <div
-            className={`mt-10 ${isOpen ? 'animate-slide-up' : 'opacity-0'}`}
-            style={{ animationDelay: isOpen ? `${100 + navItems.length * 60}ms` : '0ms' }}
-          >
-            {user ? (
-              <button
-                onClick={() => {
-                  close();
-                  signOut({ callbackUrl: '/' });
-                }}
-                className="liquid-glass flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-medium text-white"
-              >
-                <span className="h-2 w-2 rounded-full bg-foreground" /> Sign out
-              </button>
-            ) : (
-              <Link
-                href="/marketplace"
-                onClick={close}
-                className="liquid-glass flex items-center gap-2.5 rounded-full px-7 py-3.5 text-sm font-medium text-white"
-              >
-                Begin Journey
-              </Link>
-            )}
-          </div>
         </div>
       </div>
     </>
