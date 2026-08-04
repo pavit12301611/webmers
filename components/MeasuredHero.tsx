@@ -1,26 +1,17 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import Header from '@/components/Header';
 
 export default function MeasuredHero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 0.25;
-    }
-  }, []);
-
   return (
     <section className="relative h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] rounded-[32px] md:rounded-[40px] overflow-hidden shadow-sm ring-1 ring-black/5 bg-wander-blue w-full">
       {/* 1. Navigation Bar (Absolute Positioned inside Hero) */}
       <Header hero />
 
       {/* 2. Hero Section Content */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center h-full max-w-3xl mx-auto -mt-20 md:-mt-22 px-4 pointer-events-auto">
+      <div className="relative z-20 flex flex-col items-center justify-center text-center h-full max-w-3xl mx-auto px-4 pointer-events-auto">
         <span className="text-sm font-bold uppercase tracking-[0.25em] text-wander-dark mb-4">
           Gear for every journey
         </span>
@@ -38,22 +29,7 @@ export default function MeasuredHero() {
         </Link>
       </div>
 
-      {/* 3. Background Video */}
-      <video
-        ref={videoRef}
-        src="/hero-scroll.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full md:w-auto pointer-events-none z-10"
-        style={{
-          maskImage: 'radial-gradient(55% 100% at bottom, black 5%, transparent 90%)',
-          WebkitMaskImage: 'radial-gradient(55% 100% at bottom, black 5%, transparent 90%)',
-        }}
-      />
-
-      {/* 4. "Shop Now" Inverted Cutout (Bottom Right) */}
+      {/* 3. "Shop Now" Inverted Cutout (Bottom Right) */}
       <div className="absolute bottom-0 right-0 z-30 bg-[#f3efe8] rounded-tl-[40px] pt-8 pl-10 pb-8 pr-10">
         {/* Corner 1 (top junction): absolute bottom-full right-0 */}
         <div
