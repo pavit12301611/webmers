@@ -4,3 +4,6 @@ node_modules/
 .env
 *.log
 
+
+# Unzipped reference source of the original chatbot (integration lives in lib/psd)
+/chatbot-extracted/
