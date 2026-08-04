@@ -46,9 +46,9 @@ export default function MeasuredHero() {
       <div className="relative z-20 flex flex-col items-center justify-center text-center h-full max-w-3xl mx-auto px-6 pt-24 pointer-events-auto">
         {/* Dark 10% accent tag pill */}
         <span
-          className="inline-flex items-center gap-2 rounded-full border border-[#1f3d47]/20 bg-[#1f3d47]/[0.08] px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-[#1f3d47] mb-5 shadow-[0_2px_8px_rgba(31,61,71,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md"
+          className="inline-flex items-center gap-2 rounded-full border border-[#7bb5cc]/40 bg-[#7bb5cc]/[0.12] px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-[#4a8eb0] mb-5 shadow-[0_2px_8px_rgba(123,181,204,0.2),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#1f3d47]/70" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#4a8eb0]/80" />
           Gear for every journey
         </span>
 
