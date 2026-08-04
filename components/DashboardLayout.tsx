@@ -90,16 +90,15 @@ export default async function DashboardLayout({
         <DashboardNav role={role} isAdmin={isAdmin} />
       </div>
 
-      <main className="flex-1 pt-16 lg:ml-72 lg:pt-0">
+      <main className="flex-1 pt-16 lg:ml-72 lg:pt-0 bg-[#f3efe8]">
         <div className="p-6 md:p-8 lg:p-12">
           <div className="mb-8 max-w-5xl">
-            <span className="section-eyebrow">Dashboard</span>
-            <h1 className="mb-2 font-display text-3xl font-bold capitalize tracking-tight md:text-4xl lg:text-5xl">
+            <div className="uppercase text-xs tracking-[2.5px] text-emerald-900/40 mb-1">WEBMERS CONTROL PANEL</div>
+            <h1 className="mb-2 font-display text-3xl font-bold capitalize tracking-[-1.2px] md:text-4xl lg:text-5xl text-[#1f3d47]">
               {role} Dashboard
             </h1>
-            <p className="text-emerald-900/42">
-              Welcome back,{' '}
-              <span className="text-emerald-900/70">{userName}</span>
+            <p className="text-emerald-900/50 text-[15px]">
+              Welcome back, <span className="font-medium text-emerald-900/70">{userName}</span>
             </p>
           </div>
           <div className="max-w-5xl">{children}</div>
