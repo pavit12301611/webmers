@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import PSDMarkdown from './PSDMarkdown';
 
 interface WidgetMessage {
@@ -42,6 +43,7 @@ const SUGGESTIONS = [
 ];
 
 export default function PSDWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -128,6 +130,9 @@ export default function PSDWidget() {
   const clearChat = useCallback(() => {
     setMessages([WELCOME]);
   }, []);
+
+  const isEditorPage = pathname?.startsWith('/editor');
+  if (isEditorPage) return null;
 
   return (
     <>
