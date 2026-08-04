@@ -3,82 +3,107 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import Header from '@/components/Header';
+import { useEffect, useRef } from 'react';
 
 export default function MeasuredHero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.25;
+    }
+  }, []);
+
   return (
-    <section className="relative h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] rounded-[3.5rem] overflow-hidden ring-1 ring-[#7bb5cc]/40 shadow-[0_20px_60px_rgba(123,181,204,0.22),inset_0_1px_0_rgba(255,255,255,0.5)] w-full bg-[#7bb5cc]">
+    <section className="relative h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] rounded-[32px] md:rounded-[40px] overflow-hidden ring-1 ring-black/5 shadow-sm w-full bg-[#7bb5cc]">
       {/* Navigation Bar inside Hero */}
-      <div className="absolute top-0 left-0 right-0 z-40 px-6 py-5 md:px-12 md:py-6">
+      <div className="absolute top-0 left-0 right-0 z-50 px-8 py-8 lg:px-16">
         <Header hero />
       </div>
 
-      {/* Hero Content — single solid #7BB5CC shape */}
-      <div className="relative z-20 flex flex-col items-center justify-center text-center h-full max-w-3xl mx-auto px-6 pt-24 pointer-events-auto">
-        {/* Single-color tag pill matching #7BB5CC */}
-        <span
-          className="inline-flex items-center gap-2 rounded-full border border-[#4a8eb0]/40 bg-[#4a8eb0]/20 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-[#1f3d47] mb-5 shadow-[0_2px_8px_rgba(31,61,71,0.12),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md"
+      {/* Background Video */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full md:w-auto pointer-events-none">
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full md:w-auto h-auto max-w-none"
+          style={{
+            maskImage: 'radial-gradient(55% 100% at bottom, black 5%, transparent 90%)',
+            WebkitMaskImage: 'radial-gradient(55% 100% at bottom, black 5%, transparent 90%)',
+          }}
         >
+          <source
+            src="https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/travel_hike_bg_video_1.mp4"
+            type="video/mp4"
+          />
+        </video>
+      </div>
+
+      {/* Hero Content — centered, with negative top margin for optical lift */}
+      <div className="relative z-20 flex flex-col items-center justify-center text-center h-full max-w-3xl mx-auto px-6 -mt-22 pointer-events-auto">
+        {/* Eyebrow Text */}
+        <span className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.25em] text-[#1f3d47] mb-5 bg-[#f3efe8]/40 backdrop-blur-sm border border-[#1f3d47]/10 shadow-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-[#1f3d47]/70" />
           Gear for every journey
         </span>
 
-        <h1 className="font-heading font-medium text-5xl sm:text-6xl lg:text-[5.8rem] leading-[0.92] tracking-tight text-[#1f3d47] drop-shadow-[0_3px_18px_rgba(255,255,255,0.35)]">
-          EXPLORE UNCHARTED <br />
-          <span className="text-[#1f3d47]/85">TERRITORIES</span>
+        {/* Main Headline */}
+        <h1 className="font-heading font-medium text-4xl sm:text-5xl md:text-6xl lg:text-6xl leading-[1.05] tracking-tight text-[#1f3d47]">
+          Explore Uncharted <br />
+          <span className="text-[#1f3d47]/85">Territories</span>
         </h1>
 
-        <p className="mt-6 text-lg sm:text-xl max-w-lg text-[#1f3d47]/80 leading-[1.7] font-body">
+        {/* Subheadline */}
+        <p className="mt-6 text-base sm:text-lg md:max-w-md max-w-lg text-[#1f3d47]/90 leading-relaxed font-body">
           Launch-ready websites and premium digital gear precision-built for your next venture.
         </p>
 
-        {/* CTA button — single dark accent (#1F3D47) */}
+        {/* CTA Button */}
         <Link
           href="/marketplace"
-          className="mt-8 inline-block rounded-full bg-[#1f3d47] text-[#f3efe8] uppercase tracking-[0.15em] px-10 py-4 text-sm font-extrabold shadow-[0_10px_32px_rgba(31,61,71,0.28),inset_0_1px_0_rgba(255,255,255,0.1)] hover:-translate-y-0.5 hover:shadow-[0_16px_42px_rgba(31,61,71,0.35)] transition-all duration-350"
+          className="mt-8 inline-block rounded-full bg-transparent border-2 border-[#1f3d47] text-[#1f3d47] uppercase tracking-[0.15em] px-10 py-4 text-sm font-bold transition-all hover:bg-[#1f3d47] hover:text-white"
         >
-          Explore category
+          Explore Category
         </Link>
       </div>
 
-      {/* Bottom-right cutout card — single #7BB5CC with clay depth */}
-      <div
-        className="absolute bottom-0 right-0 z-30 w-[320px] md:w-[390px] rounded-tl-[3.5rem] backdrop-blur-xl overflow-hidden shadow-[-12px_-12px_50px_rgba(123,181,204,0.35),0_8px_28px_rgba(123,181,204,0.2),inset_0_1px_0_rgba(255,255,255,0.6)] bg-[#7bb5cc]/90"
-        style={{ borderTopLeftRadius: '3.5rem' }}
-      >
-        {/* Corner blend 1 */}
+      {/* Bottom-right Shop Now Cutout */}
+      <div className="absolute bottom-0 right-0 z-30 rounded-tl-[40px] bg-[#f3efe8] pt-8 pl-10 pr-10 pb-8">
+        {/* Corner blend 1 - top junction */}
         <div
-          className="absolute bottom-full right-0 w-14 h-14 pointer-events-none"
+          className="absolute bottom-full right-0 w-10 h-10 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 0 0, transparent 56px, #f3efe8 56px)',
+            background: 'radial-gradient(circle at 0 0, transparent 40px, #f3efe8 40px)',
           }}
         />
-        {/* Corner blend 2 */}
+        {/* Corner blend 2 - left junction */}
         <div
-          className="absolute bottom-0 right-full w-14 h-14 pointer-events-none"
+          className="absolute bottom-0 right-full w-10 h-10 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 0 0, transparent 56px, #f3efe8 56px)',
+            background: 'radial-gradient(circle at 0 0, transparent 40px, #f3efe8 40px)',
           }}
         />
 
-        <div className="pt-9 pl-11 pb-9 pr-11">
-          <div className="flex items-center gap-6">
-            <div className="text-left">
-              <div className="text-[1.35rem] font-heading font-bold text-[#1f3d47] leading-[1.1] tracking-tight">
-                Shop Now
-              </div>
-              <div className="mt-1.5 text-sm text-[#1f3d47]/70 font-body font-medium">
-                Explore category &gt;
-              </div>
+        <div className="flex items-center gap-6">
+          <div className="text-left">
+            <div className="text-lg font-medium text-[#1f3d47] leading-[1.1]">
+              Shop Now
             </div>
-
-            <Link
-              href="/marketplace"
-              aria-label="Shop now"
-              className="w-16 h-16 rounded-full flex items-center justify-center bg-[#1f3d47] text-[#f3efe8] shadow-[0_8px_24px_rgba(31,61,71,0.28),0_3px_10px_rgba(31,61,71,0.18),inset_0_1px_0_rgba(255,255,255,0.15)] hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(31,61,71,0.35),0_5px_14px_rgba(31,61,71,0.22)] transition-all duration-300 shrink-0"
-            >
-              <ArrowUpRight size={24} strokeWidth={2.5} />
-            </Link>
+            <div className="mt-1 text-sm text-[#1f3d47]/60 font-body">
+              Explore category &gt;
+            </div>
           </div>
+
+          <Link
+            href="/marketplace"
+            aria-label="Shop now"
+            className="w-12 h-12 rounded-full flex items-center justify-center bg-black/5 hover:bg-black/10 transition-colors shrink-0"
+          >
+            <ArrowUpRight size={20} className="text-[#1f3d47]" strokeWidth={2.5} />
+          </Link>
         </div>
       </div>
     </section>
