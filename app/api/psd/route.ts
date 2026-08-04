@@ -2,16 +2,40 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getPSDAnswer, type ChatMessage } from '@/lib/psd/answerEngine';
 import { getKnowledge, PSD_NAME } from '@/lib/psd/knowledge';
+import { parseEditorCommand } from '@/lib/editorAI/parser';
+import type { EditorState } from '@/lib/editorAI/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+function normalizeEditorState(raw: any): EditorState | null {
+  try {
+    if (!raw || typeof raw !== 'object') return null;
+    const pages = Array.isArray(raw.pages) ? raw.pages : [];
+    if (pages.length === 0) return null;
+    return {
+      pages,
+      activePageId: typeof raw.activePageId === 'string' ? raw.activePageId : pages[0]?.id || 'home',
+      selectedSectionId: raw.selectedSectionId ?? null,
+      themeKey: raw.themeKey || 'WanderWarm',
+      accent: raw.accent || '#d9772b',
+      font: raw.font || 'Outfit',
+      siteTitle: raw.siteTitle || 'My Custom Site',
+    } as EditorState;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * PSD — Webmers' built-in chatbot (zero API keys, runs fully locally).
+ * Now also connected to visual editor: if editorState is provided and
+ * the message is an editing command, it returns { actions } alongside reply
+ * so the editor can apply live edits.
  *
  * POST /api/psd
- * Body: { message: string, history?: Array<{ role: 'user'|'assistant', content: string }> }
- * Response: { reply, sources, intent, matched, meta }
+ * Body: { message: string, history?, editorState? }
+ * Response: { reply, sources, intent, matched, actions?, meta }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -44,6 +68,47 @@ export async function POST(req: NextRequest) {
     }
 
     const kb = await getKnowledge();
+    const editorState = normalizeEditorState(body?.editorState);
+
+    // If editor context is present, try editor command parsing first
+    if (editorState) {
+      const parsed = parseEditorCommand(message, editorState);
+      if (parsed.actions.length > 0) {
+        return NextResponse.json({
+          reply: parsed.reply,
+          actions: parsed.actions,
+          sources: [],
+          intent: parsed.intent,
+          matched: true,
+          meta: {
+            assistant: PSD_NAME,
+            offline: true,
+            mode: 'editor',
+            knowledgeDocs: kb.docs,
+            knowledgeChunks: kb.chunks,
+            embeddingModel: kb.model,
+          },
+        });
+      }
+      if (parsed.intent === 'help') {
+        return NextResponse.json({
+          reply: parsed.reply,
+          actions: [],
+          sources: [],
+          intent: parsed.intent,
+          matched: true,
+          meta: {
+            assistant: PSD_NAME,
+            offline: true,
+            mode: 'editor-help',
+            knowledgeDocs: kb.docs,
+            knowledgeChunks: kb.chunks,
+            embeddingModel: kb.model,
+          },
+        });
+      }
+    }
+
     const answer = await getPSDAnswer(message, history);
 
     return NextResponse.json({
@@ -51,6 +116,7 @@ export async function POST(req: NextRequest) {
       sources: answer.sources,
       intent: answer.intent,
       matched: answer.matched ?? true,
+      actions: [],
       meta: {
         assistant: PSD_NAME,
         offline: true,

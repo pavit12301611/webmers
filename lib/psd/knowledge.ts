@@ -275,6 +275,41 @@ PSD can help with: what Webmers is, how buying works, listing prices and details
 
 If a question is not about Webmers, PSD politely explains it only knows Webmers content.`,
   },
+  {
+    id: 'psd-editor-ai',
+    title: 'PSD Visual Editor AI',
+    markdown: `# PSD Visual Editor AI — Live Editing by Typing
+
+The Webmers visual editor at /editor is directly connected to PSD — Webmers' AI assistant. You can type natural language and PSD will edit the live site instantly, 100% offline with no API keys.
+
+## How it works
+Open /editor, look for the "PSD • EDITOR" floating button at bottom-right. Click it, type what you want, and the AI parses your command into structured editor actions (add section, change title, set theme, etc.) and applies them live to the canvas with undo support.
+
+## What PSD can edit via text
+- **Site brand:** "Change site title to Neon Agency", "Rename site to My Studio"
+- **Themes & styles:** "Set theme to dark", "Make theme dawn", "Set accent to orange #d9772b", "Make it blue", "Set font to Inter"
+- **Pages:** "Add page Services", "Create new page Contact", "Go to about page", "Rename page home to Landing", "Delete page services"
+- **Sections:** "Add pricing section", "Add hero and stats sections to home page", "Remove pricing section", "Remove this section", "Duplicate hero section", "Move features up"
+- **Text content:** "Change hero title to Welcome", "Set hero subtitle to We build amazing products", "Change badge to NEW", "Change button text to Get Started"
+- **List items:** "Change first feature title to Fast", "Change second stat value to 10K+", "Add feature", "Add testimonial"
+- **Preview:** "Show mobile preview", "Show desktop preview", "Show tablet view"
+
+## Examples
+- "Add a pricing section with 3 plans" → adds pricing block before footer, scrolls to it
+- "Set theme to dark and accent to blue" → two sequential commands: first "Set theme to dark" then "Make accent blue"
+- "Change hero title to Build Outstanding Products" → updates current page hero headline live
+- "Add page Portfolio with portfolio and team sections" → create new page, you can then add sections via follow-ups
+
+## Technical
+- Endpoint: POST /api/editor-ai accepts { message, history, editorState: { pages, activePageId, selectedSectionId, themeKey, accent, font, siteTitle } } and returns { reply, actions: EditorAction[], intent, confidence }
+- Parser: lib/editorAI/parser.ts — deterministic regex + keyword matching, runs offline, no LLMs, zero API keys
+- Actions: defined in lib/editorAI/types.ts — setSiteTitle, setTheme, setAccent, setFont, setDevice, addPage, deletePage, renamePage, switchPage, addSection, removeSection, duplicateSection, moveSection, updateSection, updateSectionItem, addSectionItem, removeSectionItem
+- UI: components/EditorAI.tsx — floating chat, context bar showing active page/theme/font, quick prompts, live toast
+- Integration: app/editor/page.tsx hosts EditorAI, provides applyAIActions callback that saves undo history, mutates pages state, autosaves to localStorage webmers_website_maker_data_v3
+
+This is the core "visual editor connected to PSD AI" feature — type to AI what you want and AI edits the website live.
+`,
+  },
 ];
 
 /* ------------------------------------------------------------------ */

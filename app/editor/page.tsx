@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
+import EditorAI from '@/components/EditorAI';
+import { EditorAction, EditorState } from '@/lib/editorAI/types';
 import {
   Eye,
   Home,
@@ -461,6 +463,247 @@ export default function OverhauledEditorPage() {
     showToast('Redo completed');
   };
 
+  // --- PSD AI: Apply actions coming from AI ---
+  const applyAIActions = useCallback((actions: EditorAction[]) => {
+    if (!actions || actions.length === 0) return;
+    // Save snapshot once for undo
+    setHistoryStack(prev => [...prev.slice(-30), pages]);
+    setRedoStack([]);
+
+    let newPages = [...pages];
+    let newThemeKey = themeKey;
+    let newAccent = accent;
+    let newFont = font;
+    let newSiteTitle = siteTitle;
+    let newActivePageId = activePageId;
+    let newSelectedSectionId: string | null = selectedSectionId;
+    let newDevice = device;
+    let toastMsg = '';
+
+    const resolvePage = (idOrName: string): string | null => {
+      const lower = idOrName.toLowerCase();
+      const byId = newPages.find(p => p.id.toLowerCase() === lower);
+      if (byId) return byId.id;
+      const byName = newPages.find(p => p.name.toLowerCase() === lower);
+      if (byName) return byName.id;
+      const incl = newPages.find(p => p.name.toLowerCase().includes(lower) || lower.includes(p.name.toLowerCase()));
+      if (incl) return incl.id;
+      return null;
+    };
+
+    for (const act of actions) {
+      switch (act.type) {
+        case 'setSiteTitle': {
+          newSiteTitle = act.title.slice(0, 80);
+          toastMsg = `Site title → "${newSiteTitle}" via PSD`;
+          break;
+        }
+        case 'setTheme': {
+          if (THEMES[act.theme]) {
+            newThemeKey = act.theme as ThemeKey;
+            toastMsg = `Theme → ${act.theme} via PSD`;
+          }
+          break;
+        }
+        case 'setAccent': {
+          newAccent = act.accent;
+          toastMsg = `Accent → ${act.accent} via PSD`;
+          break;
+        }
+        case 'setFont': {
+          if (FONTS[act.font]) {
+            newFont = act.font;
+            toastMsg = `Font → ${act.font} via PSD`;
+          }
+          break;
+        }
+        case 'setDevice': {
+          newDevice = act.device as Device;
+          toastMsg = `Preview → ${act.device} via PSD`;
+          break;
+        }
+        case 'addPage': {
+          const cleanId = act.pageId || act.pageName.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 30);
+          if (newPages.some(p => p.id === cleanId)) {
+            toastMsg = `Page "${act.pageName}" already exists`;
+            break;
+          }
+          const np: Page = {
+            id: cleanId,
+            name: act.pageName,
+            sections: [createDefaultSection('hero'), createDefaultSection('features'), createDefaultSection('footer')],
+          };
+          newPages = [...newPages, np];
+          newActivePageId = cleanId;
+          newSelectedSectionId = null;
+          toastMsg = `Page "${act.pageName}" created via PSD`;
+          break;
+        }
+        case 'deletePage': {
+          if (act.pageId === 'home') {
+            toastMsg = 'Cannot delete Home page';
+            break;
+          }
+          newPages = newPages.filter(p => p.id !== act.pageId);
+          if (newActivePageId === act.pageId) newActivePageId = 'home';
+          toastMsg = `Page deleted via PSD`;
+          break;
+        }
+        case 'renamePage': {
+          newPages = newPages.map(p => p.id === act.pageId ? { ...p, name: act.newName } : p);
+          toastMsg = `Renamed to "${act.newName}" via PSD`;
+          break;
+        }
+        case 'switchPage': {
+          const resolved = resolvePage(act.pageId) || act.pageId;
+          if (newPages.some(p => p.id === resolved)) {
+            newActivePageId = resolved;
+            newSelectedSectionId = null;
+            toastMsg = `Switched to ${newPages.find(p=>p.id===resolved)?.name} via PSD`;
+          }
+          break;
+        }
+        case 'addSection': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          const target = newPages.find(p => p.id === pid);
+          if (!target) break;
+          const newSec = createDefaultSection(act.sectionType);
+          const footerIdx = target.sections.findIndex(s => s.type === 'footer');
+          let updated = [...target.sections];
+          if (footerIdx !== -1) updated.splice(footerIdx, 0, newSec);
+          else updated.push(newSec);
+          newPages = newPages.map(p => p.id === pid ? { ...p, sections: updated } : p);
+          newSelectedSectionId = newSec.id;
+          newActivePageId = pid;
+          toastMsg = `Added ${act.sectionType} via PSD`;
+          // scroll after render
+          setTimeout(() => {
+            const el = document.getElementById(`section-card-${newSec.id}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+          break;
+        }
+        case 'removeSection': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          const target = newPages.find(p => p.id === pid);
+          if (!target) break;
+          const filtered = target.sections.filter(s => s.id !== act.sectionId);
+          newPages = newPages.map(p => p.id === pid ? { ...p, sections: filtered } : p);
+          if (newSelectedSectionId === act.sectionId) newSelectedSectionId = null;
+          toastMsg = `Removed section via PSD`;
+          break;
+        }
+        case 'duplicateSection': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          const target = newPages.find(p => p.id === pid);
+          if (!target) break;
+          const sec = target.sections.find(s => s.id === act.sectionId);
+          if (!sec) break;
+          const copy: SectionInstance = {
+            ...sec,
+            id: `${sec.type}-${Math.random().toString(36).slice(2, 9)}`,
+            title: `${sec.title} (Copy)`,
+            buttons: sec.buttons ? JSON.parse(JSON.stringify(sec.buttons)) : undefined,
+            items: sec.items ? JSON.parse(JSON.stringify(sec.items)) : undefined,
+          };
+          const idx = target.sections.findIndex(s => s.id === act.sectionId);
+          const updated = [...target.sections];
+          updated.splice(idx + 1, 0, copy);
+          newPages = newPages.map(p => p.id === pid ? { ...p, sections: updated } : p);
+          newSelectedSectionId = copy.id;
+          toastMsg = `Duplicated ${sec.type} via PSD`;
+          break;
+        }
+        case 'moveSection': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          const target = newPages.find(p => p.id === pid);
+          if (!target) break;
+          const idx = target.sections.findIndex(s => s.id === act.sectionId);
+          if (idx === -1) break;
+          if (act.direction === 'up' && idx === 0) break;
+          if (act.direction === 'down' && idx === target.sections.length - 1) break;
+          const updated = [...target.sections];
+          const tIdx = act.direction === 'up' ? idx - 1 : idx + 1;
+          const tmp = updated[idx];
+          updated[idx] = updated[tIdx];
+          updated[tIdx] = tmp;
+          newPages = newPages.map(p => p.id === pid ? { ...p, sections: updated } : p);
+          toastMsg = `Moved section ${act.direction} via PSD`;
+          break;
+        }
+        case 'updateSection': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          newPages = newPages.map(p => {
+            if (p.id !== pid) return p;
+            const secs = p.sections.map(s => s.id === act.sectionId ? { ...s, [act.field]: act.value } : s);
+            return { ...p, sections: secs };
+          });
+          toastMsg = `Updated ${act.field} via PSD`;
+          break;
+        }
+        case 'updateSectionItem': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          newPages = newPages.map(p => {
+            if (p.id !== pid) return p;
+            const secs = p.sections.map(s => {
+              if (s.id !== act.sectionId || !s.items) return s;
+              const newItems = [...s.items];
+              if (act.itemIndex >= 0 && act.itemIndex < newItems.length) {
+                newItems[act.itemIndex] = { ...newItems[act.itemIndex], [act.field]: act.value };
+              }
+              return { ...s, items: newItems };
+            });
+            return { ...p, sections: secs };
+          });
+          toastMsg = `Updated item via PSD`;
+          break;
+        }
+        case 'addSectionItem': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          newPages = newPages.map(p => {
+            if (p.id !== pid) return p;
+            const secs = p.sections.map(s => {
+              if (s.id !== act.sectionId) return s;
+              const dummy = createDefaultSection(s.type);
+              const sample = dummy.items?.[0] || { title: 'New Item', description: 'Description' };
+              const newItems = [...(s.items || []), sample];
+              return { ...s, items: newItems };
+            });
+            return { ...p, sections: secs };
+          });
+          toastMsg = `Added item via PSD`;
+          break;
+        }
+        case 'removeSectionItem': {
+          const pid = resolvePage(act.pageId) || activePageId;
+          newPages = newPages.map(p => {
+            if (p.id !== pid) return p;
+            const secs = p.sections.map(s => {
+              if (s.id !== act.sectionId || !s.items) return s;
+              const filtered = s.items.filter((_, ix) => ix !== act.itemIndex);
+              return { ...s, items: filtered };
+            });
+            return { ...p, sections: secs };
+          });
+          toastMsg = `Removed item via PSD`;
+          break;
+        }
+        default:
+          break;
+      }
+    }
+
+    setPages(newPages);
+    setThemeKey(newThemeKey);
+    setAccent(newAccent);
+    setFont(newFont);
+    setSiteTitle(newSiteTitle);
+    setActivePageId(newActivePageId);
+    setSelectedSectionId(newSelectedSectionId);
+    setDevice(newDevice as Device);
+    if (toastMsg) showToast(toastMsg);
+  }, [pages, themeKey, accent, font, siteTitle, activePageId, selectedSectionId, device]);
+
   // Helper getters
   const activePage = pages.find(p => p.id === activePageId) || pages[0] || null;
   const currentTheme = THEMES[themeKey] || THEMES.WanderWarm;
@@ -702,6 +945,10 @@ export default function OverhauledEditorPage() {
           <div className="h-4 w-px bg-white/20" />
           <h1 className="font-heading font-bold text-sm md:text-base text-white truncate flex items-center gap-2">
             <Mountain size={18} className="text-[#d9772b]" /> WEBMERS Visual Editor
+            <span className="hidden sm:inline-flex items-center gap-1.5 ml-3 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              PSD AI • LIVE EDITS
+            </span>
           </h1>
           
           <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] text-white/80">
@@ -2229,6 +2476,22 @@ export default function OverhauledEditorPage() {
 
           </div>
         </div>
+      )}
+
+      {/* PSD AI — Visual Editor Live Connection */}
+      {pages.length > 0 && (
+        <EditorAI
+          editorState={{
+            pages,
+            activePageId,
+            selectedSectionId,
+            themeKey,
+            accent,
+            font,
+            siteTitle,
+          }}
+          onApplyActions={applyAIActions}
+        />
       )}
 
       {/* Dynamic Toast feedback */}
