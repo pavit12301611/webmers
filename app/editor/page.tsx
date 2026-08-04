@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import EditorAI from '@/components/EditorAI';
 import { EditorAction, EditorState } from '@/lib/editorAI/types';
+import { listingToPages } from '@/lib/editorAI/listingAdapter';
 import {
   Eye,
   Home,
@@ -362,7 +364,7 @@ const createDefaultSection = (type: SectionInstance['type']): SectionInstance =>
   }
 };
 
-export default function OverhauledEditorPage() {
+function OverhauledEditorPageInner() {
   // Global States
   const [pages, setPages] = useState<Page[]>([]);
   const [activePageId, setActivePageId] = useState<string>('home');
@@ -374,6 +376,9 @@ export default function OverhauledEditorPage() {
   const [font, setFont] = useState<string>('Outfit');
   const [siteTitle, setSiteTitle] = useState<string>('My Custom Site');
   const [device, setDevice] = useState<Device>('desktop');
+  const searchParams = useSearchParams();
+  const [isLoadingListing, setIsLoadingListing] = useState(false);
+  const [loadedListingId, setLoadedListingId] = useState<string | null>(null);
 
   // Interactive controls
   const [isAddingSection, setIsAddingSection] = useState(false);
@@ -389,28 +394,74 @@ export default function OverhauledEditorPage() {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'upi'>('card');
   const [processingLog, setProcessingLog] = useState<string>('');
   
-  // Load initially or set defaults
+  // Load initially or set defaults — now supports ?listing=ID for any listed site
   useEffect(() => {
-    const saved = localStorage.getItem('webmers_website_maker_data_v3');
-    if (saved) {
+    const loadFromListing = async (listingId: string) => {
+      setIsLoadingListing(true);
       try {
-        const parsed = JSON.parse(saved);
-        if (parsed.pages && parsed.pages.length > 0) {
-          setPages(parsed.pages);
-          setThemeKey(parsed.themeKey || 'WanderWarm');
-          setAccent(parsed.accent || '#d9772b');
-          setFont(parsed.font || 'Outfit');
-          setSiteTitle(parsed.siteTitle || 'My Custom Site');
-          setActivePageId(parsed.pages[0].id);
-          return;
+        const res = await fetch(`/api/listings?id=${encodeURIComponent(listingId)}`);
+        const data = await res.json();
+        const listing = data.listing;
+        if (listing && listing.id) {
+          const { pages: mappedPages, accent: mappedAccent, theme: mappedTheme, siteTitle: mappedTitle } = listingToPages(listing as any, []);
+          setPages(mappedPages as any);
+          setThemeKey(mappedTheme as any);
+          setAccent(mappedAccent);
+          setSiteTitle(mappedTitle);
+          setActivePageId(mappedPages[0]?.id || 'home');
+          setLoadedListingId(listing.id);
+          // Also save to localStorage as the new baseline so it persists
+          localStorage.setItem('webmers_website_maker_data_v3', JSON.stringify({
+            pages: mappedPages,
+            themeKey: mappedTheme,
+            accent: mappedAccent,
+            font,
+            siteTitle: mappedTitle,
+            sourceListingId: listing.id,
+          }));
+          return true;
         }
-      } catch (err) {
-        console.error('Error loading config', err);
+      } catch (e) {
+        console.error('Failed to load listing for editor', e);
+      } finally {
+        setIsLoadingListing(false);
       }
-    }
-    // Set standard default if localstorage empty
-    setPages(INITIAL_PAGES);
-  }, []);
+      return false;
+    };
+
+    const init = async () => {
+      // 1. Check query param ?listing=xxx or ?id=xxx — this enables EVERY listed site to be editable via PSD AI
+      const listingParam = searchParams.get('listing') || searchParams.get('id') || searchParams.get('listingId');
+      if (listingParam) {
+        const ok = await loadFromListing(listingParam);
+        if (ok) return;
+      }
+      // 2. Otherwise load from localStorage autosave
+      const saved = localStorage.getItem('webmers_website_maker_data_v3');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.pages && parsed.pages.length > 0) {
+            setPages(parsed.pages);
+            setThemeKey(parsed.themeKey || 'WanderWarm');
+            setAccent(parsed.accent || '#d9772b');
+            setFont(parsed.font || 'Outfit');
+            setSiteTitle(parsed.siteTitle || 'My Custom Site');
+            setActivePageId(parsed.pages[0].id);
+            if (parsed.sourceListingId) setLoadedListingId(parsed.sourceListingId);
+            return;
+          }
+        } catch (err) {
+          console.error('Error loading config', err);
+        }
+      }
+      // 3. Fallback to default template
+      setPages(INITIAL_PAGES);
+    };
+
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // Autosave when changes occur
   useEffect(() => {
@@ -951,8 +1002,19 @@ export default function OverhauledEditorPage() {
             </span>
           </h1>
           
+          {loadedListingId && (
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-[#d9772b]/20 border border-[#d9772b]/30 text-[11px] text-orange-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#d9772b] animate-pulse" />
+              <span>Editing listed site: {siteTitle} ({loadedListingId}) via PSD AI</span>
+            </div>
+          )}
           <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] text-white/80">
-            {isAutosaving ? (
+            {isLoadingListing ? (
+              <>
+                <RefreshCw size={11} className="animate-spin text-[#d9772b]" />
+                <span>Loading listed site...</span>
+              </>
+            ) : isAutosaving ? (
               <>
                 <RefreshCw size={11} className="animate-spin text-[#d9772b]" />
                 <span>Autosaving changes...</span>
@@ -2502,6 +2564,14 @@ export default function OverhauledEditorPage() {
       )}
 
     </div>
+  );
+}
+
+export default function OverhauledEditorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#f3efe8] flex items-center justify-center text-[#1f3d47]"><div className="text-sm">Loading PSD Editor...</div></div>}>
+      <OverhauledEditorPageInner />
+    </Suspense>
   );
 }
 

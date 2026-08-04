@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { ArrowLeft, ArrowRight, BadgeCheck, ExternalLink, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BadgeCheck, ExternalLink, Star, Wand2, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
 import SiteFooter from '@/components/SiteFooter';
 import ListingCard from '@/components/ListingCard';
@@ -105,13 +105,16 @@ export default async function ListingPage({ params }: { params: { id: string } }
                 <Link href={`/checkout?listing=${listing.id}`} className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-4 text-sm font-medium text-black transition hover:bg-white/90">
                   Buy Now <ArrowRight size={14} />
                 </Link>
+                <Link href={`/editor?listing=${listing.id}`} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#d9772b] to-[#b85e1f] py-4 text-sm font-bold text-white shadow-[0_4px_14px_rgba(217,119,43,0.35)] transition hover:scale-[1.01]">
+                  <Wand2 size={16} /> Edit with PSD AI <Sparkles size={12} className="opacity-80" />
+                </Link>
                 {listing.demoUrl && (
                   <a href={listing.demoUrl} target="_blank" rel="noopener noreferrer" className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-white/10 py-3 text-sm text-foreground/60 transition hover:bg-white/[0.04] hover:text-foreground">
                     <ExternalLink size={14} /> View live demo
                   </a>
                 )}
                 <p className="mt-4 text-center text-[11px] uppercase tracking-wide text-foreground/25">
-                  Escrow protected · 72-hour satisfaction window · Includes visual editor
+                  Escrow protected · Every site editable via PSD AI at /editor?listing={listing.id}
                 </p>
               </div>
             </div>
