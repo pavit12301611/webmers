@@ -24,11 +24,11 @@ import { getBuyerOrders, getListings, getWishlist, getReviews, createReview, typ
 import React from 'react';
 
 const STATUS_STYLES: Record<OrderStatus, { bg: string; text: string; label: string }> = {
-  PENDING: { bg: 'bg-white/10', text: 'text-white/70', label: 'Pending' },
-  PAID: { bg: 'bg-amber-400/10', text: 'text-amber-300', label: 'Paid · In Escrow' },
-  COMPLETED: { bg: 'bg-emerald-400/10', text: 'text-emerald-300', label: 'Completed' },
-  REFUNDED: { bg: 'bg-rose-400/10', text: 'text-rose-300', label: 'Refunded' },
-  DISPUTED: { bg: 'bg-rose-400/10', text: 'text-rose-300', label: 'Disputed' },
+  PENDING: { bg: 'bg-white/10', text: 'text-foreground/70', label: 'Pending' },
+  PAID: { bg: 'bg-amber-400/10', text: 'text-amber-700', label: 'Paid · In Escrow' },
+  COMPLETED: { bg: 'bg-emerald-400/10', text: 'text-emerald-700', label: 'Completed' },
+  REFUNDED: { bg: 'bg-rose-400/10', text: 'text-rose-700', label: 'Refunded' },
+  DISPUTED: { bg: 'bg-rose-400/10', text: 'text-rose-700', label: 'Disputed' },
 };
 
 function formatDate(date: Date): string {
@@ -104,12 +104,12 @@ export default async function BuyerDashboard({
           {activeOrders > 0 && (
             <div className="mb-8 rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5">
               <div className="flex items-start gap-3">
-                <ShieldCheck size={20} className="text-amber-300 shrink-0 mt-0.5" />
+                <ShieldCheck size={20} className="text-amber-700 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-amber-200 mb-1">
+                  <h3 className="font-semibold text-amber-700 mb-1">
                     {activeOrders} {activeOrders === 1 ? 'order' : 'orders'} in escrow
                   </h3>
-                  <p className="text-sm text-emerald-50/50">
+                  <p className="text-sm text-emerald-900/50">
                     Funds are held for 72 hours. Confirm satisfaction to release payment to the seller.
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export default async function BuyerDashboard({
               {orders.length > 3 && (
                 <Link
                   href="/dashboard/buyer?tab=websites"
-                  className="text-xs text-emerald-50/50 hover:text-emerald-50 flex items-center gap-1"
+                  className="text-xs text-emerald-900/50 hover:text-emerald-900 flex items-center gap-1"
                 >
                   View all <ArrowUpRight size={12} />
                 </Link>
@@ -154,7 +154,7 @@ export default async function BuyerDashboard({
                               <h3 className="font-display font-semibold truncate">
                                 {order.listingTitle}
                               </h3>
-                              <div className="flex items-center gap-3 mt-1 text-xs text-emerald-50/40">
+                              <div className="flex items-center gap-3 mt-1 text-xs text-emerald-900/40">
                                 <span className="flex items-center gap-1">
                                   <Calendar size={11} />
                                   {formatDate(order.createdAt)}
@@ -168,11 +168,11 @@ export default async function BuyerDashboard({
                             </span>
                           </div>
                           <div className="mt-3 flex items-center gap-3 flex-wrap">
-                            <span className="text-sm font-semibold text-emerald-50">
+                            <span className="text-sm font-semibold text-emerald-900">
                               ${order.amount}
                             </span>
                             {order.codeUnlocked && (
-                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 flex items-center gap-1">
+                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-700 flex items-center gap-1">
                                 <Download size={10} /> Code unlocked
                               </span>
                             )}
@@ -250,7 +250,7 @@ export default async function BuyerDashboard({
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-display font-bold">My Websites</h2>
-            <span className="text-sm text-emerald-50/40">{orders.length} orders</span>
+            <span className="text-sm text-emerald-900/40">{orders.length} orders</span>
           </div>
           {orders.length > 0 ? (
             <div className="space-y-3">
@@ -268,7 +268,7 @@ export default async function BuyerDashboard({
                         {listing ? (
                           <ListingThumbnail listing={listing} showChrome={false} />
                         ) : (
-                          <div className="w-full h-full bg-emerald-50/10 flex items-center justify-center text-emerald-50/30">
+                          <div className="w-full h-full bg-emerald-50/10 flex items-center justify-center text-emerald-900/30">
                             <Package size={24} />
                           </div>
                         )}
@@ -279,7 +279,7 @@ export default async function BuyerDashboard({
                             <h3 className="font-display text-lg font-semibold truncate">
                               {order.listingTitle}
                             </h3>
-                            <div className="flex items-center gap-2 mt-1 text-xs text-emerald-50/40 flex-wrap">
+                            <div className="flex items-center gap-2 mt-1 text-xs text-emerald-900/40 flex-wrap">
                               <span className="flex items-center gap-1">
                                 <Calendar size={11} />
                                 {formatDate(order.createdAt)}
@@ -295,22 +295,22 @@ export default async function BuyerDashboard({
 
                         <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                           <div>
-                            <div className="text-emerald-50/30">Layout</div>
-                            <div className="text-emerald-50/70 font-medium">{order.layoutChoice}</div>
+                            <div className="text-emerald-900/30">Layout</div>
+                            <div className="text-emerald-900/70 font-medium">{order.layoutChoice}</div>
                           </div>
                           <div>
-                            <div className="text-emerald-50/30">Amount</div>
-                            <div className="text-emerald-50 font-semibold">${order.amount}</div>
+                            <div className="text-emerald-900/30">Amount</div>
+                            <div className="text-emerald-900 font-semibold">${order.amount}</div>
                           </div>
                           <div>
-                            <div className="text-emerald-50/30">Code Unlock</div>
-                            <div className={order.codeUnlocked ? 'text-amber-300' : 'text-emerald-50/50'}>
+                            <div className="text-emerald-900/30">Code Unlock</div>
+                            <div className={order.codeUnlocked ? 'text-amber-700' : 'text-emerald-900/50'}>
                               {order.codeUnlocked ? 'Included' : 'Not included'}
                             </div>
                           </div>
                           <div>
-                            <div className="text-emerald-50/30">Order ID</div>
-                            <div className="text-emerald-50/50 font-mono text-[10px]">{order.id.slice(0, 12)}…</div>
+                            <div className="text-emerald-900/30">Order ID</div>
+                            <div className="text-emerald-900/50 font-mono text-[10px]">{order.id.slice(0, 12)}…</div>
                           </div>
                         </div>
 
@@ -334,7 +334,7 @@ export default async function BuyerDashboard({
                                 if (res.ok) window.location.reload();
                                 else alert('Failed to confirm');
                               }}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-700 hover:bg-emerald-400/15 transition-colors"
                             >
                               <ShieldCheck size={12} /> Confirm Satisfaction
                             </button>
@@ -348,7 +348,7 @@ export default async function BuyerDashboard({
                             </Link>
                           )}
                           {order.codeUnlocked && (
-                            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[11px] font-medium text-amber-300 hover:bg-amber-400/15 transition-colors">
+                            <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[11px] font-medium text-amber-700 hover:bg-amber-400/15 transition-colors">
                               <Download size={12} /> Download Source
                             </button>
                           )}
@@ -373,7 +373,7 @@ export default async function BuyerDashboard({
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-display font-bold">Wishlist</h2>
-            <span className="text-sm text-emerald-50/40">{wishlist.length} saved</span>
+            <span className="text-sm text-emerald-900/40">{wishlist.length} saved</span>
           </div>
           {wishlist.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -391,8 +391,8 @@ export default async function BuyerDashboard({
                   <div className="p-4">
                     <div className="text-sm font-display font-semibold truncate">{listing.title}</div>
                     <div className="flex items-center justify-between mt-1">
-                      <div className="text-sm font-bold text-emerald-50">${listing.price}</div>
-                      <div className="text-[11px] text-emerald-50/40">{listing.category}</div>
+                      <div className="text-sm font-bold text-emerald-900">${listing.price}</div>
+                      <div className="text-[11px] text-emerald-900/40">{listing.category}</div>
                     </div>
                   </div>
                 </Link>
@@ -420,7 +420,7 @@ export default async function BuyerDashboard({
                 <ReviewForm key={order.id} order={order} />
               ))}
             {orders.filter((o) => o.status === 'COMPLETED').length === 0 && (
-              <div className="text-center py-12 text-white/50">No completed purchases yet.</div>
+              <div className="text-center py-12 text-foreground/50">No completed purchases yet.</div>
             )}
           </div>
         </section>
@@ -434,19 +434,19 @@ export default async function BuyerDashboard({
               <h3 className="font-display font-bold mb-4">Profile</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-emerald-50/40 block mb-1">Name</label>
+                  <label className="text-xs text-emerald-900/40 block mb-1">Name</label>
                   <div className="px-4 py-3 rounded-xl bg-emerald-50/[0.04] border border-emerald-50/10 text-sm">
                     {session.user.name || '—'}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-emerald-50/40 block mb-1">Email</label>
+                  <label className="text-xs text-emerald-900/40 block mb-1">Email</label>
                   <div className="px-4 py-3 rounded-xl bg-emerald-50/[0.04] border border-emerald-50/10 text-sm">
                     {session.user.email}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-emerald-50/40 block mb-1">Role</label>
+                  <label className="text-xs text-emerald-900/40 block mb-1">Role</label>
                   <div className="px-4 py-3 rounded-xl bg-emerald-50/[0.04] border border-emerald-50/10 text-sm">
                     {session.user.role}
                   </div>
@@ -455,7 +455,7 @@ export default async function BuyerDashboard({
             </div>
             <div className="leaf-card rounded-2xl p-6">
               <h3 className="font-display font-bold mb-2">Security</h3>
-              <p className="text-sm text-emerald-50/45 mb-4">
+              <p className="text-sm text-emerald-900/45 mb-4">
                 Manage your password and two-factor authentication settings.
               </p>
               <div className="flex gap-3">
@@ -486,14 +486,14 @@ function StatCard({
   accent: 'emerald' | 'lime' | 'rose' | 'amber';
 }) {
   const accentMap = {
-    emerald: 'text-emerald-300',
-    lime: 'text-lime-300',
-    rose: 'text-rose-300',
-    amber: 'text-amber-300',
+    emerald: 'text-emerald-700',
+    lime: 'text-lime-700',
+    rose: 'text-rose-700',
+    amber: 'text-amber-700',
   };
   return (
     <div className="stat-card">
-      <div className="flex items-center gap-2 mb-3 text-emerald-50/40">
+      <div className="flex items-center gap-2 mb-3 text-emerald-900/40">
         <Icon size={18} className={accentMap[accent]} />
         <span className="text-xs">{label}</span>
       </div>
@@ -520,7 +520,7 @@ function QuickAction({
     >
       <Icon size={20} />
       <div className="mt-3 text-sm font-semibold">{label}</div>
-      <div className="text-xs text-emerald-50/40 mt-0.5">{desc}</div>
+      <div className="text-xs text-emerald-900/40 mt-0.5">{desc}</div>
     </Link>
   );
 }
@@ -537,7 +537,7 @@ function EmptyState({
   return (
     <div className="text-center py-16 rounded-3xl border border-emerald-50/10 bg-emerald-50/[0.02]">
       <p className="text-xl font-display font-semibold mb-2">{title}</p>
-      <p className="text-emerald-50/45 mb-6">{message}</p>
+      <p className="text-emerald-900/45 mb-6">{message}</p>
       <Link href={cta.href} className="btn-forest px-6 py-3">
         {cta.label}
       </Link>
@@ -573,7 +573,7 @@ function ReviewForm({ order }: { order: any }) {
 
   if (submitted) {
     return (
-      <div className="leaf-card rounded-2xl p-6 text-emerald-300">
+      <div className="leaf-card rounded-2xl p-6 text-emerald-700">
         ✓ Thanks! Your review has been submitted.
       </div>
     );
@@ -582,7 +582,7 @@ function ReviewForm({ order }: { order: any }) {
   return (
     <form onSubmit={handleSubmit} className="leaf-card rounded-2xl p-6">
       <div className="font-medium mb-1">{order.listingTitle}</div>
-      <div className="text-xs text-white/40 mb-4">Order #{order.id}</div>
+      <div className="text-xs text-foreground/40 mb-4">Order #{order.id}</div>
 
       <div className="flex gap-1 mb-4">
         {[1,2,3,4,5].map((n) => (
@@ -590,7 +590,7 @@ function ReviewForm({ order }: { order: any }) {
             type="button"
             key={n}
             onClick={() => setRating(n)}
-            className={n <= rating ? 'text-amber-400' : 'text-white/30'}
+            className={n <= rating ? 'text-amber-400' : 'text-foreground/30'}
           >
             <Star size={22} fill={n <= rating ? 'currentColor' : 'none'} />
           </button>
@@ -601,7 +601,7 @@ function ReviewForm({ order }: { order: any }) {
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Share your experience with this website..."
-        className="w-full rounded-xl bg-black/40 border border-white/10 p-4 text-sm resize-y min-h-[90px]"
+        className="w-full rounded-xl bg-black/40 border border-white/10 text-emerald-50 p-4 text-sm resize-y min-h-[90px]"
         required
       />
 

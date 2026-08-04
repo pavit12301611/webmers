@@ -41,16 +41,16 @@ export default async function SellerPage({ params }: { params: { id: string } })
         <div className="relative mx-auto max-w-7xl">
           <Link
             href="/marketplace"
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/50 transition-colors hover:text-white"
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-foreground/50 transition-colors hover:text-foreground"
           >
             <ArrowLeft size={14} /> Back to marketplace
           </Link>
 
           <div className="mb-10 flex flex-col gap-5">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/40">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground/40">
               <BadgeCheck size={12} /> Seller
             </span>
-            <h1 className="text-balance text-4xl leading-[0.95] tracking-tight text-white md:text-6xl" style={{ fontFamily: 'var(--font-instrument)' }}>
+            <h1 className="text-balance text-4xl leading-[0.95] tracking-tight text-foreground md:text-6xl" style={{ fontFamily: 'var(--font-instrument)' }}>
               {sellerName}
             </h1>
           </div>
@@ -60,9 +60,9 @@ export default async function SellerPage({ params }: { params: { id: string } })
               const Icon = s.icon;
               return (
                 <div key={s.label} className="rounded-[1.4rem] border border-white/[0.07] bg-white/[0.02] p-5 backdrop-blur-xl">
-                  <Icon size={18} className="mb-3 text-white/40" />
-                  <div className="text-2xl tracking-tight text-white" style={{ fontFamily: 'var(--font-instrument)' }}>{s.value}</div>
-                  <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-white/40">{s.label}</div>
+                  <Icon size={18} className="mb-3 text-foreground/40" />
+                  <div className="text-2xl tracking-tight text-foreground" style={{ fontFamily: 'var(--font-instrument)' }}>{s.value}</div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-foreground/40">{s.label}</div>
                 </div>
               );
             })}
@@ -71,7 +71,7 @@ export default async function SellerPage({ params }: { params: { id: string } })
       </section>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-10">
-        <h2 className="mb-8 text-2xl tracking-tight text-white md:text-3xl" style={{ fontFamily: 'var(--font-instrument)' }}>
+        <h2 className="mb-8 text-2xl tracking-tight text-foreground md:text-3xl" style={{ fontFamily: 'var(--font-instrument)' }}>
           Sites by {sellerName}
         </h2>
 
@@ -83,7 +83,7 @@ export default async function SellerPage({ params }: { params: { id: string } })
           </div>
         ) : (
           <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.03] py-20 text-center backdrop-blur-xl">
-            <p className="text-white/40">No active sites from this seller right now.</p>
+            <p className="text-foreground/40">No active sites from this seller right now.</p>
           </div>
         )}
       </section>
