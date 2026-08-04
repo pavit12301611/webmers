@@ -120,7 +120,7 @@ export default function DashboardNav({
           </div>
 
           <div className="px-4 py-6">
-            <div className="mb-6 rounded-xl border border-emerald-50/10 bg-emerald-50/[0.03] px-4 py-2 text-xs uppercase tracking-widest text-emerald-50/40">
+            <div className="mb-6 rounded-xl border border-emerald-50/10 bg-emerald-50/[0.03] px-4 py-2 text-xs uppercase tracking-widest text-emerald-900/40">
               {role} Dashboard
             </div>
             <nav className="space-y-1">
@@ -129,10 +129,10 @@ export default function DashboardNav({
                   key={item.label}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-all hover:bg-emerald-50/[0.06] hover:text-emerald-50 ${
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-all hover:bg-emerald-50/[0.06] hover:text-emerald-900 ${
                     item.isShortcut
-                      ? 'text-lime-300 hover:bg-lime-400/10 hover:text-lime-200 border border-lime-400/20 mt-2'
-                      : 'text-emerald-50/70'
+                      ? 'text-lime-700 hover:bg-lime-400/10 hover:text-lime-700 border border-lime-400/20 mt-2'
+                      : 'text-emerald-900/70'
                   }`}
                 >
                   <item.icon size={20} />

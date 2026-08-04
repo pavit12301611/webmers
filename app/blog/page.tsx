@@ -35,15 +35,15 @@ const articles = [
 
 export default function BlogPage() {
   return (
-    <main className="bg-background text-white px-6 md:px-10 py-20 md:py-28">
+    <main className="bg-background text-foreground px-6 md:px-10 py-20 md:py-28">
       <div className="mx-auto max-w-5xl">
-        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/50">
+        <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground/50">
           Resources
         </span>
         <h1 className="text-4xl md:text-6xl tracking-tight mb-6" style={{ fontFamily: 'var(--font-instrument)' }}>
           Articles & Guides
         </h1>
-        <p className="text-[15px] leading-7 text-white/45 mb-14 max-w-2xl">
+        <p className="text-[15px] leading-7 text-foreground/45 mb-14 max-w-2xl">
           Measured insights for buyers, sellers, and anyone who believes a website should feel as precise as it looks.
         </p>
 
@@ -51,11 +51,11 @@ export default function BlogPage() {
           {articles.map((a) => (
             <Link key={a.title} href="#" className="group rounded-[1.4rem] border border-white/[0.07] bg-white/[0.02] p-7 md:p-8 backdrop-blur-xl transition hover:bg-white/[0.04] hover:-translate-y-0.5 hover:shadow-[0_16px_60px_rgba(255,255,255,0.04)]">
               <div className="flex items-center gap-3 mb-4">
-                <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/60">{a.tag}</span>
-                <span className="text-[11px] text-white/30">{a.readTime} read</span>
+                <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-foreground/60">{a.tag}</span>
+                <span className="text-[11px] text-foreground/30">{a.readTime} read</span>
               </div>
-              <h3 className="text-xl md:text-2xl font-medium tracking-tight mb-3 group-hover:text-white/90 transition-colors">{a.title}</h3>
-              <p className="text-[14px] leading-6 text-white/45">{a.excerpt}</p>
+              <h3 className="text-xl md:text-2xl font-medium tracking-tight mb-3 group-hover:text-foreground/90 transition-colors">{a.title}</h3>
+              <p className="text-[14px] leading-6 text-foreground/45">{a.excerpt}</p>
             </Link>
           ))}
         </div>

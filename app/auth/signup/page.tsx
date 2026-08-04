@@ -104,7 +104,7 @@ function SignUpForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-16 text-white relative">
+    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-16 text-foreground relative">
       <div className="absolute inset-0 opacity-[0.04]">
         <svg width="100%" height="100%">
           <defs>
@@ -118,36 +118,36 @@ function SignUpForm() {
 
       <div className="relative w-full max-w-md rounded-[1.8rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-2xl md:p-10">
         <Link href="/" className="mb-6 inline-flex items-center gap-2">
-          <svg viewBox="0 0 256 256" width="22" height="22" fill="white">
+          <svg viewBox="0 0 256 256" width="22" height="22" fill="#1f3d47">
             <path d="M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 96 95 L 63.5 128 L 64 128 L 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 64 L 64 0 L 192 0 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z" />
           </svg>
           <span className="text-xl tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>Webmers</span>
         </Link>
         <h1 className="mb-2 text-3xl tracking-tight md:text-4xl" style={{ fontFamily: "'Instrument Serif', serif" }}>Create Account</h1>
-        <p className="mb-8 text-white/40">Join Webmers to buy, edit, and own websites</p>
+        <p className="mb-8 text-foreground/40">Join Webmers to buy, edit, and own websites</p>
 
         {error && (
-          <div className="mb-6 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+          <div className="mb-6 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-700">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
-            <label htmlFor="name" className="mb-1 block text-[11px] uppercase tracking-widest text-white/40">Name</label>
-            <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" autoComplete="name" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" required />
+            <label htmlFor="name" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Name</label>
+            <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" autoComplete="name" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" required />
           </div>
           <div>
-            <label htmlFor="email" className="mb-1 block text-[11px] uppercase tracking-widest text-white/40">Email</label>
-            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" required />
+            <label htmlFor="email" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Email</label>
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" required />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1 block text-[11px] uppercase tracking-widest text-white/40">Password</label>
-            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 12 characters" autoComplete="new-password" minLength={12} className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" required />
+            <label htmlFor="password" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Password</label>
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 12 characters" autoComplete="new-password" minLength={12} className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" required />
           </div>
 
           <div>
-            <span className="mb-2 block text-[11px] uppercase tracking-widest text-white/40">I want to…</span>
+            <span className="mb-2 block text-[11px] uppercase tracking-widest text-foreground/40">I want to…</span>
             <div className="grid grid-cols-2 gap-3">
               {(['BUYER', 'SELLER'] as Role[]).map((r) => (
                 <button
@@ -157,7 +157,7 @@ function SignUpForm() {
                   className={`rounded-[1.2rem] border p-4 text-left transition-all ${
                     role === r
                       ? 'border-white bg-white text-black'
-                      : 'border-white/10 bg-white/[0.03] text-white/50 hover:border-white/20 hover:text-white'
+                      : 'border-white/10 bg-white/[0.03] text-foreground/50 hover:border-white/20 hover:text-foreground'
                   }`}
                 >
                   <div className="text-sm font-semibold">{r === 'BUYER' ? 'Buy websites' : 'Sell websites'}</div>
@@ -171,12 +171,12 @@ function SignUpForm() {
 
           {role === 'SELLER' && (
             <div className="rounded-[1.2rem] border border-amber-400/20 bg-amber-400/[0.04] p-4">
-              <p className="mb-3 text-[11px] uppercase tracking-widest text-amber-100/70">Seller payout method — add at least one</p>
+              <p className="mb-3 text-[11px] uppercase tracking-widest text-amber-700">Seller payout method — add at least one</p>
               <div className="space-y-3">
-                <div><label htmlFor="upiId" className="mb-1 block text-xs text-white/55">UPI ID</label><input id="upiId" type="text" value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="yourname@okaxis" autoComplete="off" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" /></div>
-                <div><label htmlFor="paypalEmail" className="mb-1 block text-xs text-white/55">PayPal email</label><input id="paypalEmail" type="email" value={paypalEmail} onChange={(e) => setPaypalEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none focus:border-white/20" /></div>
+                <div><label htmlFor="upiId" className="mb-1 block text-xs text-foreground/55">UPI ID</label><input id="upiId" type="text" value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="yourname@okaxis" autoComplete="off" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" /></div>
+                <div><label htmlFor="paypalEmail" className="mb-1 block text-xs text-foreground/55">PayPal email</label><input id="paypalEmail" type="email" value={paypalEmail} onChange={(e) => setPaypalEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" /></div>
               </div>
-              <p className="mt-3 text-[11px] leading-5 text-amber-100/50">A UPI ID or PayPal email is required. Enter only payout details — never a UPI PIN, password, or OTP.</p>
+              <p className="mt-3 text-[11px] leading-5 text-amber-700/80">A UPI ID or PayPal email is required. Enter only payout details — never a UPI PIN, password, or OTP.</p>
             </div>
           )}
 
@@ -187,15 +187,15 @@ function SignUpForm() {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10" /></div>
-          <span className="relative flex justify-center text-[11px] uppercase tracking-widest text-white/20">
-            <span className="bg-[#0e0e0e] px-3">or</span>
+          <span className="relative flex justify-center text-[11px] uppercase tracking-widest text-foreground/20">
+            <span className="bg-white px-3">or</span>
           </span>
         </div>
 
         <button
           type="button"
           onClick={handleGoogleClick}
-          className="flex w-full items-center justify-center gap-3 rounded-full border border-white/10 py-3.5 font-medium text-white/80 transition hover:bg-white/[0.04]"
+          className="flex w-full items-center justify-center gap-3 rounded-full border border-white/10 py-3.5 font-medium text-foreground/80 transition hover:bg-white/[0.04]"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.2 3.3v2.69h3.57c2.08-1.92 3.28-4.75 3.28-8.01z" fill="#4285F4"/>
@@ -203,12 +203,12 @@ function SignUpForm() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.66-2.84z" fill="#FBBC05"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.12-3.12C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l2.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
-          Sign up with Google {!hasGoogle && <span className="text-[10px] text-white/30 border border-white/10 px-1.5 py-0.5 rounded-full ml-1">Sandbox</span>}
+          Sign up with Google {!hasGoogle && <span className="text-[10px] text-foreground/30 border border-white/10 px-1.5 py-0.5 rounded-full ml-1">Sandbox</span>}
         </button>
 
-        <div className="mt-6 text-center text-sm text-white/30">
+        <div className="mt-6 text-center text-sm text-foreground/30">
           Already have an account?{' '}
-          <Link href={`/auth/signin${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-white/60 underline underline-offset-4 hover:text-white">
+          <Link href={`/auth/signin${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-foreground/60 underline underline-offset-4 hover:text-foreground">
             Sign in
           </Link>
         </div>

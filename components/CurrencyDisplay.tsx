@@ -8,8 +8,8 @@ export default function CurrencyDisplay({ basePrice }: { basePrice: number }) {
   const converted = Math.round(basePrice * rates[currency]);
 
   return (
-    <div className="flex items-center gap-2 text-sm text-white/60">
-      <span className="font-medium text-white">{symbols[currency]}{converted.toLocaleString()}</span>
+    <div className="flex items-center gap-2 text-sm text-foreground/60">
+      <span className="font-medium text-foreground">{symbols[currency]}{converted.toLocaleString()}</span>
       <select
         value={currency}
         onChange={(e) => setCurrency(e.target.value as 'INR' | 'USD' | 'EUR' | 'GBP')}

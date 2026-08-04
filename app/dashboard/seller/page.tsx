@@ -24,10 +24,10 @@ import {
 import { getSellerStats, type ListingStatus } from '@/lib/data';
 
 const STATUS_STYLES: Record<ListingStatus, { bg: string; text: string }> = {
-  ACTIVE: { bg: 'bg-emerald-400/10', text: 'text-emerald-300' },
-  DRAFT: { bg: 'bg-white/10', text: 'text-white/60' },
-  PAUSED: { bg: 'bg-amber-400/10', text: 'text-amber-300' },
-  SOLD: { bg: 'bg-rose-400/10', text: 'text-rose-300' },
+  ACTIVE: { bg: 'bg-emerald-400/10', text: 'text-emerald-700' },
+  DRAFT: { bg: 'bg-white/10', text: 'text-foreground/60' },
+  PAUSED: { bg: 'bg-amber-400/10', text: 'text-amber-700' },
+  SOLD: { bg: 'bg-rose-400/10', text: 'text-rose-700' },
 };
 
 function formatDate(date: Date): string {
@@ -93,12 +93,12 @@ export default async function SellerDashboard({
             <div className="leaf-card rounded-2xl p-6">
               <div className="flex items-end justify-between mb-6">
                 <div>
-                  <div className="text-sm text-emerald-50/40">Total Earnings</div>
+                  <div className="text-sm text-emerald-900/40">Total Earnings</div>
                   <div className="text-4xl font-display font-bold">${revenue.toLocaleString()}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-emerald-50/40">This period</div>
-                  <div className="flex items-center gap-1 text-sm text-emerald-300">
+                  <div className="text-xs text-emerald-900/40">This period</div>
+                  <div className="flex items-center gap-1 text-sm text-emerald-700">
                     <TrendingUp size={14} />
                     <span>—</span>
                   </div>
@@ -112,21 +112,21 @@ export default async function SellerDashboard({
                   const pct = (listingRevenue / maxRevenue) * 100;
                   return (
                     <div key={l.id} className="flex items-center gap-3">
-                      <div className="w-28 text-xs text-emerald-50/60 truncate">{l.title}</div>
+                      <div className="w-28 text-xs text-emerald-900/60 truncate">{l.title}</div>
                       <div className="flex-1 h-6 rounded-full bg-emerald-50/[0.04] overflow-hidden">
                         <div
                           className="h-full rounded-full bg-foreground/40 transition-all"
                           style={{ width: `${Math.max(pct, 2)}%` }}
                         />
                       </div>
-                      <div className="w-20 text-right text-xs font-semibold text-emerald-50/70">
+                      <div className="w-20 text-right text-xs font-semibold text-emerald-900/70">
                         ${listingRevenue.toLocaleString()}
                       </div>
                     </div>
                   );
                 })}
                 {listings.length === 0 && (
-                  <p className="text-sm text-emerald-50/30 text-center py-4">
+                  <p className="text-sm text-emerald-900/30 text-center py-4">
                     No listings yet. Create your first to start earning.
                   </p>
                 )}
@@ -140,7 +140,7 @@ export default async function SellerDashboard({
               <h2 className="text-xl font-display font-bold">Top Listings</h2>
               <Link
                 href="/dashboard/seller?tab=listings"
-                className="text-xs text-emerald-50/50 hover:text-emerald-50 flex items-center gap-1"
+                className="text-xs text-emerald-900/50 hover:text-emerald-900 flex items-center gap-1"
               >
                 View all <ArrowUpRight size={12} />
               </Link>
@@ -165,9 +165,9 @@ export default async function SellerDashboard({
                             {l.status}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-emerald-50/40">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-emerald-900/40">
                           <span className="flex items-center gap-1">
-                            <Star size={10} fill="currentColor" className="text-amber-300" />
+                            <Star size={10} fill="currentColor" className="text-amber-700" />
                             {l.rating.toFixed(1)}
                           </span>
                           <span>{l.sales} sales</span>
@@ -181,7 +181,7 @@ export default async function SellerDashboard({
             ) : (
               <div className="text-center py-12 rounded-2xl border border-emerald-50/10 bg-emerald-50/[0.02]">
                 <p className="text-lg font-display font-semibold mb-2">No listings yet</p>
-                <p className="text-emerald-50/45 mb-4">Create your first listing to start selling.</p>
+                <p className="text-emerald-900/45 mb-4">Create your first listing to start selling.</p>
                 <Link href="/dashboard/seller?tab=listings" className="btn-forest px-5 py-2.5 text-sm">
                   <Plus size={14} /> Create Listing
                 </Link>
@@ -195,10 +195,10 @@ export default async function SellerDashboard({
               {draftCount > 0 && (
                 <div className="leaf-card rounded-2xl p-5 border-amber-400/10">
                   <div className="flex items-center gap-2 mb-1">
-                    <Package size={16} className="text-amber-300" />
-                    <span className="font-semibold text-amber-200">{draftCount} draft{draftCount > 1 ? 's' : ''}</span>
+                    <Package size={16} className="text-amber-700" />
+                    <span className="font-semibold text-amber-700">{draftCount} draft{draftCount > 1 ? 's' : ''}</span>
                   </div>
-                  <p className="text-xs text-emerald-50/45">
+                  <p className="text-xs text-emerald-900/45">
                     Publish your drafts to make them visible in the marketplace.
                   </p>
                 </div>
@@ -206,10 +206,10 @@ export default async function SellerDashboard({
               {pausedCount > 0 && (
                 <div className="leaf-card rounded-2xl p-5 border-amber-400/10">
                   <div className="flex items-center gap-2 mb-1">
-                    <Pause size={16} className="text-amber-300" />
-                    <span className="font-semibold text-amber-200">{pausedCount} paused</span>
+                    <Pause size={16} className="text-amber-700" />
+                    <span className="font-semibold text-amber-700">{pausedCount} paused</span>
                   </div>
-                  <p className="text-xs text-emerald-50/45">
+                  <p className="text-xs text-emerald-900/45">
                     Reactivate paused listings to resume earning.
                   </p>
                 </div>
@@ -241,10 +241,10 @@ export default async function SellerDashboard({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
-                            <Link href={`/listing/${l.id}`} className="font-display text-lg font-semibold hover:text-emerald-50/80 transition-colors">
+                            <Link href={`/listing/${l.id}`} className="font-display text-lg font-semibold hover:text-emerald-900/80 transition-colors">
                               {l.title}
                             </Link>
-                            <div className="flex items-center gap-3 mt-1 text-xs text-emerald-50/40 flex-wrap">
+                            <div className="flex items-center gap-3 mt-1 text-xs text-emerald-900/40 flex-wrap">
                               <span>{l.category}</span>
                               <span>·</span>
                               <span>${l.price}</span>
@@ -259,23 +259,23 @@ export default async function SellerDashboard({
 
                         <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                           <div>
-                            <div className="text-emerald-50/30">Sales</div>
-                            <div className="text-emerald-50 font-semibold">{l.sales}</div>
+                            <div className="text-emerald-900/30">Sales</div>
+                            <div className="text-emerald-900 font-semibold">{l.sales}</div>
                           </div>
                           <div>
-                            <div className="text-emerald-50/30">Revenue</div>
-                            <div className="text-emerald-50 font-semibold">${listingRevenue.toLocaleString()}</div>
+                            <div className="text-emerald-900/30">Revenue</div>
+                            <div className="text-emerald-900 font-semibold">${listingRevenue.toLocaleString()}</div>
                           </div>
                           <div>
-                            <div className="text-emerald-50/30">Rating</div>
+                            <div className="text-emerald-900/30">Rating</div>
                             <div className="flex items-center gap-1">
-                              <Star size={10} fill="currentColor" className="text-amber-300" />
-                              <span className="text-emerald-50/70">{l.rating.toFixed(1)}</span>
+                              <Star size={10} fill="currentColor" className="text-amber-700" />
+                              <span className="text-emerald-900/70">{l.rating.toFixed(1)}</span>
                             </div>
                           </div>
                           <div>
-                            <div className="text-emerald-50/30">Tech</div>
-                            <div className="text-emerald-50/50 truncate">{l.techStack.slice(0, 2).join(', ')}</div>
+                            <div className="text-emerald-900/30">Tech</div>
+                            <div className="text-emerald-900/50 truncate">{l.techStack.slice(0, 2).join(', ')}</div>
                           </div>
                         </div>
 
@@ -283,7 +283,7 @@ export default async function SellerDashboard({
                           {l.status === 'DRAFT' && (
                             <button 
                               onClick={() => handleAction(l.id, 'status', { status: 'ACTIVE' })}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-700 hover:bg-emerald-400/15 transition-colors"
                             >
                               <Play size={12} /> Publish
                             </button>
@@ -291,7 +291,7 @@ export default async function SellerDashboard({
                           {l.status === 'ACTIVE' && (
                             <button 
                               onClick={() => handleAction(l.id, 'status', { status: 'PAUSED' })}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[11px] font-medium text-amber-300 hover:bg-amber-400/15 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 text-[11px] font-medium text-amber-700 hover:bg-amber-400/15 transition-colors"
                             >
                               <Pause size={12} /> Pause
                             </button>
@@ -299,7 +299,7 @@ export default async function SellerDashboard({
                           {l.status === 'PAUSED' && (
                             <button 
                               onClick={() => handleAction(l.id, 'status', { status: 'ACTIVE' })}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-300 hover:bg-emerald-400/15 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/20 text-[11px] font-medium text-emerald-700 hover:bg-emerald-400/15 transition-colors"
                             >
                               <Play size={12} /> Reactivate
                             </button>
@@ -318,7 +318,7 @@ export default async function SellerDashboard({
                           </Link>
                           <button 
                             onClick={() => handleAction(l.id, 'delete')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-400/5 border border-rose-400/10 text-[11px] font-medium text-rose-300 hover:bg-rose-400/10 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-400/5 border border-rose-400/10 text-[11px] font-medium text-rose-700 hover:bg-rose-400/10 transition-colors"
                           >
                             <Trash2 size={12} /> Delete
                           </button>
@@ -331,9 +331,9 @@ export default async function SellerDashboard({
             </div>
           ) : (
             <div className="text-center py-16 rounded-3xl border border-emerald-50/10 bg-emerald-50/[0.02]">
-              <Package size={40} className="mx-auto text-emerald-50/20 mb-4" />
+              <Package size={40} className="mx-auto text-emerald-900/20 mb-4" />
               <p className="text-xl font-display font-semibold mb-2">No listings yet</p>
-              <p className="text-emerald-50/45 mb-6">Create your first listing to start selling websites.</p>
+              <p className="text-emerald-900/45 mb-6">Create your first listing to start selling websites.</p>
               <button className="btn-forest px-6 py-3">
                 <Plus size={14} /> Create Your First Listing
               </button>
@@ -349,7 +349,7 @@ export default async function SellerDashboard({
             <div className="leaf-card rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="text-[11px] uppercase tracking-wider text-emerald-50/30 bg-emerald-50/[0.03]">
+                  <thead className="text-[11px] uppercase tracking-wider text-emerald-900/30 bg-emerald-50/[0.03]">
                     <tr>
                       <th className="px-5 py-3 font-medium">Listing</th>
                       <th className="px-5 py-3 font-medium">Price</th>
@@ -364,13 +364,13 @@ export default async function SellerDashboard({
                       return (
                         <tr key={l.id} className="hover:bg-emerald-50/[0.02] transition-colors">
                           <td className="px-5 py-4">
-                            <Link href={`/listing/${l.id}`} className="font-medium hover:text-emerald-50/80 transition-colors">
+                            <Link href={`/listing/${l.id}`} className="font-medium hover:text-emerald-900/80 transition-colors">
                               {l.title}
                             </Link>
-                            <div className="text-[11px] text-emerald-50/30">{l.category}</div>
+                            <div className="text-[11px] text-emerald-900/30">{l.category}</div>
                           </td>
-                          <td className="px-5 py-4 text-emerald-50/60">${l.price}</td>
-                          <td className="px-5 py-4 text-emerald-50/60">{l.sales}</td>
+                          <td className="px-5 py-4 text-emerald-900/60">${l.price}</td>
+                          <td className="px-5 py-4 text-emerald-900/60">{l.sales}</td>
                           <td className="px-5 py-4 font-semibold">${(l.sales * l.price).toLocaleString()}</td>
                           <td className="px-5 py-4">
                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${s.bg} ${s.text}`}>
@@ -387,7 +387,7 @@ export default async function SellerDashboard({
           ) : (
             <div className="text-center py-16 rounded-3xl border border-emerald-50/10 bg-emerald-50/[0.02]">
               <p className="text-xl font-display font-semibold mb-2">No orders yet</p>
-              <p className="text-emerald-50/45">Orders will appear here when buyers purchase your listings.</p>
+              <p className="text-emerald-900/45">Orders will appear here when buyers purchase your listings.</p>
             </div>
           )}
         </section>
@@ -400,25 +400,25 @@ export default async function SellerDashboard({
           {/* KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             <div className="leaf-card rounded-2xl p-5">
-              <div className="text-xs text-emerald-50/40 mb-1">Total Revenue</div>
+              <div className="text-xs text-emerald-900/40 mb-1">Total Revenue</div>
               <div className="text-3xl font-display font-bold">${revenue.toLocaleString()}</div>
-              <div className="text-xs text-emerald-300 mt-1 flex items-center gap-1">
+              <div className="text-xs text-emerald-700 mt-1 flex items-center gap-1">
                 <TrendingUp size={11} /> All time
               </div>
             </div>
             <div className="leaf-card rounded-2xl p-5">
-              <div className="text-xs text-emerald-50/40 mb-1">Total Sales</div>
+              <div className="text-xs text-emerald-900/40 mb-1">Total Sales</div>
               <div className="text-3xl font-display font-bold">{totalSales}</div>
-              <div className="text-xs text-emerald-50/50 mt-1">
+              <div className="text-xs text-emerald-900/50 mt-1">
                 Across {listings.length} listing{listings.length !== 1 ? 's' : ''}
               </div>
             </div>
             <div className="leaf-card rounded-2xl p-5 col-span-2 md:col-span-1">
-              <div className="text-xs text-emerald-50/40 mb-1">Conversion Rate</div>
+              <div className="text-xs text-emerald-900/40 mb-1">Conversion Rate</div>
               <div className="text-3xl font-display font-bold">
                 {totalSales > 0 ? `${Math.min(((totalSales / Math.max(views, 1)) * 100), 100).toFixed(1)}%` : '—'}
               </div>
-              <div className="text-xs text-emerald-50/50 mt-1">
+              <div className="text-xs text-emerald-900/50 mt-1">
                 {views.toLocaleString()} estimated views
               </div>
             </div>
@@ -437,7 +437,7 @@ export default async function SellerDashboard({
                   return (
                     <div key={l.id}>
                       <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-emerald-50/70">{l.title}</span>
+                        <span className="text-emerald-900/70">{l.title}</span>
                         <span className="font-semibold">${l.rev.toLocaleString()}</span>
                       </div>
                       <div className="h-2 rounded-full bg-emerald-50/[0.04] overflow-hidden">
@@ -450,7 +450,7 @@ export default async function SellerDashboard({
                   );
                 })}
               {listings.length === 0 && (
-                <p className="text-sm text-emerald-50/30 text-center py-4">No data yet.</p>
+                <p className="text-sm text-emerald-900/30 text-center py-4">No data yet.</p>
               )}
             </div>
           </div>
@@ -461,21 +461,21 @@ export default async function SellerDashboard({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="text-center p-4 rounded-xl bg-emerald-50/[0.03]">
                 <div className="text-2xl font-display font-bold">{active}</div>
-                <div className="text-xs text-emerald-50/40">Active</div>
+                <div className="text-xs text-emerald-900/40">Active</div>
               </div>
               <div className="text-center p-4 rounded-xl bg-emerald-50/[0.03]">
                 <div className="text-2xl font-display font-bold">{draftCount}</div>
-                <div className="text-xs text-emerald-50/40">Drafts</div>
+                <div className="text-xs text-emerald-900/40">Drafts</div>
               </div>
               <div className="text-center p-4 rounded-xl bg-emerald-50/[0.03]">
                 <div className="text-2xl font-display font-bold">{pausedCount}</div>
-                <div className="text-xs text-emerald-50/40">Paused</div>
+                <div className="text-xs text-emerald-900/40">Paused</div>
               </div>
               <div className="text-center p-4 rounded-xl bg-emerald-50/[0.03]">
                 <div className="text-2xl font-display font-bold">
                   {avgRating > 0 ? avgRating.toFixed(1) : '—'}
                 </div>
-                <div className="text-xs text-emerald-50/40">Avg Rating</div>
+                <div className="text-xs text-emerald-900/40">Avg Rating</div>
               </div>
             </div>
           </div>
@@ -486,9 +486,9 @@ export default async function SellerDashboard({
         <section>
           <h2 className="text-2xl font-display font-bold mb-6">Messages</h2>
           <div className="text-center py-16 rounded-3xl border border-emerald-50/10 bg-emerald-50/[0.02]">
-            <MessageSquare size={40} className="mx-auto text-emerald-50/20 mb-4" />
+            <MessageSquare size={40} className="mx-auto text-emerald-900/20 mb-4" />
             <p className="text-xl font-display font-semibold mb-2">No messages yet</p>
-            <p className="text-emerald-50/45">Messages from buyers will appear here.</p>
+            <p className="text-emerald-900/45">Messages from buyers will appear here.</p>
           </div>
         </section>
       )}
@@ -505,13 +505,13 @@ export default async function SellerDashboard({
               <h3 className="font-display font-bold mb-4">Profile</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-emerald-50/40 block mb-1">Name</label>
+                  <label className="text-xs text-emerald-900/40 block mb-1">Name</label>
                   <div className="px-4 py-3 rounded-xl bg-emerald-50/[0.04] border border-emerald-50/10 text-sm">
                     {session.user.name || '—'}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-emerald-50/40 block mb-1">Email</label>
+                  <label className="text-xs text-emerald-900/40 block mb-1">Email</label>
                   <div className="px-4 py-3 rounded-xl bg-emerald-50/[0.04] border border-emerald-50/10 text-sm">
                     {session.user.email}
                   </div>
@@ -520,10 +520,10 @@ export default async function SellerDashboard({
             </div>
             <div className="leaf-card rounded-2xl p-6">
               <h3 className="font-display font-bold mb-2">Payout &amp; commission</h3>
-              <p className="text-sm text-emerald-50/45 mb-4">
+              <p className="text-sm text-emerald-900/45 mb-4">
                 You set the base price. Customers see a 20% marketplace markup, while your earnings remain your base price after a verified sale.
               </p>
-              <div className="rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-4 py-3 text-sm text-amber-100/70">
+              <div className="rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-4 py-3 text-sm text-amber-700">
                 Payouts are currently reviewed manually using your registered UPI ID or PayPal email. Never share a UPI PIN, password, or OTP.
               </div>
             </div>
@@ -570,8 +570,8 @@ function CreateListingForm() {
   if (success) {
     return (
       <div className="text-center py-12">
-        <div className="text-emerald-400 text-2xl mb-2">✓ Listing created!</div>
-        <p className="text-white/50">It is currently in DRAFT status. You can publish it later.</p>
+        <div className="text-emerald-700 text-2xl mb-2">✓ Listing created!</div>
+        <p className="text-foreground/50">It is currently in DRAFT status. You can publish it later.</p>
         <Link href="/dashboard/seller?tab=listings" className="mt-4 inline-block btn-forest px-6 py-2">View My Listings</Link>
       </div>
     );
@@ -582,28 +582,28 @@ function CreateListingForm() {
       <h2 className="text-2xl font-display font-bold mb-6">Create New Website Listing</h2>
       <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
         <div>
-          <label className="text-xs text-white/40 block mb-1">Website Title</label>
-          <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full rounded-xl bg-black/40 border border-white/10 p-3" />
+          <label className="text-xs text-foreground/40 block mb-1">Website Title</label>
+          <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full rounded-xl bg-black/40 border border-white/10 text-emerald-50 p-3" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-white/40 block mb-1">Price (₹)</label>
-            <input type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required className="w-full rounded-xl bg-black/40 border border-white/10 p-3" />
+            <label className="text-xs text-foreground/40 block mb-1">Price (₹)</label>
+            <input type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required className="w-full rounded-xl bg-black/40 border border-white/10 text-emerald-50 p-3" />
           </div>
           <div>
-            <label className="text-xs text-white/40 block mb-1">Category</label>
-            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full rounded-xl bg-black/40 border border-white/10 p-3">
+            <label className="text-xs text-foreground/40 block mb-1">Category</label>
+            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full rounded-xl bg-black/40 border border-white/10 text-emerald-50 p-3">
               {['SaaS', 'Portfolio', 'E-commerce', 'Blog', 'Dashboard', 'Agency'].map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
         </div>
         <div>
-          <label className="text-xs text-white/40 block mb-1">Description</label>
-          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full rounded-xl bg-black/40 border border-white/10 p-3 h-24" />
+          <label className="text-xs text-foreground/40 block mb-1">Description</label>
+          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full rounded-xl bg-black/40 border border-white/10 text-emerald-50 p-3 h-24" />
         </div>
         <div>
-          <label className="text-xs text-white/40 block mb-1">Tech Stack (comma separated)</label>
-          <input type="text" value={form.techStack} onChange={e => setForm({ ...form, techStack: e.target.value })} placeholder="Next.js, Tailwind, Stripe" className="w-full rounded-xl bg-black/40 border border-white/10 p-3" />
+          <label className="text-xs text-foreground/40 block mb-1">Tech Stack (comma separated)</label>
+          <input type="text" value={form.techStack} onChange={e => setForm({ ...form, techStack: e.target.value })} placeholder="Next.js, Tailwind, Stripe" className="w-full rounded-xl bg-black/40 border border-white/10 text-emerald-50 p-3" />
         </div>
         <button type="submit" disabled={loading} className="btn-forest px-8 py-3 text-sm font-medium disabled:opacity-50">
           {loading ? 'Creating...' : 'Create Listing'}
@@ -625,14 +625,14 @@ function StatCard({
   accent: 'emerald' | 'lime' | 'rose' | 'amber';
 }) {
   const accentMap = {
-    emerald: 'text-emerald-300',
-    lime: 'text-lime-300',
-    rose: 'text-rose-300',
-    amber: 'text-amber-300',
+    emerald: 'text-emerald-700',
+    lime: 'text-lime-700',
+    rose: 'text-rose-700',
+    amber: 'text-amber-700',
   };
   return (
     <div className="stat-card">
-      <div className="flex items-center gap-2 mb-3 text-emerald-50/40">
+      <div className="flex items-center gap-2 mb-3 text-emerald-900/40">
         <Icon size={18} className={accentMap[accent]} />
         <span className="text-xs">{label}</span>
       </div>

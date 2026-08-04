@@ -13,13 +13,13 @@ const notifications = [
 
 export default function NotificationsPage() {
   return (
-    <main className="bg-background text-white px-6 md:px-10 py-20 md:py-28">
+    <main className="bg-background text-foreground px-6 md:px-10 py-20 md:py-28">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-3xl md:text-4xl tracking-tight font-display font-bold">Notifications</h1>
           <button
             onClick={() => alert('All notifications marked as read (demo)')}
-            className="text-xs text-white/40 hover:text-white underline underline-offset-4"
+            className="text-xs text-foreground/40 hover:text-foreground underline underline-offset-4"
           >
             Mark all read
           </button>
@@ -34,18 +34,18 @@ export default function NotificationsPage() {
                 className={`flex items-start gap-4 rounded-[1.4rem] border p-5 backdrop-blur-xl transition hover:bg-white/[0.04] ${n.read ? 'bg-white/[0.01] border-white/[0.06]' : 'bg-white/[0.03] border-white/[0.08]'
 }`}
               >
-                <div className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center ${n.read ? 'bg-white/5 text-white/30' : 'bg-rose-400/10 text-rose-300'}`}>
+                <div className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center ${n.read ? 'bg-white/5 text-foreground/30' : 'bg-rose-400/10 text-rose-700'}`}>
                   <Icon size={18} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <h4 className={`text-sm font-medium ${n.read ? 'text-white/50' : 'text-white'}`}>{n.title}</h4>
+                    <h4 className={`text-sm font-medium ${n.read ? 'text-foreground/50' : 'text-foreground'}`}>{n.title}</h4>
                     {!n.read && <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />}
                   </div>
-                  <p className="text-[13px] text-white/40">{n.desc}</p>
-                  <p className="text-[11px] text-white/20 mt-1">{n.time}</p>
+                  <p className="text-[13px] text-foreground/40">{n.desc}</p>
+                  <p className="text-[11px] text-foreground/20 mt-1">{n.time}</p>
                 </div>
-                <div className="shrink-0 text-white/20 hover:text-white transition-colors">
+                <div className="shrink-0 text-foreground/20 hover:text-foreground transition-colors">
                   <Check size={16} />
                 </div>
               </Link>

@@ -79,7 +79,7 @@ function SignInForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-16 text-white relative">
+    <div className="flex min-h-screen items-center justify-center bg-background px-6 py-16 text-foreground relative">
       <div className="absolute inset-0 opacity-[0.04]">
         <svg width="100%" height="100%">
           <defs>
@@ -93,23 +93,23 @@ function SignInForm() {
 
       <div className="relative w-full max-w-md rounded-[1.8rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-2xl md:p-10">
         <Link href="/" className="mb-6 inline-flex items-center gap-2">
-          <svg viewBox="0 0 256 256" width="22" height="22" fill="white">
+          <svg viewBox="0 0 256 256" width="22" height="22" fill="#1f3d47">
             <path d="M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 96 95 L 63.5 128 L 64 128 L 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 64 L 64 0 L 192 0 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z" />
           </svg>
           <span className="text-xl tracking-tight" style={{ fontFamily: "'Instrument Serif', serif" }}>Webmers</span>
         </Link>
         <h1 className="mb-2 text-3xl tracking-tight md:text-4xl" style={{ fontFamily: "'Instrument Serif', serif" }}>Sign In</h1>
-        <p className="mb-8 text-white/40">Access your measured account</p>
+        <p className="mb-8 text-foreground/40">Access your measured account</p>
 
         {(error || urlError) && (
-          <div className="mb-6 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+          <div className="mb-6 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-700">
             {error || 'Authentication failed. Please try again.'}
           </div>
         )}
 
         <form onSubmit={handleCredentials} className="mb-6 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1 block text-[11px] uppercase tracking-widest text-white/40">Email</label>
+            <label htmlFor="email" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Email</label>
             <input
               id="email"
               type="email"
@@ -117,16 +117,16 @@ function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
-              className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
+              className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
               required
             />
           </div>
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <label htmlFor="password" className="block text-[11px] uppercase tracking-widest text-white/40">Password</label>
+              <label htmlFor="password" className="block text-[11px] uppercase tracking-widest text-foreground/40">Password</label>
               <Link
                 href="/auth/forgot-password"
-                className="text-[11px] text-white/50 underline-offset-2 hover:text-white/80 hover:underline"
+                className="text-[11px] text-foreground/50 underline-offset-2 hover:text-foreground/80 hover:underline"
               >
                 Forgot password?
               </Link>
@@ -138,7 +138,7 @@ function SignInForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               autoComplete="current-password"
-              className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-white placeholder-white/25 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
+              className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none backdrop-blur-xl transition-colors focus:border-white/20"
               required
             />
           </div>
@@ -153,15 +153,15 @@ function SignInForm() {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10" /></div>
-          <span className="relative flex justify-center text-[11px] uppercase tracking-widest text-white/20">
-            <span className="bg-[#0e0e0e] px-3">or</span>
+          <span className="relative flex justify-center text-[11px] uppercase tracking-widest text-foreground/20">
+            <span className="bg-white px-3">or</span>
           </span>
         </div>
 
         <button
           type="button"
           onClick={handleGoogleClick}
-          className="flex w-full items-center justify-center gap-3 rounded-full border border-white/10 py-3.5 font-medium text-white/80 transition hover:bg-white/[0.04]"
+          className="flex w-full items-center justify-center gap-3 rounded-full border border-white/10 py-3.5 font-medium text-foreground/80 transition hover:bg-white/[0.04]"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.2 3.3v2.69h3.57c2.08-1.92 3.28-4.75 3.28-8.01z" fill="#4285F4" />
@@ -169,12 +169,12 @@ function SignInForm() {
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.66-2.84z" fill="#FBBC05" />
             <path d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.12-3.12C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l2.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
           </svg>
-          Continue with Google {!hasGoogle && <span className="text-[10px] text-white/30 border border-white/10 px-1.5 py-0.5 rounded-full ml-1">Sandbox</span>}
+          Continue with Google {!hasGoogle && <span className="text-[10px] text-foreground/30 border border-white/10 px-1.5 py-0.5 rounded-full ml-1">Sandbox</span>}
         </button>
 
-        <div className="mt-6 text-center text-sm text-white/30">
+        <div className="mt-6 text-center text-sm text-foreground/30">
           Don&apos;t have an account?{' '}
-          <Link href={`/auth/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-white/60 underline underline-offset-4 hover:text-white">
+          <Link href={`/auth/signup${callbackUrl !== '/' ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className="text-foreground/60 underline underline-offset-4 hover:text-foreground">
             Sign up
           </Link>
         </div>

@@ -46,7 +46,7 @@ export default async function DashboardLayout({
   const userInitial = (userName[0] || 'U').toUpperCase();
 
   return (
-    <div className="nature-page flex min-h-screen text-emerald-50">
+    <div className="nature-page flex min-h-screen text-emerald-900">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed z-30 h-full w-72 flex-col border-r border-emerald-50/10 bg-background/80 backdrop-blur-2xl">
         <div className="border-b border-emerald-50/8 p-6">
@@ -56,7 +56,7 @@ export default async function DashboardLayout({
             </span>
             Webmers
           </Link>
-          <div className="mt-2 text-xs uppercase tracking-wider text-emerald-50/38">
+          <div className="mt-2 text-xs uppercase tracking-wider text-emerald-900/38">
             {role} Dashboard
           </div>
         </div>
@@ -72,7 +72,7 @@ export default async function DashboardLayout({
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-medium">{userName}</div>
-              <div className="truncate text-[11px] text-emerald-50/40">{session.user.email}</div>
+              <div className="truncate text-[11px] text-emerald-900/40">{session.user.email}</div>
             </div>
           </div>
           <SignOutButton />
@@ -97,9 +97,9 @@ export default async function DashboardLayout({
             <h1 className="mb-2 font-display text-3xl font-bold capitalize tracking-tight md:text-4xl lg:text-5xl">
               {role} Dashboard
             </h1>
-            <p className="text-emerald-50/42">
+            <p className="text-emerald-900/42">
               Welcome back,{' '}
-              <span className="text-emerald-50/70">{userName}</span>
+              <span className="text-emerald-900/70">{userName}</span>
             </p>
           </div>
           <div className="max-w-5xl">{children}</div>
@@ -164,10 +164,10 @@ function SidebarLinks({ role, isAdmin }: { role: 'BUYER' | 'SELLER' | 'ADMIN'; i
         <Link
           key={item.label}
           href={item.href}
-          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all hover:bg-emerald-50/[0.06] hover:text-emerald-50 ${
+          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all hover:bg-emerald-50/[0.06] hover:text-emerald-900 ${
             item.isShortcut
-              ? 'text-lime-300 hover:bg-lime-400/10 hover:text-lime-200 border border-lime-400/20 mt-2'
-              : 'text-emerald-50/55'
+              ? 'text-lime-700 hover:bg-lime-400/10 hover:text-lime-700 border border-lime-400/20 mt-2'
+              : 'text-emerald-900/55'
           }`}
         >
           <item.icon size={18} />

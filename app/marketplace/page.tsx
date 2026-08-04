@@ -77,26 +77,26 @@ export default async function MarketplacePage({
         <GridPattern id="mp-grid" />
 
         <div className="relative mx-auto max-w-7xl">
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/40">
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground/40">
             Marketplace grove
           </span>
-          <h1 className="mb-4 max-w-3xl text-balance text-4xl leading-[0.95] tracking-tight text-white md:text-6xl" style={{ fontFamily: 'var(--font-instrument)' }}>
+          <h1 className="mb-4 max-w-3xl text-balance text-4xl leading-[0.95] tracking-tight text-foreground md:text-6xl" style={{ fontFamily: 'var(--font-instrument)' }}>
             Browse launch-ready websites.
           </h1>
-          <p className="max-w-2xl text-[15px] leading-7 text-white/45">
+          <p className="max-w-2xl text-[15px] leading-7 text-foreground/45">
             Fully-built websites, ready to launch. Filter by category, sort by what matters, or search for a stack with a measured, precise experience.
           </p>
 
           <form action="/marketplace" method="get" className="mt-8 flex max-w-3xl flex-col gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
             {cat !== 'All' && <input type="hidden" name="cat" value={cat} />}
             <div className="relative flex-1">
-              <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/30" />
+              <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/30" />
               <input
                 type="search"
                 name="q"
                 defaultValue={q}
                 placeholder="Search by name, category or tech…"
-                className="w-full rounded-full bg-transparent py-3.5 pl-12 pr-4 text-white placeholder-white/25 outline-none"
+                className="w-full rounded-full bg-transparent py-3.5 pl-12 pr-4 text-foreground placeholder-foreground/25 outline-none"
               />
             </div>
             <button type="submit" className="rounded-full bg-white px-8 py-3.5 text-sm font-medium text-black transition hover:bg-white/90">
@@ -105,11 +105,11 @@ export default async function MarketplacePage({
 
             <div className="mt-1 flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-3">
               <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
-                <span className="text-[11px] uppercase tracking-[0.14em] text-white/40">Sort</span>
+                <span className="text-[11px] uppercase tracking-[0.14em] text-foreground/40">Sort</span>
                 <select
                   name="sort"
                   defaultValue={sort}
-                  className="bg-transparent text-sm text-white/80 outline-none"
+                  className="bg-transparent text-sm text-foreground/80 outline-none"
                 >
                   {SORTS.map((s) => (
                     <option key={s.value} value={s.value} className="bg-background">
@@ -119,26 +119,26 @@ export default async function MarketplacePage({
                 </select>
               </div>
               <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
-                <span className="text-[11px] uppercase tracking-[0.14em] text-white/40">Price ₹</span>
+                <span className="text-[11px] uppercase tracking-[0.14em] text-foreground/40">Price ₹</span>
                 <input
                   type="number"
                   name="min"
                   min={0}
                   placeholder="Min"
                   defaultValue={minRaw ?? ''}
-                  className="w-16 bg-transparent text-sm text-white/80 outline-none placeholder-white/25"
+                  className="w-16 bg-transparent text-sm text-foreground/80 outline-none placeholder-foreground/25"
                 />
-                <span className="text-white/30">–</span>
+                <span className="text-foreground/30">–</span>
                 <input
                   type="number"
                   name="max"
                   min={0}
                   placeholder="Max"
                   defaultValue={maxRaw ?? ''}
-                  className="w-16 bg-transparent text-sm text-white/80 outline-none placeholder-white/25"
+                  className="w-16 bg-transparent text-sm text-foreground/80 outline-none placeholder-foreground/25"
                 />
               </div>
-              <button type="submit" className="rounded-full border border-white/10 px-5 py-2 text-sm text-white/60 transition hover:border-white/20 hover:text-white">
+              <button type="submit" className="rounded-full border border-white/10 px-5 py-2 text-sm text-foreground/60 transition hover:border-white/20 hover:text-foreground">
                 Apply
               </button>
             </div>
@@ -159,10 +159,10 @@ export default async function MarketplacePage({
       </section>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-10">
-        <div className="mb-6 text-[11px] uppercase tracking-[0.18em] text-white/30">
+        <div className="mb-6 text-[11px] uppercase tracking-[0.18em] text-foreground/30">
           {listings.length} {listings.length === 1 ? 'result' : 'results'}
-          {cat !== 'All' && <> in <span className="text-white/60">{cat}</span></>}
-          {q && <> for <span className="text-white/60">“{q}”</span></>}
+          {cat !== 'All' && <> in <span className="text-foreground/60">{cat}</span></>}
+          {q && <> for <span className="text-foreground/60">“{q}”</span></>}
         </div>
 
         {listings.length > 0 ? (
@@ -173,8 +173,8 @@ export default async function MarketplacePage({
           </div>
         ) : (
           <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.03] py-24 text-center backdrop-blur-xl">
-            <p className="mb-2 text-2xl tracking-tight text-white" style={{ fontFamily: 'var(--font-instrument)' }}>No websites found</p>
-            <p className="mb-6 text-white/40">Try a different search, category or price range.</p>
+            <p className="mb-2 text-2xl tracking-tight text-foreground" style={{ fontFamily: 'var(--font-instrument)' }}>No websites found</p>
+            <p className="mb-6 text-foreground/40">Try a different search, category or price range.</p>
             <Link href="/marketplace" className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-medium text-black">
               Clear filters
             </Link>
@@ -192,7 +192,7 @@ function CategoryPill({ label, active, href }: { label: string; active: boolean;
     <Link
       href={href}
       className={`rounded-full border px-4 py-2 text-[12px] font-medium transition-all ${
-        active ? 'border-white bg-white text-black shadow-[0_8px_24px_rgba(255,255,255,0.12)]' : 'border-white/10 bg-white/[0.03] text-white/50 hover:border-white/20 hover:text-white'
+        active ? 'border-white bg-white text-black shadow-[0_8px_24px_rgba(255,255,255,0.12)]' : 'border-white/10 bg-white/[0.03] text-foreground/50 hover:border-white/20 hover:text-foreground'
       }`}
     >
       {label}

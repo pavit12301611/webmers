@@ -22,7 +22,7 @@ export default async function CheckoutPage({
       <div className="mx-auto max-w-4xl px-6 pt-32 pb-24">
         <span className="section-eyebrow">Secure checkout</span>
         <h1 className="mb-2 font-display text-4xl font-bold md:text-5xl">Checkout</h1>
-        <p className="mb-12 text-emerald-50/45">Secure payment protected by escrow</p>
+        <p className="mb-12 text-emerald-900/45">Secure payment protected by escrow</p>
 
         {listing ? (
           <CheckoutForm
@@ -38,7 +38,7 @@ export default async function CheckoutPage({
         ) : (
           <div className="leaf-card rounded-[2rem] py-24 text-center">
             <p className="mb-2 font-display text-2xl font-semibold">No website selected</p>
-            <p className="mb-6 text-emerald-50/45">Pick a website from the marketplace to check out.</p>
+            <p className="mb-6 text-emerald-900/45">Pick a website from the marketplace to check out.</p>
             <Link href="/marketplace" className="btn-forest px-6 py-3">
               Browse the marketplace
             </Link>
