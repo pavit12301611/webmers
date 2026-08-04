@@ -19,6 +19,12 @@
 
     --font-heading: 'Outfit', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Clay surface variables */
+    --clay-surface: linear-gradient(180deg, #faf8f4 0%, #f6f2ec 100%);
+    --clay-card: linear-gradient(180deg, #fffdf9 0%, #faf5ee 100%);
+    --clay-shadow-deep: 0 12px 40px rgba(143, 113, 80, 0.1), 0 3px 10px rgba(143, 113, 80, 0.06);
+    --clay-shadow-soft: 0 6px 22px rgba(143, 113, 80, 0.1), 0 2px 6px rgba(143, 113, 80, 0.05);
   }
 
   html {
@@ -36,6 +42,11 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
     margin: 0;
+    /* Subtle clay texture via radial gradient */
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(217, 119, 43, 0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(217, 119, 43, 0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -71,39 +82,157 @@
     font-family: var(--font-body);
   }
 
+  /* Claymorphism cards */
   .card {
-    border: 1px solid rgba(31, 61, 71, 0.12);
-    background: rgba(255, 255, 255, 0.65);
-    border-radius: 1.5rem;
-    backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(31, 61, 71, 0.08);
+    background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(250,247,242,0.85) 100%);
+    border-radius: 1.75rem;
+    backdrop-filter: blur(14px);
+    box-shadow:
+      0 8px 30px rgba(143, 113, 80, 0.08),
+      0 2px 8px rgba(143, 113, 80, 0.04),
+      inset 0 1px 0 rgba(255,255,255,0.7);
+    transition: all 0.35s ease;
   }
   .card:hover {
-    border-color: rgba(217, 119, 43, 0.35);
-    box-shadow: 0 10px 30px -10px rgba(31, 61, 71, 0.08);
+    border-color: rgba(217, 119, 43, 0.25);
+    box-shadow:
+      0 14px 40px rgba(143, 113, 80, 0.14),
+      0 4px 14px rgba(143, 113, 80, 0.07),
+      inset 0 1px 0 rgba(255,255,255,0.75);
+    transform: translateY(-3px);
   }
 
+  /* Clay panel (glass-like but clay depth) */
   .panel {
-    border: 1px solid rgba(31, 61, 71, 0.12);
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
+    border: 1px solid rgba(31, 61, 71, 0.08);
+    background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(250,247,242,0.9) 100%);
+    backdrop-filter: blur(16px);
+    border-radius: 1.5rem;
+    box-shadow:
+      0 6px 24px rgba(143, 113, 80, 0.08),
+      0 2px 8px rgba(143, 113, 80, 0.04),
+      inset 0 1px 0 rgba(255,255,255,0.7);
   }
 
+  /* Clay eyebrow */
   .eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     border-radius: 9999px;
-    border: 1px solid rgba(31, 61, 71, 0.2);
-    background: rgba(31, 61, 71, 0.05);
-    padding: 0.3rem 0.85rem;
-    font-size: 0.75rem;
+    border: 1px solid rgba(31, 61, 71, 0.12);
+    background: linear-gradient(180deg, rgba(250,247,242,0.8) 0%, rgba(240,235,225,0.6) 100%);
+    padding: 0.35rem 0.9rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     color: #1f3d47;
+    box-shadow: 0 2px 6px rgba(143, 113, 80, 0.06), inset 0 1px 0 rgba(255,255,255,0.8);
   }
 
+  /* Clay pill / tag */
+  .clay-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(245,240,235,0.9) 100%);
+    border: 1px solid rgba(31, 61, 71, 0.08);
+    padding: 0.2rem 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(143, 113, 80, 0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+    transition: box-shadow 0.25s ease;
+  }
+  .clay-pill:hover {
+    box-shadow: 0 4px 12px rgba(143, 113, 80, 0.08), inset 0 1px 0 rgba(255,255,255,0.75);
+  }
+
+  /* Clay button - puffy, soft depth */
+  .btn-clay {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(31, 61, 71, 0.1);
+    background: linear-gradient(180deg, #ffffff 0%, #f6f0e8 100%);
+    padding: 0.85rem 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1f3d47;
+    box-shadow:
+      0 8px 24px rgba(143, 113, 80, 0.1),
+      0 3px 8px rgba(143, 113, 80, 0.05),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+    transition: all 0.25s ease;
+  }
+  .btn-clay:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 32px rgba(143, 113, 80, 0.14),
+      0 5px 12px rgba(143, 113, 80, 0.07),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .btn-clay:active {
+    transform: translateY(0);
+    box-shadow:
+      0 4px 12px rgba(143, 113, 80, 0.1),
+      0 1px 4px rgba(143, 113, 80, 0.05),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* Clay dark button */
+  .btn-clay-dark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: linear-gradient(180deg, #2a3b45 0%, #1a2730 100%);
+    padding: 0.85rem 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.2),
+      0 3px 8px rgba(0,0,0,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: all 0.25s ease;
+  }
+  .btn-clay-dark:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 32px rgba(0,0,0,0.28),
+      0 5px 12px rgba(0,0,0,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+    background: linear-gradient(180deg, #333f4a 0%, #1f3d47 100%);
+  }
+
+  /* Clay input */
+  .clay-input {
+    border-radius: 9999px;
+    border: 1px solid rgba(31, 61, 71, 0.1);
+    background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(250,247,242,0.9) 100%);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    color: #1f3d47;
+    outline: none;
+    box-shadow: inset 0 2px 6px rgba(143, 113, 80, 0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .clay-input:focus {
+    border-color: rgba(217, 119, 43, 0.35);
+    box-shadow: inset 0 2px 6px rgba(143, 113, 80, 0.05), 0 0 0 3px rgba(217, 119, 43, 0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  /* Clay gradient text */
   .text-gradient-aurora,
   .text-gradient-sunset,
   .text-gradient-ocean,
@@ -112,20 +241,31 @@
     color: #d9772b;
   }
 
+  /* Card glow variants */
   .card-glow-purple,
   .card-glow-pink,
   .card-glow-cyan,
   .card-glow-emerald,
   .card-glow-orange {
-    border: 1px solid rgba(31, 61, 71, 0.12);
-    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(31, 61, 71, 0.08);
+    background: linear-gradient(180deg, #fffdf9 0%, #faf5ee 100%);
+    box-shadow:
+      0 8px 30px rgba(143, 113, 80, 0.08),
+      0 2px 8px rgba(143, 113, 80, 0.04),
+      inset 0 1px 0 rgba(255,255,255,0.7);
   }
 
+  /* Liquid glass with clay feel */
   .liquid-glass {
     position: relative;
-    border: 1px solid rgba(31, 61, 71, 0.15);
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
+    border: 1px solid rgba(31, 61, 71, 0.12);
+    background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(250,247,242,0.9) 100%);
+    backdrop-filter: blur(14px);
+    border-radius: 1.5rem;
+    box-shadow:
+      0 8px 28px rgba(143, 113, 80, 0.09),
+      0 2px 8px rgba(143, 113, 80, 0.04),
+      inset 0 1px 0 rgba(255,255,255,0.75);
   }
 
   .text-balance {
@@ -133,13 +273,14 @@
   }
 }
 
+/* Reveal — gentle, not overwhelming */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
   will-change: opacity, transform;
   transition:
-    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal--in {
   opacity: 1;
@@ -147,10 +288,11 @@
   will-change: auto;
 }
 
+/* Gentle fade-rise keyframes */
 @keyframes fade-rise {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -163,9 +305,9 @@
 }
 
 .animate-fade-rise-delay {
-  animation: fade-rise 0.8s ease-out 0.2s both;
+  animation: fade-rise 0.8s ease-out 0.15s both;
 }
 
 .animate-fade-rise-delay-2 {
-  animation: fade-rise 0.8s ease-out 0.4s both;
+  animation: fade-rise 0.8s ease-out 0.3s both;
 }

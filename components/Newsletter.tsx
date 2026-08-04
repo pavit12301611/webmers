@@ -52,13 +52,13 @@ export default function Newsletter() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
           aria-label="Email address"
-          className="flex-1 rounded-full border border-wander-dark/20 bg-white/80 px-6 py-4 text-wander-dark placeholder-wander-dark/50 outline-none backdrop-blur-xl transition-colors focus:border-wander-orange"
+          className="flex-1 rounded-full border border-wander-dark/10 bg-gradient-to-b from-white/95 to-[#faf8f4] px-6 py-4 text-wander-dark placeholder-wander-dark/40 outline-none shadow-[inset_0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl transition-all focus:border-wander-orange/40 focus:shadow-[inset_0_2px_6px_rgba(143,113,80,0.05),0_0_0_3px_rgba(217,119,43,0.08),inset_0_1px_0_rgba(255,255,255,0.8)]"
           required
         />
         <button
           type="submit"
           disabled={state === 'loading'}
-          className="inline-flex items-center justify-center rounded-full bg-wander-dark px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-orange-500 disabled:opacity-60"
+          className="inline-flex items-center justify-center rounded-full bg-gradient-to-b from-[#1f3d47] to-[#2a3b45] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white shadow-[0_8px_24px_rgba(22,30,38,0.2),0_3px_8px_rgba(22,30,38,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(22,30,38,0.28),0_5px_12px_rgba(22,30,38,0.15),inset_0_1px_0_rgba(255,255,255,0.15)] disabled:opacity-60"
         >
           {state === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>

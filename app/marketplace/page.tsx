@@ -87,7 +87,7 @@ export default async function MarketplacePage({
             Fully-built websites, ready to launch. Filter by category, sort by what matters, or search for a stack with a measured, precise experience.
           </p>
 
-          <form action="/marketplace" method="get" className="mt-8 flex max-w-3xl flex-col gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl">
+          <form action="/marketplace" method="get" className="mt-8 flex max-w-3xl flex-col gap-3 rounded-[1.8rem] border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-[#faf8f4]/[0.08] p-4 backdrop-blur-2xl shadow-[0_8px_32px_rgba(143,113,80,0.06),0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.12)]">
             {cat !== 'All' && <input type="hidden" name="cat" value={cat} />}
             <div className="relative flex-1">
               <Search size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/30" />
@@ -96,20 +96,20 @@ export default async function MarketplacePage({
                 name="q"
                 defaultValue={q}
                 placeholder="Search by name, category or tech…"
-                className="w-full rounded-full bg-transparent py-3.5 pl-12 pr-4 text-foreground placeholder-foreground/25 outline-none"
+                className="w-full rounded-full border border-white/10 bg-gradient-to-b from-[#fffdf9]/20 to-[#faf5ee]/10 px-4 py-3.5 pl-12 pr-4 text-foreground placeholder-foreground/20 outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all focus:border-wander-orange/30 focus:shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.1)]"
               />
             </div>
-            <button type="submit" className="rounded-full bg-white px-8 py-3.5 text-sm font-medium text-black transition hover:bg-white/90">
+            <button type="submit" className="rounded-full bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] px-8 py-3.5 text-sm font-bold text-wander-dark shadow-[0_4px_12px_rgba(143,113,80,0.1),0_1px_4px_rgba(143,113,80,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(143,113,80,0.15),0_2px_6px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:bg-gradient-to-b hover:from-white hover:to-[#f6f0e8]">
               Search
             </button>
 
             <div className="mt-1 flex flex-wrap items-center gap-3 border-t border-white/[0.06] pt-3">
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
+              <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-gradient-to-b from-[#fffdf9]/[0.06] to-[#faf5ee]/[0.06] px-4 py-2 shadow-[inset_0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
                 <span className="text-[11px] uppercase tracking-[0.14em] text-foreground/40">Sort</span>
                 <select
                   name="sort"
                   defaultValue={sort}
-                  className="bg-transparent text-sm text-foreground/80 outline-none"
+                  className="bg-transparent text-sm text-foreground/80 outline-none appearance-none cursor-pointer"
                 >
                   {SORTS.map((s) => (
                     <option key={s.value} value={s.value} className="bg-background">
@@ -118,7 +118,7 @@ export default async function MarketplacePage({
                   ))}
                 </select>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
+              <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-gradient-to-b from-[#fffdf9]/[0.06] to-[#faf5ee]/[0.06] px-4 py-2 shadow-[inset_0_1px_3px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
                 <span className="text-[11px] uppercase tracking-[0.14em] text-foreground/40">Price ₹</span>
                 <input
                   type="number"
@@ -126,7 +126,7 @@ export default async function MarketplacePage({
                   min={0}
                   placeholder="Min"
                   defaultValue={minRaw ?? ''}
-                  className="w-16 bg-transparent text-sm text-foreground/80 outline-none placeholder-foreground/25"
+                  className="w-16 bg-transparent text-sm text-foreground/80 outline-none placeholder-foreground/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)] rounded-full px-1"
                 />
                 <span className="text-foreground/30">–</span>
                 <input
@@ -135,10 +135,10 @@ export default async function MarketplacePage({
                   min={0}
                   placeholder="Max"
                   defaultValue={maxRaw ?? ''}
-                  className="w-16 bg-transparent text-sm text-foreground/80 outline-none placeholder-foreground/25"
+                  className="w-16 bg-transparent text-sm text-foreground/80 outline-none placeholder-foreground/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)] rounded-full px-1"
                 />
               </div>
-              <button type="submit" className="rounded-full border border-white/10 px-5 py-2 text-sm text-foreground/60 transition hover:border-white/20 hover:text-foreground">
+              <button type="submit" className="rounded-full border border-white/[0.08] bg-gradient-to-b from-[#fffdf9]/[0.06] to-[#faf5ee]/[0.06] px-5 py-2 text-sm text-foreground/60 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-white/20 hover:text-foreground hover:shadow-[inset_0_1px_3px_rgba(0,0,0,0.05),0_4px_12px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.1)]">
                 Apply
               </button>
             </div>
@@ -172,10 +172,10 @@ export default async function MarketplacePage({
             ))}
           </div>
         ) : (
-          <div className="rounded-[1.8rem] border border-white/10 bg-white/[0.03] py-24 text-center backdrop-blur-xl">
+          <div className="rounded-[1.8rem] border border-white/[0.06] bg-gradient-to-b from-[#fffdf9]/[0.04] to-[#faf5ee]/[0.06] py-24 text-center backdrop-blur-2xl shadow-[0_8px_32px_rgba(143,113,80,0.05),inset_0_1px_0_rgba(255,255,255,0.1)]">
             <p className="mb-2 text-2xl tracking-tight text-foreground" style={{ fontFamily: 'var(--font-instrument)' }}>No websites found</p>
             <p className="mb-6 text-foreground/40">Try a different search, category or price range.</p>
-            <Link href="/marketplace" className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-medium text-black">
+            <Link href="/marketplace" className="inline-flex rounded-full bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] px-6 py-3 text-sm font-bold text-wander-dark shadow-[0_4px_12px_rgba(143,113,80,0.1),0_1px_4px_rgba(143,113,80,0.05),inset_0_1px_0_rgba(255,255,255,0.9)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(143,113,80,0.14),0_2px_6px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]">
               Clear filters
             </Link>
           </div>
@@ -191,8 +191,8 @@ function CategoryPill({ label, active, href }: { label: string; active: boolean;
   return (
     <Link
       href={href}
-      className={`rounded-full border px-4 py-2 text-[12px] font-medium transition-all ${
-        active ? 'border-white bg-white text-black shadow-[0_8px_24px_rgba(255,255,255,0.12)]' : 'border-white/10 bg-white/[0.03] text-foreground/50 hover:border-white/20 hover:text-foreground'
+      className={`rounded-full border px-4 py-2 text-[12px] font-medium transition-all shadow-[0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-sm ${
+        active ? 'border-white bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] text-wander-dark shadow-[0_8px_24px_rgba(255,255,255,0.12),0_2px_6px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]' : 'border-white/10 bg-gradient-to-b from-[#fffdf9]/[0.03] to-[#faf5ee]/[0.03] text-foreground/50 hover:border-white/20 hover:text-foreground hover:shadow-[0_4px_12px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.75)]'
       }`}
     >
       {label}

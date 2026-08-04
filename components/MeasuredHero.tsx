@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 
 export default function MeasuredHero() {
   return (
-    <section className="relative h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] rounded-[32px] md:rounded-[40px] overflow-hidden shadow-sm ring-1 ring-black/5 bg-wander-blue w-full">
+    <section className="relative h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] rounded-[3rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_16px_48px_rgba(143,113,80,0.15),0_6px_20px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-white/30 bg-gradient-to-b from-[#7bb5cc]/20 via-[#d0e4ec]/30 to-[#f3efe8] w-full">
       {/* 1. Navigation Bar (Absolute Positioned inside Hero) */}
       <Header hero />
 
@@ -23,14 +23,14 @@ export default function MeasuredHero() {
         </p>
         <Link
           href="/marketplace"
-          className="mt-8 inline-block bg-transparent border-2 border-wander-dark text-wander-dark uppercase tracking-wider px-8 py-3.5 rounded-full font-semibold text-sm hover:bg-wander-dark hover:text-white transition-colors duration-300"
+          className="mt-8 inline-block rounded-full border-2 border-wander-dark/20 bg-gradient-to-b from-white/90 to-[#faf8f4] text-wander-dark uppercase tracking-wider px-8 py-3.5 rounded-full font-semibold text-sm hover:bg-gradient-to-b hover:from-white hover:to-[#f6f0e8] hover:border-wander-dark/30 hover:-translate-y-0.5 shadow-[0_6px_18px_rgba(143,113,80,0.1),0_2px_6px_rgba(143,113,80,0.05),inset_0_1px_0_rgba(255,255,255,0.8)] transition-all duration-300"
         >
           EXPLORE CATEGORY
         </Link>
       </div>
 
       {/* 3. "Shop Now" Inverted Cutout (Bottom Right) */}
-      <div className="absolute bottom-0 right-0 z-30 bg-[#f3efe8] rounded-tl-[40px] pt-8 pl-10 pb-8 pr-10">
+      <div className="absolute bottom-0 right-0 z-30 bg-gradient-to-br from-[#faf6f0] to-[#f6f0e8] rounded-tl-[3rem] pt-8 pl-10 pb-8 pr-10 shadow-[-8px_-8px_30px_rgba(143,113,80,0.1),0_4px_15px_rgba(143,113,80,0.06)] border border-r-0 border-b-0 border-t-white/40 border-l-white/40 backdrop-blur-sm">
         {/* Corner 1 (top junction): absolute bottom-full right-0 */}
         <div
           className="absolute bottom-full right-0 w-10 h-10 pointer-events-none"

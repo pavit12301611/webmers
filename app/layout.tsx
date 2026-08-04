@@ -40,7 +40,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
         </noscript>
       </head>
-      <body className="bg-[#f3efe8] text-[#1f3d47] antialiased">
+      <body className="bg-[#f3efe8] text-[#1f3d47] antialiased selection:bg-wander-orange/25 selection:text-wander-dark">
+        <div className="fixed inset-0 pointer-events-none z-[0] opacity-60"
+          style={{
+            backgroundImage: `radial-gradient(ellipse at 10% 20%, rgba(217,119,43,0.05) 0%, transparent 50%), radial-gradient(ellipse at 90% 80%, rgba(217,119,43,0.05) 0%, transparent 50%), radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.4) 0%, transparent 70%)`,
+          }}
+        />
         <Providers>{children}</Providers>
         <CustomCursor />
       </body>

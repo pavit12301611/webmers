@@ -116,7 +116,7 @@ function SignUpForm() {
         </svg>
       </div>
 
-      <div className="relative w-full max-w-md rounded-[1.8rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-2xl md:p-10">
+      <div className="relative w-full max-w-md rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#fffdf9]/10 to-[#faf5ee]/10 p-8 backdrop-blur-2xl shadow-[0_8px_32px_rgba(143,113,80,0.08),0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.15)] md:p-10">
         <Link href="/" className="mb-6 inline-flex items-center gap-2">
           <svg viewBox="0 0 256 256" width="22" height="22" fill="#1f3d47">
             <path d="M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 96 95 L 63.5 128 L 64 128 L 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 64 L 64 0 L 192 0 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z" />
@@ -135,15 +135,15 @@ function SignUpForm() {
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
             <label htmlFor="name" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Name</label>
-            <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" autoComplete="name" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" required />
+            <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" autoComplete="name" className="w-full rounded-full border border-white/10 bg-gradient-to-b from-[#fffdf9]/20 to-[#faf5ee]/10 px-5 py-3.5 text-foreground placeholder-foreground/30 outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all focus:border-wander-orange/30 focus:shadow-[inset_0_2px_6px_rgba(0,0,0,0.04),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.1)]" required />
           </div>
           <div>
             <label htmlFor="email" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Email</label>
-            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" required />
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-gradient-to-b from-[#fffdf9]/20 to-[#faf5ee]/10 px-5 py-3.5 text-foreground placeholder-foreground/30 outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all focus:border-wander-orange/30 focus:shadow-[inset_0_2px_6px_rgba(0,0,0,0.04),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.1)]" required />
           </div>
           <div>
             <label htmlFor="password" className="mb-1 block text-[11px] uppercase tracking-widest text-foreground/40">Password</label>
-            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 12 characters" autoComplete="new-password" minLength={12} className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" required />
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 12 characters" autoComplete="new-password" minLength={12} className="w-full rounded-full border border-white/10 bg-gradient-to-b from-[#fffdf9]/20 to-[#faf5ee]/10 px-5 py-3.5 text-foreground placeholder-foreground/30 outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all focus:border-wander-orange/30 focus:shadow-[inset_0_2px_6px_rgba(0,0,0,0.04),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.1)]" required />
           </div>
 
           <div>
@@ -173,8 +173,8 @@ function SignUpForm() {
             <div className="rounded-[1.2rem] border border-amber-400/20 bg-amber-400/[0.04] p-4">
               <p className="mb-3 text-[11px] uppercase tracking-widest text-amber-700">Seller payout method — add at least one</p>
               <div className="space-y-3">
-                <div><label htmlFor="upiId" className="mb-1 block text-xs text-foreground/55">UPI ID</label><input id="upiId" type="text" value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="yourname@okaxis" autoComplete="off" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" /></div>
-                <div><label htmlFor="paypalEmail" className="mb-1 block text-xs text-foreground/55">PayPal email</label><input id="paypalEmail" type="email" value={paypalEmail} onChange={(e) => setPaypalEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-foreground placeholder-foreground/25 outline-none focus:border-white/20" /></div>
+                <div><label htmlFor="upiId" className="mb-1 block text-xs text-foreground/55">UPI ID</label><input id="upiId" type="text" value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="yourname@okaxis" autoComplete="off" className="w-full rounded-full border border-white/10 bg-gradient-to-b from-[#fffdf9]/20 to-[#faf5ee]/10 px-5 py-3.5 text-foreground placeholder-foreground/30 outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all focus:border-wander-orange/30 focus:shadow-[inset_0_2px_6px_rgba(0,0,0,0.04),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.1)]" /></div>
+                <div><label htmlFor="paypalEmail" className="mb-1 block text-xs text-foreground/55">PayPal email</label><input id="paypalEmail" type="email" value={paypalEmail} onChange={(e) => setPaypalEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" className="w-full rounded-full border border-white/10 bg-gradient-to-b from-[#fffdf9]/20 to-[#faf5ee]/10 px-5 py-3.5 text-foreground placeholder-foreground/30 outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all focus:border-wander-orange/30 focus:shadow-[inset_0_2px_6px_rgba(0,0,0,0.04),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.1)]" /></div>
               </div>
               <p className="mt-3 text-[11px] leading-5 text-amber-700/80">A UPI ID or PayPal email is required. Enter only payout details — never a UPI PIN, password, or OTP.</p>
             </div>
