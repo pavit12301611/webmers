@@ -49,14 +49,14 @@ export default function MeasuredHero() {
         <div
           className="absolute bottom-full right-0 w-14 h-14 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 0 0, transparent 56px, rgba(123,181,204,0.95) 56px)',
+            background: 'radial-gradient(circle at 0 0, transparent 56px, #f3efe8 56px)',
           }}
         />
         {/* Corner blend 2 */}
         <div
           className="absolute bottom-0 right-full w-14 h-14 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 0 0, transparent 56px, rgba(123,181,204,0.95) 56px)',
+            background: 'radial-gradient(circle at 0 0, transparent 56px, #f3efe8 56px)',
           }}
         />
 
