@@ -17,7 +17,7 @@ export default function ListingCard({
   return (
     <Link
       href={`/listing/${listing.id}`}
-      className="group relative block overflow-hidden rounded-[24px] bg-white/80 border border-wander-dark/10 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-wander-orange/40 hover:shadow-md"
+      className="group relative block overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/8 shadow-[0_8px_28px_rgba(143,113,80,0.08),0_2px_8px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] transition-all duration-350 hover:-translate-y-1 hover:border-wander-orange/25 hover:shadow-[0_14px_36px_rgba(143,113,80,0.12),0_4px_14px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-wander-blue/20">
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04] will-change-transform">
@@ -26,13 +26,13 @@ export default function ListingCard({
         <div className="absolute inset-0 bg-gradient-to-t from-wander-dark/85 via-transparent to-black/20" />
 
         <div className="absolute left-4 top-4 flex items-center gap-2">
-          <span className="rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-wander-dark shadow-sm">
+          <span className="rounded-full bg-gradient-to-b from-white/95 to-[#faf8f4] backdrop-blur-md px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-wander-dark shadow-[0_2px_6px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.85)] border border-white/50">
             {listing.category}
           </span>
         </div>
 
         <div className="absolute right-4 top-4">
-          <div className="rounded-full bg-white/80 backdrop-blur-md p-1 shadow-sm">
+          <div className="rounded-full bg-gradient-to-b from-white/90 to-[#faf5ee] backdrop-blur-md p-1.5 shadow-[0_2px_8px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/40">
             <WishlistButton listingId={listing.id} initial={initialWishlisted} />
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function ListingCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 py-3.5 text-xs text-wander-dark/80">
+      <div className="flex items-center justify-between px-5 py-3.5 text-xs text-wander-dark/80 bg-gradient-to-r from-white/30 to-[#faf5ee]/60 rounded-b-[1.75rem] border-t border-wander-dark/[0.04]">
         <span className="flex items-center gap-1.5 font-medium">
           <Star size={13} fill="currentColor" className="text-wander-orange" /> {listing.rating.toFixed(1)}
           <span className="ml-2 h-3 w-px bg-wander-dark/15" />

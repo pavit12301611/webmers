@@ -45,13 +45,13 @@ export default function SellPage() {
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/auth/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-black transition hover:bg-white/90"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] px-7 py-3.5 text-sm font-bold text-wander-dark shadow-[0_6px_18px_rgba(143,113,80,0.12),0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(143,113,80,0.18),0_3px_10px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:bg-gradient-to-b hover:from-white hover:to-[#f6f0e8]"
             >
               Become a seller <ArrowRight size={14} />
             </Link>
             <Link
               href="/dashboard/seller"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-7 py-3.5 text-sm text-foreground/70 transition hover:border-white/20 hover:text-foreground"
+              className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-gradient-to-b from-[#fffdf9]/[0.04] to-[#faf5ee]/[0.06] px-7 py-3.5 text-sm text-foreground/80 shadow-[0_2px_8px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:border-white/20 hover:text-foreground hover:shadow-[0_4px_12px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.12)]"
             >
               Seller dashboard
             </Link>
@@ -72,7 +72,7 @@ export default function SellPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {steps.map((item, i) => (
               <Reveal key={item.n} delay={i * 90}>
-                <div className="h-full rounded-[1.6rem] border border-white/[0.07] bg-white/[0.02] p-7 backdrop-blur-xl">
+                <div className="h-full rounded-[1.6rem] border border-white/[0.07] bg-gradient-to-b from-[#fffdf9]/[0.04] to-[#faf5ee]/[0.05] p-7 backdrop-blur-xl shadow-[0_6px_22px_rgba(143,113,80,0.06),0_2px_6px_rgba(143,113,80,0.03),inset_0_1px_0_rgba(255,255,255,0.15)]">
                   <div className="mb-8 font-instrument text-5xl text-foreground/[0.08]">{item.n}</div>
                   <h3 className="mb-3 text-xl font-medium tracking-tight text-foreground md:text-2xl">{item.title}</h3>
                   <p className="text-[14px] leading-6 text-foreground/45">{item.desc}</p>
@@ -98,7 +98,7 @@ export default function SellPage() {
               const Icon = item.icon;
               return (
                 <Reveal key={item.title} delay={i * 70}>
-                  <div className="h-full rounded-[1.5rem] border border-white/[0.07] bg-white/[0.02] p-6 backdrop-blur-xl">
+                  <div className="h-full rounded-[1.5rem] border border-white/[0.07] bg-gradient-to-b from-[#fffdf9]/[0.04] to-[#faf5ee]/[0.05] p-6 backdrop-blur-xl shadow-[0_6px_22px_rgba(143,113,80,0.06),0_2px_6px_rgba(143,113,80,0.03),inset_0_1px_0_rgba(255,255,255,0.15)]">
                     <Icon className="mb-5 text-foreground/40" size={22} />
                     <h3 className="mb-2 text-[17px] font-medium text-foreground">{item.title}</h3>
                     <p className="text-[13px] leading-6 text-foreground/45">{item.desc}</p>
@@ -112,7 +112,7 @@ export default function SellPage() {
 
       <section className="relative px-6 pb-28 md:px-10">
         <Reveal>
-          <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-white/[0.08] bg-white/[0.04] p-10 text-center backdrop-blur-xl md:p-14">
+          <div className="mx-auto max-w-4xl rounded-[1.8rem] border border-white/[0.08] bg-gradient-to-b from-[#fffdf9]/[0.05] to-[#faf5ee]/[0.08] p-10 text-center backdrop-blur-2xl shadow-[0_8px_32px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.15)] md:p-14">
             <h2 className="text-3xl tracking-tight text-foreground md:text-5xl" style={{ fontFamily: 'var(--font-instrument)' }}>
               Ready to list your first site?
             </h2>
@@ -121,7 +121,7 @@ export default function SellPage() {
             </p>
             <Link
               href="/auth/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium text-black transition hover:bg-white/90"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] px-7 py-3.5 text-sm font-bold text-wander-dark shadow-[0_6px_18px_rgba(143,113,80,0.12),0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(143,113,80,0.18),0_3px_10px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] hover:bg-gradient-to-b hover:from-white hover:to-[#f6f0e8]"
             >
               Start selling <ArrowRight size={14} />
             </Link>

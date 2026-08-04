@@ -56,8 +56,8 @@ export default function Header({ hero = false }: HeaderProps) {
   if (hero) {
     return (
       <>
-        <header className="absolute top-0 left-0 right-0 z-50 px-8 py-8 lg:px-16 pointer-events-auto">
-          <div className="flex items-center justify-between">
+        <header className="absolute top-0 left-0 right-0 z-50 px-6 py-6 lg:px-12 pointer-events-auto">
+          <div className="flex items-center justify-between rounded-[2rem] bg-white/60 border border-white/60 backdrop-blur-xl px-6 py-3 shadow-clay md:px-8 md:py-3.5" style={{ boxShadow: '0 8px 28px rgba(143,113,80,0.08), 0 2px 8px rgba(143,113,80,0.04), inset 0 1px 0 rgba(255,255,255,0.75)' }}>
             {/* Logo (Left) */}
             <Link href="/" className="flex items-center gap-3 text-wander-dark group">
               <Mountain size={28} className="text-wander-dark transition-transform group-hover:scale-105" />
@@ -99,7 +99,7 @@ export default function Header({ hero = false }: HeaderProps) {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search gear & sites..."
                     autoFocus
-                    className="w-40 sm:w-56 rounded-full border border-wander-dark/20 bg-white/80 px-4 py-1.5 text-xs text-wander-dark placeholder-wander-dark/50 outline-none focus:border-wander-orange"
+                    className="w-40 sm:w-56 rounded-full border border-wander-dark/15 bg-white/70 px-4 py-1.5 text-xs text-wander-dark placeholder-wander-dark/50 outline-none focus:border-wander-orange shadow-[inset_0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] transition-all focus:shadow-[inset_0_2px_6px_rgba(143,113,80,0.05),0_0_0_3px_rgba(217,119,43,0.1),inset_0_1px_0_rgba(255,255,255,0.8)]"
                   />
                   <button
                     type="button"
@@ -166,7 +166,7 @@ export default function Header({ hero = false }: HeaderProps) {
 
         {/* Mobile Nav Drawer */}
         <div
-          className={`fixed inset-0 z-[100] bg-wander-bg transition-transform duration-500 ease-in-out ${
+          className={`fixed inset-0 z-[100] bg-gradient-to-b from-[#faf6f0]/95 via-[#f6f0e8]/95 to-[#f3efe8]/95 backdrop-blur-2xl transition-transform duration-500 ease-in-out ${
             isOpen ? 'translate-y-0' : '-translate-y-full'
           }`}
           aria-hidden={!isOpen}
@@ -180,7 +180,7 @@ export default function Header({ hero = false }: HeaderProps) {
             </Link>
             <button
               onClick={close}
-              className="p-2 text-wander-dark hover:text-orange-500 transition-colors rounded-full border border-wander-dark/20"
+              className="p-2 text-wander-dark hover:text-orange-500 transition-colors rounded-full border border-wander-dark/15 bg-white/60 shadow-[0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]"
               aria-label="Close menu"
             >
               <X size={24} />
@@ -242,7 +242,7 @@ export default function Header({ hero = false }: HeaderProps) {
   // Non-hero (standard sticky header across other pages)
   return (
     <>
-      <header className="sticky top-0 z-50 bg-wander-bg/90 backdrop-blur-md border-b border-wander-dark/10 px-6 py-4 md:px-10">
+      <header className="sticky top-0 z-50 bg-white/50 backdrop-blur-xl border-b border-wander-dark/5 px-6 py-3.5 md:px-10 shadow-[0_6px_24px_rgba(143,113,80,0.06),0_1px_4px_rgba(143,113,80,0.03),inset_0_1px_0_rgba(255,255,255,0.75)] rounded-b-[2rem] mx-4 mt-1">
         <div className="max-w-[1600px] mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 text-wander-dark group">
             <Mountain size={26} className="text-wander-dark transition-transform group-hover:scale-105" />

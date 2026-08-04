@@ -5,7 +5,7 @@ export default function SiteFooter() {
   return (
     <footer id="footer" className="relative z-10 overflow-hidden pb-12 pt-16 bg-[#f3efe8]">
       <div className="relative mx-auto max-w-[1600px] w-full">
-        <div className="flex flex-col items-start justify-between gap-12 rounded-[32px] p-8 md:p-12 bg-wander-dark text-white shadow-sm">
+        <div className="flex flex-col items-start justify-between gap-12 rounded-[2.5rem] p-8 md:p-12 bg-gradient-to-br from-[#2a3b45] to-[#1a2730] text-white shadow-[0_16px_48px_rgba(22,30,42,0.25),0_6px_16px_rgba(22,30,42,0.15),inset_0_1px_0_rgba(255,255,255,0.08)]">
           <div className="max-w-md">
             <div className="mb-6 flex items-center gap-3">
               <Mountain size={30} className="text-wander-orange" />
@@ -26,7 +26,7 @@ export default function SiteFooter() {
 
           <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3 md:gap-16">
             <div>
-              <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-wander-orange">
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-wander-orange drop-shadow-[0_1px_2px_rgba(143,113,80,0.15)]">
                 Categories
               </h4>
               <ul className="space-y-2.5 text-white/70 font-body">
@@ -65,7 +65,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-wander-dark/10 pt-6 md:flex-row text-wander-dark/70 font-body">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row text-white/60 font-body rounded-b-[2rem]">
           <div className="text-xs font-medium uppercase tracking-[0.16em]">
             © {new Date().getFullYear()} WEBMERS Platform
           </div>

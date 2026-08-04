@@ -83,7 +83,7 @@ export default async function Home() {
         {/* 2. Stats Section */}
         <section className="relative z-20 -mt-6 md:-mt-8">
           <Reveal>
-            <div className="mx-auto rounded-[28px] md:rounded-[36px] bg-white/80 border border-wander-dark/10 px-8 py-8 shadow-sm backdrop-blur-md md:px-12 md:py-10">
+            <div className="mx-auto rounded-[28px] md:rounded-[36px] bg-gradient-to-b from-[#fffdf9]/90 to-[#faf5ee]/90 border border-wander-dark/[0.08] px-8 py-8 shadow-[0_8px_28px_rgba(143,113,80,0.08),0_2px_8px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md md:px-12 md:py-10">
               <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
                 {stats.map((s) => (
                   <div key={s.label} className="text-center md:text-left">
@@ -117,7 +117,7 @@ export default async function Home() {
             <div className="grid gap-6 md:grid-cols-3">
               {steps.map((item, i) => (
                 <Reveal key={item.step} delay={i * 90}>
-                  <div className="group relative h-full rounded-[24px] bg-white/80 border border-wander-dark/10 p-8 shadow-sm transition hover:border-wander-orange/40 hover:shadow-md">
+                  <div className="group relative h-full rounded-[24px] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/[0.08] p-8 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] transition-all duration-300 hover:-translate-y-1 hover:border-wander-orange/30 hover:shadow-[0_10px_30px_rgba(143,113,80,0.12),0_3px_10px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]">
                     <div className="mb-8 flex items-center justify-between">
                       <span className="font-heading text-5xl font-bold text-wander-dark/15 transition group-hover:text-wander-orange/30">
                         {item.step}
@@ -181,14 +181,14 @@ export default async function Home() {
                   </p>
                   <ul className="mt-8 grid gap-3 text-sm font-medium text-wander-dark sm:grid-cols-2">
                     {editorFeatures.map((f) => (
-                      <li key={f} className="flex items-center gap-3 rounded-full border border-wander-dark/15 bg-white/80 px-4 py-3 shadow-xs">
+                      <li key={f} className="flex items-center gap-3 rounded-full border border-wander-dark/[0.08] bg-gradient-to-b from-white/90 to-[#faf8f4] px-4 py-3 shadow-[0_2px_6px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]">
                         <Sparkles size={14} className="shrink-0 text-wander-orange" /> {f}
                       </li>
                     ))}
                   </ul>
                   <Link
                     href="/editor"
-                    className="mt-8 inline-flex items-center gap-2 rounded-full bg-wander-dark px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-orange-500"
+                    className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#1f3d47] to-[#2a3b45] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white shadow-[0_8px_24px_rgba(22,30,38,0.2),0_3px_8px_rgba(22,30,38,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(22,30,38,0.28),0_5px_12px_rgba(22,30,38,0.15),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-gradient-to-b hover:from-[#2a3b45] hover:to-[#1f3d47]"
                   >
                     Try the editor <ArrowRight size={14} />
                   </Link>
@@ -232,7 +232,7 @@ export default async function Home() {
                 <Reveal key={cat.name} delay={i * 70}>
                   <Link
                     href={`/marketplace?cat=${encodeURIComponent(cat.name)}`}
-                    className="group block h-full rounded-[20px] bg-white/80 border border-wander-dark/10 p-6 shadow-sm transition hover:-translate-y-1 hover:border-wander-orange/40 hover:shadow-md"
+                    className="group block h-full rounded-[20px] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/[0.08] p-6 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] transition-all duration-300 hover:-translate-y-1 hover:border-wander-orange/30 hover:shadow-[0_10px_30px_rgba(143,113,80,0.1),0_3px_10px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]"
                   >
                     <h3 className="mb-1 font-heading text-xl font-medium tracking-tight text-wander-dark group-hover:text-wander-orange transition-colors md:text-2xl">
                       {cat.name}
@@ -261,7 +261,7 @@ export default async function Home() {
                 const Icon = item.icon;
                 return (
                   <Reveal key={item.title} delay={i * 70}>
-                    <div className="h-full rounded-[24px] bg-white/80 border border-wander-dark/10 p-8 shadow-sm transition hover:border-wander-orange/40 hover:shadow-md">
+                    <div className="h-full rounded-[24px] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/[0.08] p-8 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] transition-all duration-300 hover:-translate-y-1 hover:border-wander-orange/30 hover:shadow-[0_10px_30px_rgba(143,113,80,0.1),0_3px_10px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]">
                       <Icon className="mb-5 text-wander-orange" size={24} />
                       <h3 className="mb-2 font-heading text-xl font-medium text-wander-dark">{item.title}</h3>
                       <p className="text-sm leading-relaxed text-wander-text/80">{item.desc}</p>
@@ -287,7 +287,7 @@ export default async function Home() {
                 </p>
                 <Link
                   href="/sell"
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-wander-dark px-8 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-orange-500"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#1f3d47] to-[#2a3b45] px-8 py-4 text-xs font-bold uppercase tracking-wider text-white shadow-[0_8px_24px_rgba(22,30,38,0.2),0_3px_8px_rgba(22,30,38,0.1),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(22,30,38,0.28),0_5px_12px_rgba(22,30,38,0.15),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-gradient-to-b hover:from-[#2a3b45] hover:to-[#1f3d47]"
                 >
                   Start selling <ArrowRight size={14} />
                 </Link>
@@ -296,7 +296,7 @@ export default async function Home() {
             <div className="grid gap-6 md:grid-cols-3">
               {sellSteps.map((item, i) => (
                 <Reveal key={item.n} delay={i * 90}>
-                  <div className="h-full rounded-[24px] bg-white/80 border border-wander-dark/10 p-8 shadow-sm">
+                  <div className="h-full rounded-[24px] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/[0.08] p-8 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)]">
                     <div className="mb-6 font-heading text-5xl font-bold text-wander-dark/20">{item.n}</div>
                     <h3 className="mb-3 font-heading text-2xl font-medium tracking-tight text-wander-dark">{item.title}</h3>
                     <p className="text-sm leading-relaxed text-wander-text/80">{item.desc}</p>
@@ -326,7 +326,7 @@ export default async function Home() {
             <div className="grid gap-6 md:grid-cols-3">
               {layoutVariants.map((layout, i) => (
                 <Reveal key={layout} delay={i * 90}>
-                  <div className="group relative aspect-[3/4] h-full overflow-hidden rounded-[28px] border border-wander-dark/15 bg-wander-blue/20 shadow-sm">
+                  <div className="group relative aspect-[3/4] h-full overflow-hidden rounded-[28px] border border-wander-dark/[0.1] bg-gradient-to-b from-[#e8f0f5]/40 to-[#f0e8e0]/30 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.5)]">
                     <Image
                       src="/layout-preview.jpg"
                       alt=""
@@ -362,7 +362,7 @@ export default async function Home() {
             <div className="grid gap-6 md:grid-cols-2">
               {testimonials.map((t, i) => (
                 <Reveal key={t.name} delay={i * 90}>
-                  <div className="h-full rounded-[28px] bg-white/80 border border-wander-dark/10 p-8 shadow-sm md:p-10">
+                  <div className="h-full rounded-[28px] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/[0.08] p-8 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] md:p-10">
                     <div className="mb-5 flex gap-1">
                       {[1, 2, 3, 4, 5].map((i) => (
                         <Star key={i} size={15} fill="currentColor" className="text-wander-orange" />
@@ -403,7 +403,7 @@ export default async function Home() {
             </Reveal>
             <div className="mx-auto grid max-w-4xl gap-6 text-left md:grid-cols-2">
               <Reveal>
-                <div className="h-full rounded-[28px] bg-white/80 border border-wander-dark/10 p-8 shadow-sm">
+                <div className="h-full rounded-[28px] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/[0.08] p-8 shadow-[0_6px_22px_rgba(143,113,80,0.08),0_2px_6px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)]">
                   <h3 className="mb-2 font-heading text-2xl font-medium text-wander-dark">Visual Edit</h3>
                   <div className="mb-6 font-heading text-4xl font-bold text-wander-dark">Included</div>
                   <ul className="space-y-3 text-sm text-wander-dark/80">
@@ -440,7 +440,7 @@ export default async function Home() {
         {/* 12. Newsletter Section */}
         <section className="relative py-4">
           <Reveal>
-            <div className="mx-auto rounded-[32px] bg-white/80 border border-wander-dark/10 p-8 text-center shadow-sm backdrop-blur-md md:p-14">
+            <div className="mx-auto rounded-[32px] bg-gradient-to-b from-[#fffdf9]/95 to-[#faf5ee]/90 border border-wander-dark/[0.08] p-8 text-center shadow-[0_8px_28px_rgba(143,113,80,0.08),0_2px_8px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md md:p-14">
               <div className="flex justify-center">
                 <Eyebrow>Weekly harvest</Eyebrow>
               </div>
