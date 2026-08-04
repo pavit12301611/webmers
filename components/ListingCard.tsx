@@ -1,12 +1,15 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Star, ArrowUpRight, Wand2 } from 'lucide-react';
 import { ListingThumbnail } from './Thumbnail';
 import WishlistButton from './WishlistButton';
 import { customerPrice, type Listing } from '@/lib/data';
 
 /**
- * ListingCard styled for the Wander design system.
- * Now includes PSD AI edit button — every listed site is editable at /editor?listing=ID
+ * ListingCard - every listed site is editable via PSD AI at /editor?listing=ID
+ * Fixed: no nested <a> tags, uses router.push for card click and stops propagation for edit/wishlist
  */
 export default function ListingCard({
   listing,
@@ -15,9 +18,19 @@ export default function ListingCard({
   listing: Listing;
   initialWishlisted?: boolean;
 }) {
+  const router = useRouter();
+
+  const goToListing = () => router.push(`/listing/${listing.id}`);
+  const goToEditor = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    router.push(`/editor?listing=${listing.id}`);
+  };
+
   return (
     <div className="group relative block overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-[#fffdf9] to-[#faf5ee] border border-wander-dark/8 shadow-[0_8px_28px_rgba(143,113,80,0.08),0_2px_8px_rgba(143,113,80,0.04),inset_0_1px_0_rgba(255,255,255,0.75)] transition-all duration-350 hover:-translate-y-1 hover:border-wander-orange/25 hover:shadow-[0_14px_36px_rgba(143,113,80,0.12),0_4px_14px_rgba(143,113,80,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]">
-      <Link href={`/listing/${listing.id}`} className="block">
+      {/* Main clickable area - NOT a Link to avoid nested anchors */}
+      <div onClick={goToListing} className="block cursor-pointer">
         <div className="relative aspect-[4/3] overflow-hidden bg-wander-blue/20">
           <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04] will-change-transform">
             <ListingThumbnail listing={listing} showChrome={false} />
@@ -31,15 +44,18 @@ export default function ListingCard({
           </div>
 
           <div className="absolute right-4 top-4 flex items-center gap-2">
-            <Link
-              href={`/editor?listing=${listing.id}`}
+            <button
+              type="button"
+              onClick={goToEditor}
               title={`Edit ${listing.title} with PSD AI`}
               className="rounded-full bg-[#1f3d47]/90 backdrop-blur-md p-1.5 text-white border border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.2)] hover:bg-[#d9772b] transition-colors"
-              onClick={(e) => e.stopPropagation()}
             >
               <Wand2 size={14} />
-            </Link>
-            <div className="rounded-full bg-gradient-to-b from-white/90 to-[#faf5ee] backdrop-blur-md p-1.5 shadow-[0_2px_8px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/40">
+            </button>
+            <div
+              className="rounded-full bg-gradient-to-b from-white/90 to-[#faf5ee] backdrop-blur-md p-1.5 shadow-[0_2px_8px_rgba(143,113,80,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] border border-white/40"
+              onClick={(e) => e.stopPropagation()}
+            >
               <WishlistButton listingId={listing.id} initial={initialWishlisted} />
             </div>
           </div>
@@ -58,7 +74,7 @@ export default function ListingCard({
             </div>
           </div>
         </div>
-      </Link>
+      </div>
 
       <div className="flex items-center justify-between px-5 py-3.5 text-xs text-wander-dark/80 bg-gradient-to-r from-white/30 to-[#faf5ee]/60 rounded-b-[1.75rem] border-t border-wander-dark/[0.04]">
         <span className="flex items-center gap-1.5 font-medium">
@@ -67,10 +83,18 @@ export default function ListingCard({
           <span>{listing.sales} sales</span>
         </span>
         <div className="flex items-center gap-2">
-          <Link href={`/editor?listing=${listing.id}`} className="inline-flex items-center gap-1 rounded-full bg-[#1f3d47] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#d9772b] transition-colors">
+          <button
+            type="button"
+            onClick={goToEditor}
+            className="inline-flex items-center gap-1 rounded-full bg-[#1f3d47] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white hover:bg-[#d9772b] transition-colors"
+          >
             <Wand2 size={11} /> Edit with PSD
-          </Link>
-          <Link href={`/listing/${listing.id}`} className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-wander-dark transition-colors group-hover:text-wander-orange">
+          </button>
+          <Link
+            href={`/listing/${listing.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-wander-dark transition-colors group-hover:text-wander-orange"
+          >
             Explore <ArrowUpRight size={14} />
           </Link>
         </div>
