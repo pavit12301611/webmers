@@ -42,7 +42,7 @@ export default function MeasuredHero() {
 
       {/* Bottom-right cutout card — single #7BB5CC with clay depth */}
       <div
-        className="absolute bottom-0 right-0 z-30 w-[320px] md:w-[390px] rounded-tl-[3.5rem] backdrop-blur-xl overflow-hidden shadow-[-12px_-12px_50px_rgba(123,181,204,0.35),0_8px_28px_rgba(123,181,204,0.2),inset_0_1px_0_rgba(255,255,255,0.6)] bg-[#7bb5cc]/95"
+        className="absolute bottom-0 right-0 z-30 w-[320px] md:w-[390px] rounded-tl-[3.5rem] backdrop-blur-xl overflow-hidden shadow-[-12px_-12px_50px_rgba(123,181,204,0.35),0_8px_28px_rgba(123,181,204,0.2),inset_0_1px_0_rgba(255,255,255,0.6)] bg-[#7bb5cc]/90"
         style={{ borderTopLeftRadius: '3.5rem' }}
       >
         {/* Corner blend 1 */}
