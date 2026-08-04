@@ -88,6 +88,26 @@ middleware.ts                 # Auth + role-based route protection
 
 ---
 
+## 🤖 PSD — built-in chatbot
+
+**PSD** (Webmers Assistant) is a fully local chatbot floating on every page — the "PSD" pill in the bottom-right corner.
+
+- **Zero API keys.** PSD runs 100% offline: deterministic local embeddings + hybrid (semantic + lexical) retrieval + a curated local answer engine. No OpenAI, no Gemini, no external calls.
+- **Trained only on Webmers.** Its knowledge base is compiled at boot from the site's live content (pages, FAQ, legal, blog) *and* the live data layer (`lib/data.ts`), so it answers about the actual current marketplace — including listings sellers add later.
+- **Site-themed.** The widget follows the site's claymorphism design system (wander-dark/wander-orange palette, clay shadows, Outfit/Inter type).
+
+Where it lives:
+
+| Piece | Path |
+| :--- | :--- |
+| Knowledge base (training corpus) | `lib/psd/knowledge.ts` |
+| Local answer engine (intents + retrieval) | `lib/psd/answerEngine.ts` |
+| Embeddings / vector store / splitter | `lib/psd/embeddings.ts`, `lib/psd/vectorStore.ts`, `lib/psd/splitter.ts` |
+| API | `app/api/psd/route.ts` (`POST /api/psd`) |
+| Widget UI | `components/PSDWidget.tsx`, `components/PSDMarkdown.tsx` |
+
+---
+
 ## 🔒 Security notes
 
 - Tight Content-Security-Policy and security headers on every response.

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Providers from '@/components/Providers';
 import CustomCursor from '@/components/CustomCursor';
+import PSDWidget from '@/components/PSDWidget';
 import '../styles/globals.css';
 
 export const metadata: Metadata = {
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <Providers>{children}</Providers>
+        <PSDWidget />
         <CustomCursor />
       </body>
     </html>
